@@ -1,0 +1,28 @@
+{
+  "name": "ima",
+  "version": "1.0.0",
+  "description": "Two-player riichi mahjong",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chalkpe/ima.git"
+  },
+  "keywords": [
+    "mahjong"
+  ],
+  "author": "Chalk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chalkpe/ima/issues"
+  },
+  "homepage": "https://github.com/chalkpe/ima#readme",
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
+}

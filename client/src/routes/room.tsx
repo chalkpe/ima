@@ -14,19 +14,16 @@ const Room = () => {
   const skip = useAuth()
   const { data, error, refetch } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
   const { mutate: ready } = trpc.lobby.ready.useMutation()
-  const { mutate: start } = trpc.game.startGame.useMutation()
+  const { mutate: start } = trpc.game.start.useMutation()
 
   useEffect(() => {
     if (error) {
       navigate('/lobby')
     }
-  }, [error, navigate])
-
-  useEffect(() => {
-    if (data?.started) {
+    else if (data?.started) {
       navigate('/game')
     }
-  }, [data?.started, navigate])
+  }, [data?.started, error, navigate])
 
   return (
     <>

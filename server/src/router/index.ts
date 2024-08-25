@@ -8,6 +8,7 @@ setInterval(() => {
     const ping = database.lastPing.get(room.host)
     if (ping && Date.now() - ping <= 10000) return true
     database.lastPing.delete(room.host)
+    console.log('Room removed:', room.host)
     return false
   })
 }, 30000).unref()

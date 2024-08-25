@@ -10,13 +10,13 @@ import { convertTileToCode } from '../utils/tile'
 const Game = () => {
   const navigate = useNavigate()
   const skip = useAuth()
-  const { data } = trpc.game.getGameState.useQuery(skip, { refetchInterval: 1000 })
+  const { data, error } = trpc.game.state.useQuery(skip, { refetchInterval: 1000 })
 
   useEffect(() => {
-    if (!data) {
+    if (!data || error) {
       navigate('/room')
     }
-  }, [data, navigate])
+  }, [data, error, navigate])
 
   if (!data) return null
   return (

@@ -3,14 +3,14 @@ import { availableTiles, database } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 export const gameRouter = router({
-  getGameState: publicProcedure.query((opts) => {
+  state: publicProcedure.query((opts) => {
     const { username } = opts.ctx
     const room = database.rooms.find((room) => room.host === username || room.guest === username)
     if (!room) throw new Error('Room not found')
 
     return room.state
   }),
-  startGame: publicProcedure.mutation((opts) => {
+  start: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
     const room = database.rooms.find((room) => room.host === username || room.guest === username)
     if (!room) throw new Error('Room not found')

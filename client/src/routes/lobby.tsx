@@ -3,15 +3,23 @@ import { trpc } from '../utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import { CheckOutlined } from '@mui/icons-material'
 import useAuth from '../hooks/useAuth'
+import { useEffect } from 'react'
 
 const Lobby = () => {
   const navigate = useNavigate()
   
   const skip = useAuth()
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
+  const { data: room, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
 
   const { mutate: create } = trpc.lobby.create.useMutation()
   const { mutate: join } = trpc.lobby.join.useMutation()
+
+  useEffect(() => {
+    if (room && !error) {
+      navigate('/room')
+    }
+  }, [room, navigate, error])
 
   return (
     <>

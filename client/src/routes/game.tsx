@@ -6,6 +6,7 @@ import Hand from '../components/Hand'
 import { Stack } from '@mui/material'
 import Mahgen from '../components/Mahgen'
 import { convertTileToCode } from '../utils/tile'
+import KingTiles from '../components/KingTiles'
 
 const Game = () => {
   const navigate = useNavigate()
@@ -24,11 +25,7 @@ const Game = () => {
       <h1>Game</h1>
 
       <h2>Dora</h2>
-      <div>
-        {data.wall.kingTiles.map((tile, index) => (
-          <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} />
-        ))}
-      </div>
+      <KingTiles tiles={data.wall.kingTiles} />
       
       <h2>Host</h2>
       <Hand hand={data.host.hand} />

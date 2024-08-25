@@ -18,5 +18,7 @@ export const convertTileToCode = (tile: Tile) => {
       return `${tile.value}z`
     case 'dragon':
       return `${tile.value + 4}z`
+    case 'back':
+      return '0z'
   }
 }

@@ -1,5 +1,5 @@
 export interface Tile {
-  type: 'man' | 'pin' | 'sou' | 'wind' | 'dragon'
+  type: 'man' | 'pin' | 'sou' | 'wind' | 'dragon' | 'back'
   value: number
   attribute: 'normal' | 'red'
   background: 'white' | 'transparent' | 'yellow'

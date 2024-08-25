@@ -1,5 +1,4 @@
-import z from 'zod'
-import { availableTiles, database } from '../db'
+import { availableTiles, database, GameState } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 export const gameRouter = router({
@@ -8,7 +7,22 @@ export const gameRouter = router({
     const room = database.rooms.find((room) => room.host === username || room.guest === username)
     if (!room) throw new Error('Room not found')
 
-    return room.state
+    const opponent = room.host === username ? 'guest' : 'host'
+    return {
+      ...room.state,
+      [opponent]: {
+        ...room.state[opponent],
+        hand: {
+          closed: room.state[opponent].hand.closed.map((tile) => ({ ...tile, type: 'back', value: 0 })),
+          called: room.state[opponent].hand.called,
+        },
+      },
+      wall: {
+        ...room.state.wall,
+        tiles: room.state.wall.tiles.map((tile) => ({ ...tile, type: 'back', value: 0 })),
+        kingTiles: room.state.wall.kingTiles.map((tile, index) => (index === 9 ? tile : { ...tile, type: 'back', value: 0 })),
+      },
+    } satisfies GameState
   }),
   start: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx

@@ -1,5 +1,5 @@
 import 'mahgen'
-import { FC, memo, useEffect, useRef } from 'react'
+import { FC, memo, MouseEventHandler, useEffect, useRef } from 'react'
 
 interface MahgenElement extends HTMLElement {
   ['data-seq']: string
@@ -21,9 +21,10 @@ interface MahgenProps {
   showError?: boolean
   riverMode?: boolean
   size?: 'small' | 'large'
+  onClick?: MouseEventHandler
 }
 
-const Mahgen: FC<MahgenProps> = memo(({ sequence, showError, riverMode, size }) => {
+const Mahgen: FC<MahgenProps> = memo(({ sequence, showError, riverMode, size, onClick }) => {
   const ref = useRef<MahgenElement>(null)
 
   useEffect(() => {
@@ -36,6 +37,7 @@ const Mahgen: FC<MahgenProps> = memo(({ sequence, showError, riverMode, size }) 
     <>
       <mah-gen
         ref={ref}
+        onClick={onClick}
         data-seq={sequence.replace('||', '|')}
         {...(showError ? { ['data-show-err']: 'true' } : {})}
         {...(riverMode ? { ['data-river-mode']: 'true' } : {})}

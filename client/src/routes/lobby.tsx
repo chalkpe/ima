@@ -1,14 +1,14 @@
 import { Button, IconButton, List, ListItem } from '@mui/material'
 import { trpc } from '../utils/trpc'
 import { useNavigate } from 'react-router-dom'
-import { CheckOutlined } from '@mui/icons-material'
+import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
 import useAuth from '../hooks/useAuth'
 import { useEffect } from 'react'
 
 const Lobby = () => {
   const navigate = useNavigate()
   
-  const skip = useAuth()
+  const { skip } = useAuth()
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
   const { data: room, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
 
@@ -46,7 +46,7 @@ const Lobby = () => {
                   edge="end"
                   onClick={() => join({ host: room.host }, { onSuccess: () => navigate('/room') })}
                 >
-                  <CheckOutlined />
+                  {room.started ? <BlockOutlined /> : <CheckOutlined />}
                 </IconButton>
               }
             >

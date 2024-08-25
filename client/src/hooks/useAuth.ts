@@ -15,7 +15,7 @@ const useAuth = () => {
     if (!username) navigate('/')
   }, [navigate, username])
 
-  return skip
+  return { username, skip } as const
 }
 
 export default useAuth

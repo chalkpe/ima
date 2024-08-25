@@ -4,7 +4,7 @@ import { Room, database } from '../db'
 import { TRPCError } from '@trpc/server'
 
 export const lobbyRouter = router({
-  list: publicProcedure.query(() => database.rooms.map((room) => ({ host: room.host, guest: room.guest }))),
+  list: publicProcedure.query(() => database.rooms.map((room) => ({ host: room.host, guest: room.guest, started: room.started }))),
 
   create: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
@@ -21,17 +21,26 @@ export const lobbyRouter = router({
       state: {
         host: {
           river: [],
-          hand: { closed: [], called: [] },
+          hand: { closed: [], called: [], tsumo: undefined },
         },
         guest: {
           river: [],
-          hand: { closed: [], called: [] },
+          hand: { closed: [], called: [], tsumo: undefined },
         },
-        wall: { tiles: [], kingTiles: [], supplementTiles: [] },
+        wall: { tiles: [], kingTiles: [], supplementTiles: [], doraCount: 1 },
+        turn: 'host',
       },
     }
 
     database.rooms.push(room)
+  }),
+
+  remove: publicProcedure.mutation((opts) => {
+    const { username } = opts.ctx
+    const room = database.rooms.find((room) => room.host === username)
+    if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
+
+    database.rooms = database.rooms.filter((room) => room.host !== username)
   }),
 
   join: publicProcedure.input(z.object({ host: z.string() })).mutation((opts) => {
@@ -43,8 +52,10 @@ export const lobbyRouter = router({
     const room = database.rooms.find((room) => room.host === host)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
 
-    database.rooms = database.rooms.filter((room) => room.host !== username)
+    if (room.guest) throw new TRPCError({ code: 'FORBIDDEN', message: '이미 게스트가 존재합니다.' })
+
     room.guest = username
+    database.rooms = database.rooms.filter((room) => room.host !== username)
   }),
 
   room: publicProcedure.query((opts) => {

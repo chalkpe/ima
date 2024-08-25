@@ -2,7 +2,7 @@ export interface Tile {
   type: 'man' | 'pin' | 'sou' | 'wind' | 'dragon' | 'back'
   value: number
   attribute: 'normal' | 'red'
-  background: 'white' | 'transparent' | 'yellow'
+  background: 'white' | 'transparent'
 }
 
 export interface TileSet {
@@ -14,6 +14,7 @@ export interface TileSet {
 export interface Hand {
   closed: Tile[]
   called: TileSet[]
+  tsumo?: Tile
 }
 
 export interface Player {
@@ -25,12 +26,14 @@ export interface Wall {
   tiles: Tile[]
   kingTiles: Tile[]
   supplementTiles: Tile[]
+  doraCount: number
 }
 
 export interface GameState {
   host: Player
   guest: Player
   wall: Wall
+  turn: 'host' | 'guest'
 }
 
 export interface Room {

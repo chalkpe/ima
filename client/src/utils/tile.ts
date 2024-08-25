@@ -3,7 +3,9 @@ import type { Tile } from '../../../server/src/db'
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 
 export const sortTiles = (tiles: Tile[]) => {
-  return tiles.sort((a, b) => tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value)
+  return tiles
+    .map((tile, index) => ({ ...tile, index }))
+    .sort((a, b) => tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value)
 }
 
 export const convertTileToCode = (tile: Tile) => {

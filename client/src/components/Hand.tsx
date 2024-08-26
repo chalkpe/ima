@@ -7,7 +7,7 @@ import { trpc } from '../utils/trpc'
 
 interface HandProps {
   hand: Hand
-  me: boolean
+  me?: boolean
 }
 
 const Hand: FC<HandProps> = ({ hand }) => {

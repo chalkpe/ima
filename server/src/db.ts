@@ -17,8 +17,14 @@ export interface Hand {
   tsumo?: Tile
 }
 
+export interface RiverTile {
+  isTsumogiri: boolean
+  isRiichi: boolean
+  tile: Tile
+}
+
 export interface Player {
-  river: Tile[]
+  river: RiverTile[]
   hand: Hand
 }
 

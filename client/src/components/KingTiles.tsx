@@ -14,14 +14,14 @@ const KingTiles: FC<KingTilesProps> = ({ tiles }) => {
         {tiles
           .filter((_, index) => index % 2 === 1)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} size="small" />
           ))}
       </div>
       <div>
         {tiles
           .filter((_, index) => index % 2 === 0)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} size="small" />
           ))}
       </div>
     </section>

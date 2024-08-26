@@ -1,4 +1,4 @@
-import { Button, IconButton, List, ListItem } from '@mui/material'
+import { Button, CircularProgress, IconButton, List, ListItem } from '@mui/material'
 import { trpc } from '../utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
@@ -55,7 +55,7 @@ const Lobby = () => {
           ))}
         </List>
       ) : (
-        <p>0명</p>
+        <p><CircularProgress /></p>
       )}
     </>
   )

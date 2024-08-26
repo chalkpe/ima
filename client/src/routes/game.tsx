@@ -7,6 +7,7 @@ import { Stack } from '@mui/material'
 import Mahgen from '../components/Mahgen'
 import { convertTileToCode } from '../utils/tile'
 import KingTiles from '../components/KingTiles'
+import River from '../components/River'
 
 const Game = () => {
   const navigate = useNavigate()
@@ -25,23 +26,23 @@ const Game = () => {
   const opponent = data.host === username ? 'guest' : 'host'
   return (
     <Stack>
-      <h1>Game</h1>
+      <h1>
+        Game
+        {data.state.turn === me && '(Your turn)'}
+      </h1>
 
-      <h2>Dora</h2>
       <KingTiles tiles={data.state.wall.kingTiles} />
-
-      <h2>Opponent</h2>
-      <Hand hand={data.state[opponent].hand} me={false} />
-
-      <h2>Me</h2>
-      <Hand hand={data.state[me].hand} me={true} />
-
-      <h2>Wall</h2>
       <div>
         {data.state.wall.tiles.map((tile, index) => (
-          <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} />
+          <Mahgen key={tile.type + tile.value + index} sequence={convertTileToCode(tile)} size="small" />
         ))}
       </div>
+
+      <Hand hand={data.state[opponent].hand} />
+      <River river={data.state[opponent].river} />
+
+      <River river={data.state[me].river} me />
+      <Hand hand={data.state[me].hand} me />
     </Stack>
   )
 }

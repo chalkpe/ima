@@ -75,9 +75,17 @@ export const gameRouter = router({
     if (!tsumo) throw new TRPCError({ code: 'UNSUPPORTED_MEDIA_TYPE', message: 'Tsumo not found' })
 
     if (index === -1) {
-      room.state[me].river.push(tsumo)
+      room.state[me].river.push({
+        tile: tsumo,
+        isTsumogiri: true,
+        isRiichi: false,
+      })
     } else {
-      room.state[me].river.push(room.state[me].hand.closed.splice(index, 1)[0])
+      room.state[me].river.push({
+        tile: room.state[me].hand.closed.splice(index, 1)[0],
+        isTsumogiri: false,
+        isRiichi: false,
+      })
       room.state[me].hand.closed.push(tsumo)
     }
     room.state[me].hand.tsumo = undefined

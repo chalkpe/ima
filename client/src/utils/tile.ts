@@ -1,4 +1,4 @@
-import type { Tile } from '../../../server/src/db'
+import type { RiverTile, Tile } from '../../../server/src/db'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 
@@ -23,4 +23,13 @@ export const convertTileToCode = (tile: Tile) => {
     case 'back':
       return '0z'
   }
+}
+
+export const convertRiverTileToCode = (river: RiverTile) => {
+  const code = convertTileToCode(river.tile)
+  
+  if (river.isTsumogiri && river.isRiichi) return `v${code}`
+  if (river.isTsumogiri) return `^${code}`
+  if (river.isRiichi) return `_${code}`
+  return code
 }

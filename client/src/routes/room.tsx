@@ -4,23 +4,19 @@ import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { CheckOutlined } from '@mui/icons-material'
 import { Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
-import { useAtomValue } from 'jotai'
-import { usernameAtom } from '../store/username'
 
 const Room = () => {
   const navigate = useNavigate()
-  const username = useAtomValue(usernameAtom)
-
-  const skip = useAuth()
+  const { username, skip } = useAuth()
   const { data, error, refetch } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
+  const { mutate: leave } = trpc.lobby.leave.useMutation()
   const { mutate: ready } = trpc.lobby.ready.useMutation()
   const { mutate: start } = trpc.game.start.useMutation()
 
   useEffect(() => {
     if (error) {
       navigate('/lobby')
-    }
-    else if (data?.started) {
+    } else if (data?.started) {
       navigate('/game')
     }
   }, [data?.started, error, navigate])
@@ -28,6 +24,7 @@ const Room = () => {
   return (
     <>
       <h1>방</h1>
+
       {data ? (
         <div>
           <p>
@@ -49,6 +46,14 @@ const Room = () => {
             />
           </FormGroup>
 
+          <Button
+            variant="contained"
+            color="warning"
+            disabled={data.host === username ? data.hostReady : data.guestReady}
+            onClick={() => leave(undefined, { onSuccess: refetch })}
+          >
+            나가기
+          </Button>
 
           {data.hostReady && data.guestReady && (
             <Button
@@ -57,7 +62,7 @@ const Room = () => {
               onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
             >
               게임 시작
-            </Button> 
+            </Button>
           )}
         </div>
       ) : (

@@ -41,6 +41,7 @@ const Lobby = () => {
         <List>
           {list.map((room) => (
             <ListItem
+              key={room.host}
               secondaryAction={
                 <IconButton
                   edge="end"

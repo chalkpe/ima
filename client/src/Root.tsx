@@ -1,6 +1,10 @@
+import './root.css'
+
+import background from './assets/background.png'
+
 import { useMemo, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
-import { Container, CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, CssBaseline, ThemeProvider } from '@mui/material'
 import { createWSClient, wsLink } from '@trpc/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from './utils/trpc.ts'
@@ -24,10 +28,18 @@ const Root = () => {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          <Container maxWidth="xl">
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100vmin',
+              height: '100vmin',
+              backgroundSize: 'cover',
+              backgroundImage: `url(${background})`,
+            }}
+          >
             <CssBaseline />
             <RouterProvider router={router} />
-          </Container>
+          </Box>
         </ThemeProvider>
       </QueryClientProvider>
     </trpc.Provider>

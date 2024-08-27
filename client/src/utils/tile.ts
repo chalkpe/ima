@@ -33,3 +33,11 @@ export const convertRiverTileToCode = (river: RiverTile) => {
   if (river.isRiichi) return `_${code}`
   return code
 }
+
+export const chunk = (river: RiverTile[], size: number) => {
+  const result: RiverTile[][] = []
+  for (let i = 0; i < river.length; i += size) {
+    result.push(river.slice(i, i + size))
+  }
+  return result
+}

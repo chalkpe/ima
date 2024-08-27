@@ -35,12 +35,22 @@ export const lobbyRouter = router({
     database.rooms.push(room)
   }),
 
-  remove: publicProcedure.mutation((opts) => {
+  leave: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
-    const room = database.rooms.find((room) => room.host === username)
+    const room = database.rooms.find((room) => room.host === username || room.guest === username)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
 
-    database.rooms = database.rooms.filter((room) => room.host !== username)
+
+    if (room.host === username) {
+      room.host = room.guest
+      room.guest = ''
+    } else {
+      room.guest = ''
+    }
+
+    if (room.host === '') {
+      database.rooms = database.rooms.filter((r) => r !== room)
+    }
   }),
 
   join: publicProcedure.input(z.object({ host: z.string() })).mutation((opts) => {

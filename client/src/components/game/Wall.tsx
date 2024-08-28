@@ -13,8 +13,8 @@ const Wall: FC<WallProps> = ({ tiles }) => {
     <>
       <Box
         position="absolute"
-        top="25vmin"
-        right="3vmin"
+        top="8vmin"
+        right="2.5vmin"
         sx={{
           transformOrigin: 'bottom right',
           transform: 'rotate(-90deg)',
@@ -23,12 +23,12 @@ const Wall: FC<WallProps> = ({ tiles }) => {
         {tiles
           .filter((_, index) => index % 2 === 0)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
           ))}
       </Box>
       <Box
         position="absolute"
-        top="25vmin"
+        top="8vmin"
         right="2vmin"
         sx={{
           transformOrigin: 'bottom right',
@@ -38,7 +38,7 @@ const Wall: FC<WallProps> = ({ tiles }) => {
         {tiles
           .filter((_, index) => index % 2 === 1)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
           ))}
       </Box>
     </>

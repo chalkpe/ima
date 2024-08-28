@@ -1,5 +1,8 @@
+export type TileType = 'man' | 'pin' | 'sou' | 'wind' | 'dragon'
+export const tileTypes = ['man', 'pin', 'sou', 'wind', 'dragon'] as const
+
 export interface Tile {
-  type: 'man' | 'pin' | 'sou' | 'wind' | 'dragon' | 'back'
+  type: TileType | 'back'
   value: number
   attribute: 'normal' | 'red'
   background: 'white' | 'transparent'
@@ -8,7 +11,7 @@ export interface Tile {
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
   tiles: Tile[]
-  calledTile: Tile
+  calledTile?: Tile
 }
 
 export interface Hand {
@@ -23,9 +26,16 @@ export interface RiverTile {
   tile: Tile
 }
 
+export interface Decision {
+  type: 'tsumo' | 'pon' | 'chi' | 'kan' | 'riichi' | 'ron' | 'nuki'
+  tile: Tile
+  otherTiles: Tile[]
+}
+
 export interface Player {
   river: RiverTile[]
   hand: Hand
+  decisions: Decision[]
 }
 
 export interface Wall {
@@ -65,20 +75,12 @@ const getAttr = (count: number, value: number) => (count === 1 && value === 5 ? 
 
 export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
   [
-    [1, 9]
-      .slice(1)
-      .flatMap((value) => [{ type: 'man', value, attribute: getAttr(count, value), background: 'white' } as const]),
-    [1, 9]
-      .slice(1)
-      .flatMap((value) => [{ type: 'pin', value, attribute: getAttr(count, value), background: 'white' } as const]),
-    [1, 2, 3, 4, 5, 6, 7, 8, 9]
-      .slice(1)
-      .flatMap((value) => [{ type: 'sou', value, attribute: getAttr(count, value), background: 'white' } as const]),
-    [1, 2, 3, 4]
-      .slice(1)
-      .flatMap((value) => [{ type: 'wind', value, attribute: 'normal', background: 'white' }] as const),
-    [1, 2, 3]
-      .slice(1)
-      .flatMap((value) => [{ type: 'dragon', value, attribute: 'normal', background: 'white' }] as const),
+    [1, 9].flatMap((value) => [{ type: 'man', value, attribute: getAttr(count, value), background: 'white' } as const]),
+    [1, 9].flatMap((value) => [{ type: 'pin', value, attribute: getAttr(count, value), background: 'white' } as const]),
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((value) => [
+      { type: 'sou', value, attribute: getAttr(count, value), background: 'white' } as const,
+    ]),
+    [1, 2, 3, 4].flatMap((value) => [{ type: 'wind', value, attribute: 'normal', background: 'white' }] as const),
+    [1, 2, 3].flatMap((value) => [{ type: 'dragon', value, attribute: 'normal', background: 'white' }] as const),
   ].flat()
 )

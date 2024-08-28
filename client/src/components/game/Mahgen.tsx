@@ -29,7 +29,7 @@ const MahgenElement: FC<MahgenProps> = ({ size, sequence, riverMode, onClick }) 
     }
   }, [riverMode, sequence])
 
-  return <img src={src} onClick={onClick} style={{ width: `${size}vmin` }} />
+  return <img src={src} onClick={onClick} style={{ width: `${size}vmin`, height: 'fit-content', userSelect: 'none' }} />
 }
 
 export default MahgenElement

@@ -7,6 +7,7 @@ import River from '../components/game/River'
 import KingTiles from '../components/game/KingTiles'
 import Center from '../components/game/Center'
 import Wall from '../components/game/Wall'
+import Decisions from '../components/game/Decisions'
 
 const Game = () => {
   const navigate = useNavigate()
@@ -34,6 +35,8 @@ const Game = () => {
 
       <River river={data.state[me].river} me />
       <Hand hand={data.state[me].hand} me />
+
+      <Decisions decisions={data.state[me].decisions} />
     </>
   )
 }

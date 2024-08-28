@@ -22,10 +22,12 @@ export const lobbyRouter = router({
         host: {
           river: [],
           hand: { closed: [], called: [], tsumo: undefined },
+          decisions: [],
         },
         guest: {
           river: [],
           hand: { closed: [], called: [], tsumo: undefined },
+          decisions: [],
         },
         wall: { tiles: [], kingTiles: [], supplementTiles: [], doraCount: 1 },
         turn: 'host',

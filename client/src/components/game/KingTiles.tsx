@@ -13,7 +13,7 @@ const KingTiles: FC<KingTilesProps> = ({ tiles }) => {
     <>
       <Box
         position="absolute"
-        left="3vmin"
+        left="2.5vmin"
         top="25vmin"
         sx={{
           transformOrigin: 'bottom left',
@@ -23,7 +23,7 @@ const KingTiles: FC<KingTilesProps> = ({ tiles }) => {
         {tiles
           .filter((_, index) => index % 2 === 0)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
           ))}
       </Box>
       <Box
@@ -38,7 +38,7 @@ const KingTiles: FC<KingTilesProps> = ({ tiles }) => {
         {tiles
           .filter((_, index) => index % 2 === 1)
           .map((tile, index) => (
-            <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
           ))}
       </Box>
     </>

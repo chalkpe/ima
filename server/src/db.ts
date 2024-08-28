@@ -6,6 +6,7 @@ export interface Tile {
   value: number
   attribute: 'normal' | 'red'
   background: 'white' | 'transparent'
+  index: number
 }
 
 export interface TileSet {
@@ -40,6 +41,7 @@ export interface Player {
 
 export interface Wall {
   tiles: Tile[]
+  tilesCount: number
   kingTiles: Tile[]
   supplementTiles: Tile[]
   doraCount: number
@@ -75,12 +77,20 @@ const getAttr = (count: number, value: number) => (count === 1 && value === 5 ? 
 
 export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
   [
-    [1, 9].flatMap((value) => [{ type: 'man', value, attribute: getAttr(count, value), background: 'white' } as const]),
-    [1, 9].flatMap((value) => [{ type: 'pin', value, attribute: getAttr(count, value), background: 'white' } as const]),
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((value) => [
-      { type: 'sou', value, attribute: getAttr(count, value), background: 'white' } as const,
+    [1, 9].flatMap((value) => [
+      { type: 'man', value, attribute: getAttr(count, value), background: 'white', index: 0 } as const,
     ]),
-    [1, 2, 3, 4].flatMap((value) => [{ type: 'wind', value, attribute: 'normal', background: 'white' }] as const),
-    [1, 2, 3].flatMap((value) => [{ type: 'dragon', value, attribute: 'normal', background: 'white' }] as const),
+    [1, 9].flatMap((value) => [
+      { type: 'pin', value, attribute: getAttr(count, value), background: 'white', index: 0 } as const,
+    ]),
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((value) => [
+      { type: 'sou', value, attribute: getAttr(count, value), background: 'white', index: 0 } as const,
+    ]),
+    [1, 2, 3, 4].flatMap(
+      (value) => [{ type: 'wind', value, attribute: 'normal', background: 'white', index: 0 }] as const
+    ),
+    [1, 2, 3].flatMap(
+      (value) => [{ type: 'dragon', value, attribute: 'normal', background: 'white', index: 0 }] as const
+    ),
   ].flat()
 )

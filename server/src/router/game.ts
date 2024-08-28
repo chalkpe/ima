@@ -63,7 +63,7 @@ export const gameRouter = router({
         },
         wall: {
           ...room.state.wall,
-          tiles: room.state.wall.tiles.map(() => backTile),
+          tiles: room.state.wall.tiles, //.map(() => backTile),
           kingTiles: room.state.wall.kingTiles.map((tile, index) =>
             [9, 7, 5, 3, 1].slice(0, room.state.wall.doraCount).includes(index) ? tile : backTile
           ),
@@ -77,7 +77,7 @@ export const gameRouter = router({
     const room = getRoom(username)
     if (room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game already started' })
 
-      // const tiles = availableTiles.slice()
+    // const tiles = availableTiles.slice()
     const tiles = availableTiles.slice().filter((tile) => tile.type !== 'wind')
     for (let i = tiles.length - 1; i > 0; i--) {
       const rand = Math.floor(Math.random() * (i + 1))
@@ -102,6 +102,9 @@ export const gameRouter = router({
       room.state.host.hand.closed.push(...tiles.splice(0, count))
       room.state.guest.hand.closed.push(...tiles.splice(0, count))
     })
+
+    room.state.wall.tilesCount = tiles.length
+    tiles.forEach((tile, index) => (tile.index = index))
 
     room.state.host.hand.tsumo = tiles.splice(0, 1)[0]
     room.state.wall.tiles = tiles

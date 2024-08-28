@@ -29,7 +29,7 @@ export const lobbyRouter = router({
           hand: { closed: [], called: [], tsumo: undefined },
           decisions: [],
         },
-        wall: { tiles: [], kingTiles: [], supplementTiles: [], doraCount: 1 },
+        wall: { tiles: [], tilesCount: 0, kingTiles: [], supplementTiles: [], doraCount: 1 },
         turn: 'host',
       },
     }

@@ -20,6 +20,14 @@ const Wall: FC<WallProps> = ({ wall }) => {
     ...Array(wall.tilesCount - lastIndex - 1).fill(null),
   ] as (Tile | null)[]
 
+  const lowerTiles = tiles.filter((_, index) => index % 2 === 1)
+  const upperTiles = tiles.filter((_, index) => index % 2 === 0)
+
+  const index = upperTiles.findIndex((tile) => tile !== null && tile.index === lastIndex)
+  if (lastIndex !== -1 && lowerTiles[index] === null) {
+    ;[upperTiles[index], lowerTiles[index]] = [lowerTiles[index], upperTiles[index]]
+  }
+
   return (
     <>
       <Stack
@@ -29,15 +37,13 @@ const Wall: FC<WallProps> = ({ wall }) => {
         right="2.5vmin"
         sx={{ transformOrigin: 'bottom right', transform: 'rotate(-90deg)' }}
       >
-        {tiles
-          .filter((_, index) => index % 2 === 1)
-          .map((tile, index) =>
-            tile !== null ? (
-              <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
-            ) : (
-              <Box width="3.5vmin" />
-            )
-          )}
+        {lowerTiles.map((tile, index) =>
+          tile !== null ? (
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+          ) : (
+            <Box width="3.5vmin" />
+          )
+        )}
       </Stack>
       <Stack
         direction="row"
@@ -46,15 +52,13 @@ const Wall: FC<WallProps> = ({ wall }) => {
         right="2vmin"
         sx={{ transformOrigin: 'bottom right', transform: 'rotate(-90deg)' }}
       >
-        {tiles
-          .filter((_, index) => index % 2 === 0)
-          .map((tile, index) =>
-            tile !== null ? (
-              <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
-            ) : (
-              <Box width="3.5vmin" />
-            )
-          )}
+        {upperTiles.map((tile, index) =>
+          tile !== null ? (
+            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+          ) : (
+            <Box width="3.5vmin" />
+          )
+        )}
       </Stack>
     </>
   )

@@ -28,7 +28,7 @@ export interface RiverTile {
 }
 
 export interface Decision {
-  type: 'tsumo' | 'pon' | 'chi' | 'kan' | 'riichi' | 'ron' | 'nuki'
+  type: 'tsumo' | 'pon' | 'chi' | 'kan' | 'riichi' | 'ron' | 'nuki' | 'skip'
   tile: Tile
   otherTiles: Tile[]
 }
@@ -37,6 +37,7 @@ export interface Player {
   river: RiverTile[]
   hand: Hand
   decisions: Decision[]
+  isAfterCall: boolean
 }
 
 export interface Wall {

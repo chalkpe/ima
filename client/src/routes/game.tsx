@@ -28,7 +28,7 @@ const Game = () => {
     <>
       <Center state={data.state} />
       <Wall wall={data.state.wall} />
-      <KingTiles tiles={data.state.wall.kingTiles} />
+      <KingTiles wall={data.state.wall} />
       
       <Hand hand={data.state[opponent].hand} />
       <River river={data.state[opponent].river} />

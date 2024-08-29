@@ -1,9 +1,10 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import type { Hand } from '../../../../server/src/db'
 import { convertTileToCode, sortTiles } from '../../utils/tile'
 import Mahgen from './Mahgen'
 import { Box, Stack } from '@mui/material'
 import { trpc } from '../../utils/trpc'
+import Tenpai from './Tenpai'
 
 interface HandProps {
   hand: Hand
@@ -12,12 +13,15 @@ interface HandProps {
 
 const Hand: FC<HandProps> = ({ hand, me }) => {
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
+  const [hovered, setHovered] = useState<number | undefined>(undefined)
 
   const utils = trpc.useUtils()
   const { mutate } = trpc.game.giri.useMutation()
 
   return (
     <>
+      {hovered !== undefined && hand.tenpai[hovered] && <Tenpai tenpai={hand.tenpai[hovered]} />}
+
       <Stack
         direction={me ? 'row' : 'row-reverse'}
         gap="2vmin"
@@ -27,10 +31,13 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         <Stack direction="row" gap={0}>
           {closed.map((tile) => (
             <Mahgen
-              key={tile.type + tile.value + tile.index}
+              key={tile.type + tile.value + tile.order}
               size={5}
               sequence={convertTileToCode(tile)}
-              onClick={() => mutate({ index: tile.index }, { onSuccess: () => utils.game.state.invalidate() })}
+              onMouseEnter={() => setHovered(tile.order)}
+              onMouseLeave={() => setHovered(undefined)}
+              onClick={() => mutate({ index: tile.order }, { onSuccess: () => utils.game.state.invalidate() })}
+              style={{ transform: hovered === tile.order ? 'translateY(-1vmin)' : undefined }}
             />
           ))}
         </Stack>
@@ -38,7 +45,10 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
           <Mahgen
             size={5}
             sequence={convertTileToCode(hand.tsumo)}
+            onMouseEnter={() => setHovered(closed.length)}
+            onMouseLeave={() => setHovered(undefined)}
             onClick={() => mutate({ index: -1 }, { onSuccess: () => utils.game.state.invalidate() })}
+            style={{ transform: hovered === closed.length ? 'translateY(-1vmin)' : undefined }}
           />
         ) : (
           <Box width="5vmin" />
@@ -53,14 +63,32 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         sx={me ? {} : { transform: 'rotate(180deg)' }}
       >
         {hand.called.map((tileSet, index) => (
-          <Stack key={tileSet.tiles[0].type + tileSet.tiles[0].value + index} direction="row" gap={0}>
+          <Stack key={tileSet.tiles[0].type + tileSet.tiles[0].value + index} direction="row" gap={0} alignItems="end">
             {tileSet.type === 'ankan' ? (
               <>
                 <Mahgen size={5} sequence="0z" />
-                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles.find((tile) => tile.attribute === 'red') ?? tileSet.tiles[0])} />
-                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles.find((tile) => tile.attribute !== 'red') ?? tileSet.tiles[1])} />
+                <Mahgen
+                  size={5}
+                  sequence={convertTileToCode(
+                    tileSet.tiles.find((tile) => tile.attribute === 'red') ?? tileSet.tiles[0]
+                  )}
+                />
+                <Mahgen
+                  size={5}
+                  sequence={convertTileToCode(
+                    tileSet.tiles.find((tile) => tile.attribute !== 'red') ?? tileSet.tiles[1]
+                  )}
+                />
                 <Mahgen size={5} sequence="0z" />
               </>
+            ) : tileSet.type === 'pon' ? (
+              tileSet.tiles.map((tile, index) => (
+                <Mahgen
+                  key={tile.type + tile.value + index}
+                  size={5}
+                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
+                />
+              ))
             ) : (
               tileSet.tiles.map((tile, index) => (
                 <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />

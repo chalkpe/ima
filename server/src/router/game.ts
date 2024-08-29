@@ -1,6 +1,6 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
-import { availableTiles, database, Decision, GameState, Hand, Player, Room, Tile, tileTypes } from '../db'
+import { availableTiles, database, Decision, GameState, Hand, Player, Room, SimpleTile, Tile, tileTypes } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 const getRoom = (username: string) => {
@@ -12,8 +12,6 @@ const getRoom = (username: string) => {
 const getClosedHand = (hand: Hand) => {
   return hand.tsumo ? [...hand.closed, hand.tsumo] : [...hand.closed]
 }
-
-type SimpleTile = Pick<Tile, 'type' | 'value'>
 
 function removeTiles(tiles: Tile[], tile: SimpleTile, count: number) {
   return tiles.reduce(
@@ -29,46 +27,14 @@ function removeTiles(tiles: Tile[], tile: SimpleTile, count: number) {
   )
 }
 
+function isTileValueValid(tile: SimpleTile) {
+  return tile.value >= 1 && tile.value <= 9
+}
+
 function getSequences(tile: Tile): SimpleTile[][] {
   const { type, value } = tile
-  if (type === 'wind' || type === 'dragon' || type === 'back') return []
+  if (type !== 'man' && type !== 'pin' && type !== 'sou') return []
 
-  if (value === 1)
-    return [
-      [
-        { type, value: 2 },
-        { type, value: 3 },
-      ],
-    ]
-  if (value === 2)
-    return [
-      [
-        { type, value: 1 },
-        { type, value: 3 },
-      ],
-      [
-        { type, value: 3 },
-        { type, value: 4 },
-      ],
-    ]
-  if (value === 8)
-    return [
-      [
-        { type, value: 6 },
-        { type, value: 7 },
-      ],
-      [
-        { type, value: 7 },
-        { type, value: 9 },
-      ],
-    ]
-  if (value === 9)
-    return [
-      [
-        { type, value: 7 },
-        { type, value: 8 },
-      ],
-    ]
   return [
     [
       { type, value: value - 2 },
@@ -82,7 +48,25 @@ function getSequences(tile: Tile): SimpleTile[][] {
       { type, value: value + 1 },
       { type, value: value + 2 },
     ],
-  ]
+  ].filter((sequence) => sequence.every(isTileValueValid))
+}
+
+function getRemainingSequence(first: Tile, second: Tile): SimpleTile[] {
+  if (first.type !== second.type) return []
+  if (first.type !== 'man' && first.type !== 'pin' && first.type !== 'sou') return []
+
+  const [small, large] = first.value < second.value ? [first, second] : [second, first]
+  const diff = large.value - small.value
+
+  if (diff === 1)
+    return [
+      { type: first.type, value: small.value - 1 },
+      { type: first.type, value: large.value + 1 },
+    ].filter(isTileValueValid)
+
+  if (diff === 2) return [{ type: first.type, value: small.value + 1 }]
+
+  return []
 }
 
 const code: Record<Tile['type'], string> = {
@@ -103,13 +87,16 @@ function toString(groups: Tile[][]) {
     .join(',')
 }
 
-interface Result {
+interface CheckResult {
   finished?: boolean
   groups: Tile[][]
   possibilities: Set<string>
 }
 
-export function check(tiles: Tile[], result: Result = { groups: [], possibilities: new Set() }): Result | false {
+export function check(
+  tiles: Tile[],
+  result: CheckResult = { groups: [], possibilities: new Set() }
+): CheckResult | false {
   if (tiles.length === 0) return { ...result, finished: true }
   if (tiles.length === 1) return false
   if (tiles.length === 2)
@@ -151,8 +138,80 @@ export function check(tiles: Tile[], result: Result = { groups: [], possibilitie
   return result.possibilities.size ? result : false
 }
 
+interface CheckTenpaiResult {
+  finished?: boolean
+  groups: Tile[][]
+  readyTiles: SimpleTile[]
+}
+
+export function checkTenpai(
+  tiles: Tile[],
+  result: CheckTenpaiResult = { groups: [], readyTiles: [] }
+): CheckTenpaiResult | false {
+  if (tiles.length === 0) return { ...result, finished: true }
+  if (tiles.length === 1)
+    return { ...result, finished: true, readyTiles: [{ type: tiles[0].type, value: tiles[0].value }] }
+
+  if (tiles.length === 2) {
+    const [first, second] = tiles
+
+    if (first.type === second.type && first.value === second.value)
+      return { ...result, finished: true, groups: [...result.groups, tiles] }
+
+    if (first.type === second.type) {
+      const remainingSequence = getRemainingSequence(first, second)
+      if (remainingSequence.length) return { ...result, finished: true, readyTiles: remainingSequence }
+    }
+
+    return { ...result, finished: true }
+  }
+
+  for (let i = 0; i < tiles.length; i++) {
+    const tile = tiles[i]
+
+    const { removed, remain } = removeTiles(tiles, tile, 3)
+    if (removed.length === 3) {
+      const r = checkTenpai(remain, { ...result, groups: [...result.groups, removed] })
+      if (r && r.finished) result.readyTiles.push(...r.readyTiles)
+    }
+
+    if (result.groups.every((group) => group.length !== 2) && removed.length === 2) {
+      const r = checkTenpai(remain, { ...result, groups: [...result.groups, removed] })
+      if (r && r.finished) result.readyTiles.push(...r.readyTiles)
+    }
+
+    for (const sequence of getSequences(tile)) {
+      const [first, second] = sequence
+      const { removed, remain } = removeTiles(tiles, first, 1)
+      if (removed.length === 1) {
+        const { removed: removed2, remain: remain2 } = removeTiles(remain, second, 1)
+        if (removed2.length === 1) {
+          const { removed: removed3, remain: remain3 } = removeTiles(remain2, tile, 1)
+          if (removed3.length === 1) {
+            const r = checkTenpai(remain3, {
+              ...result,
+              groups: [...result.groups, [...removed, ...removed2, ...removed3].sort((a, b) => a.value - b.value)],
+            })
+            if (r && r.finished) result.readyTiles.push(...r.readyTiles)
+          }
+        }
+      }
+    }
+  }
+
+  return result.readyTiles.length
+    ? {
+        ...result,
+        readyTiles: result.readyTiles.reduce(
+          (res, tile) => (res.some((t) => t.type === tile.type && t.value === tile.value) ? res : [...res, tile]),
+          [] as SimpleTile[]
+        ),
+      }
+    : false
+}
+
 // console.log(
-//   check([
+//   checkTenpai([
 //     { type: 'sou', value: 1 } as Tile,
 //     { type: 'sou', value: 2 } as Tile,
 //     { type: 'sou', value: 3 } as Tile,
@@ -232,6 +291,22 @@ const calculateAfterTsumoDecisions = (room: Room, username: string) => {
   return [...calculateAnkanDecisions(room.state[me]), ...calculateTsumoDecisions(room.state[me])]
 }
 
+const onAfterTsumo = (room: Room, username: string) => {
+  const me = room.host === username ? 'host' : 'guest'
+
+  room.state[me].decisions = calculateAfterTsumoDecisions(room, username)
+  room.state[me].hand.tenpai = [
+    ...room.state[me].hand.closed.map((_, index, array) => {
+      const hand = array.filter((_, i) => i !== index)
+      return room.state[me].hand.tsumo ? [...hand, room.state[me].hand.tsumo] : hand
+    }),
+    room.state[me].hand.closed,
+  ].map((hand) => {
+    const result = checkTenpai(hand)
+    return result ? result.readyTiles : []
+  })
+}
+
 const partition = <T>(arr: T[], predicate: (t: T) => boolean) => [
   arr.filter(predicate),
   arr.filter((t) => !predicate(t)),
@@ -254,9 +329,10 @@ export const gameRouter = router({
             closed: room.state[opponent].hand.closed.map(() => backTile),
             called: room.state[opponent].hand.called,
             tsumo: room.state[opponent].hand.tsumo ? backTile : undefined,
+            tenpai: [],
           },
           decisions: [],
-        },
+        } satisfies Player,
         wall: {
           ...room.state.wall,
           tiles: room.state.wall.tiles.map((tile) => ({ ...backTile, index: tile.index })),
@@ -297,7 +373,7 @@ export const gameRouter = router({
     room.state.wall.tiles = tiles
 
     room.state.turn = 'host'
-    room.state.host.decisions = calculateAfterTsumoDecisions(room, room.host)
+    onAfterTsumo(room, room.host)
 
     room.started = true
   }),
@@ -317,7 +393,7 @@ export const gameRouter = router({
     const furoTile = room.state[opponent].river[room.state[opponent].river.length - 1].tile
     const { remain, removed } = removeTiles(room.state[me].hand.closed, furoTile, 2)
     if (removed.length !== 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
-      
+
     room.state[me].hand.closed = remain
     room.state[me].hand.called.push({ type: 'pon', tiles: [furoTile, ...removed], calledTile: furoTile })
 
@@ -346,7 +422,7 @@ export const gameRouter = router({
     room.state.wall.supplementTiles.push(room.state.wall.tiles.splice(-1, 1)[0])
     room.state.wall.doraCount += 1
 
-    room.state[me].decisions = calculateAfterTsumoDecisions(room, username)
+    onAfterTsumo(room, username)
   }),
 
   skipAndTsumo: publicProcedure.mutation((opts) => {
@@ -360,7 +436,7 @@ export const gameRouter = router({
     if (room.state[me].decisions.length === 0) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions empty' })
 
     room.state[me].hand.tsumo = room.state.wall.tiles.splice(0, 1)[0]
-    room.state[me].decisions = calculateAfterTsumoDecisions(room, username)
+    onAfterTsumo(room, username)
   }),
 
   giri: publicProcedure.input(z.object({ index: z.number() })).mutation((opts) => {
@@ -396,6 +472,7 @@ export const gameRouter = router({
 
     room.state[me].isAfterCall = false
     room.state[me].hand.tsumo = undefined
+    room.state[me].hand.tenpai = []
 
     const opponent = room.host === username ? 'guest' : 'host'
     room.state.turn = opponent
@@ -405,7 +482,7 @@ export const gameRouter = router({
 
     if (room.state[opponent].decisions.length === 0) {
       room.state[opponent].hand.tsumo = room.state.wall.tiles.splice(0, 1)[0]
-      room.state[opponent].decisions = calculateAfterTsumoDecisions(room, room[opponent])
+      onAfterTsumo(room, room[opponent])
     }
   }),
 })

@@ -1,9 +1,9 @@
-import { FC, useCallback } from "react"
-import { Button, Stack } from "@mui/material"
-import Mahgen from "./Mahgen"
-import { convertTileToCode } from "../../utils/tile"
-import type { Decision } from "../../../../server/src/db"
-import { trpc } from "../../utils/trpc"
+import { FC, useCallback } from 'react'
+import { Button, Stack } from '@mui/material'
+import Mahgen from './Mahgen'
+import { convertTileToCode } from '../../utils/tile'
+import type { Decision } from '../../../../server/src/db'
+import { trpc } from '../../utils/trpc'
 
 interface DecisionsProps {
   decisions: Decision[]
@@ -11,15 +11,28 @@ interface DecisionsProps {
 
 const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const utils = trpc.useUtils()
+  const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
+  const { mutate: skip } = trpc.game.skipAndTsumo.useMutation()
 
-  const onClick = useCallback((decision: Decision) => {
-    if (decision.type === 'kan') {
-      const type = decision.tile.type
-      const value = decision.tile.value
-      if (type !== 'back') ankan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
-    }
-  }, [ankan, utils.game.state])
+  const onClick = useCallback(
+    (decision: Decision) => {
+      if (decision.type === 'kan') {
+        const type = decision.tile.type
+        const value = decision.tile.value
+        if (type !== 'back') ankan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
+      }
+
+      if (decision.type === 'pon') {
+        pon(undefined, { onSuccess: () => utils.game.state.invalidate() })
+      }
+
+      if (decision.type === 'skip') {
+        skip(undefined, { onSuccess: () => utils.game.state.invalidate() })
+      }
+    },
+    [ankan, pon, skip, utils.game.state]
+  )
 
   return (
     <Stack direction="row" gap="2vmin" justifyContent="center" position="absolute" bottom="12vmin" right="7vmin">
@@ -28,11 +41,10 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
           key={decision.type + decision.tile.type + decision.tile.value}
           variant="contained"
           size="large"
-          onClick={() => onClick(decision)}>
+          onClick={() => onClick(decision)}
+        >
           {decision.type}
-          <Mahgen
-            size={2}
-            sequence={convertTileToCode(decision.tile)} />
+          <Mahgen size={2} sequence={convertTileToCode(decision.tile)} />
         </Button>
       ))}
     </Stack>

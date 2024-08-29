@@ -21,13 +21,13 @@ export const lobbyRouter = router({
       state: {
         host: {
           river: [],
-          hand: { closed: [], called: [], tsumo: undefined },
+          hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
           decisions: [],
           isAfterCall: false,
         },
         guest: {
           river: [],
-          hand: { closed: [], called: [], tsumo: undefined },
+          hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
           decisions: [],
           isAfterCall: false,
         },

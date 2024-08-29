@@ -1,21 +1,21 @@
-import type { RiverTile, Tile } from '../../../server/src/db'
+import type { RiverTile, SimpleTile, Tile } from '../../../server/src/db'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 
-export const sortTiles = (tiles: Tile[]) => {
+export const sortTiles = <T extends SimpleTile>(tiles: T[]) => {
   return tiles
-    .map((tile, index) => ({ ...tile, index }))
+    .map((tile, order) => ({ ...tile, order }))
     .sort((a, b) => tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value)
 }
 
-export const convertTileToCode = (tile: Tile) => {
+export const convertTileToCode = (tile: Tile | SimpleTile) => {
   switch (tile.type) {
     case 'man':
-      return tile.attribute === 'red' ? '0m' : `${tile.value}m`
+      return 'attribute' in tile && tile.attribute === 'red' ? '0m' : `${tile.value}m`
     case 'pin':
-      return tile.attribute === 'red' ? '0p' : `${tile.value}p`
+      return 'attribute' in tile && tile.attribute === 'red' ? '0p' : `${tile.value}p`
     case 'sou':
-      return tile.attribute === 'red' ? '0s' : `${tile.value}s`
+      return 'attribute' in tile && tile.attribute === 'red' ? '0s' : `${tile.value}s`
     case 'wind':
       return `${tile.value}z`
     case 'dragon':

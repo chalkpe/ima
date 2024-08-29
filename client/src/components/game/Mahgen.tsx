@@ -1,19 +1,18 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { Mahgen } from 'mahgen'
-import { FC, MouseEventHandler, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-interface MahgenProps {
+interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
   size: number
   sequence: string
   riverMode?: boolean
-  onClick?: MouseEventHandler
 }
 
 const memory = new Map<string, string>()
 const riverMemory = new Map<string, string>()
 
-const MahgenElement: FC<MahgenProps> = ({ size, sequence, riverMode, onClick }) => {
+const MahgenElement: FC<MahgenProps> = ({ size, sequence, riverMode, style, ...rest }) => {
   const [src, setSrc] = useState('')
 
   useEffect(() => {
@@ -29,7 +28,17 @@ const MahgenElement: FC<MahgenProps> = ({ size, sequence, riverMode, onClick }) 
     }
   }, [riverMode, sequence])
 
-  return <img src={src} onClick={onClick} style={{ width: `${size}vmin`, height: 'fit-content', userSelect: 'none' }} />
+  return (
+    <img
+      {...rest}
+      src={src}
+      style={
+        sequence.startsWith('_')
+          ? { ...style, width: 'fit-content', height: `${size}vmin` }
+          : { ...style, width: `${size}vmin`, height: 'fit-content', userSelect: 'none' }
+      }
+    />
+  )
 }
 
 export default MahgenElement

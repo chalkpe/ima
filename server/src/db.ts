@@ -9,6 +9,8 @@ export interface Tile {
   index: number
 }
 
+export type SimpleTile = Pick<Tile, 'type' | 'value'>
+
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
   tiles: Tile[]
@@ -19,6 +21,7 @@ export interface Hand {
   closed: Tile[]
   called: TileSet[]
   tsumo?: Tile
+  tenpai: SimpleTile[][]
 }
 
 export interface RiverTile {

@@ -13,6 +13,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const utils = trpc.useUtils()
   const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
+  const { mutate: daiminkan } = trpc.game.daiminkan.useMutation()
   const { mutate: skipAndTsumo } = trpc.game.skipAndTsumo.useMutation()
   const { mutate: skipChankan } = trpc.game.skipChankan.useMutation()
 
@@ -28,6 +29,10 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         pon(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
 
+      if (decision.type === 'daiminkan') {
+        daiminkan(undefined, { onSuccess: () => utils.game.state.invalidate() })
+      }
+
       if (decision.type === 'skip_and_tsumo') {
         skipAndTsumo(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
@@ -36,7 +41,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         skipChankan(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
     },
-    [ankan, pon, skipAndTsumo, skipChankan, utils.game.state]
+    [ankan, daiminkan, pon, skipAndTsumo, skipChankan, utils.game.state]
   )
 
   return (
@@ -45,6 +50,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         <Button
           key={decision.type + decision.tile?.type + decision.tile?.value}
           variant="contained"
+          color={decision.type === 'tsumo' || decision.type === 'ron' ? 'error' : 'primary'}
           size="large"
           onClick={() => onClick(decision)}
         >

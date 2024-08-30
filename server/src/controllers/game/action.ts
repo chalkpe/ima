@@ -1,7 +1,14 @@
 import { TRPCError } from '@trpc/server'
 import { GameState, PlayerType, TileType, WallType } from '../../db'
 import { onAfterAnkan, onAfterGiri, onAfterTsumo, onBeforeGiri, onBeforeTsumo } from './event'
-import { getClosedHand, getOpponent, isEqualTile, partition, removeTileFromHand } from '../../helpers/common'
+import {
+  getClosedHand,
+  getOpponent,
+  getRiverEnd,
+  isEqualTile,
+  partition,
+  removeTileFromHand,
+} from '../../helpers/common'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   if (state[me].hand.tsumo) {
@@ -27,6 +34,7 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
   const [ankanTiles, otherTiles] = partition(closedHand, (tile) => isEqualTile(tile, { type, value }))
   if (ankanTiles.length !== 4) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
 
+  state[me].decisions = []
   state[me].hand.closed = otherTiles
   state[me].hand.tsumo = undefined
   state[me].hand.called.push({ type: 'ankan', tiles: ankanTiles })
@@ -34,23 +42,40 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
   onAfterAnkan(state, me)
 }
 
+export const daiminkan = (state: GameState, me: PlayerType) => {
+  const opponent = getOpponent(me)
+  const riverEnd = getRiverEnd(state[opponent])
+  if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
+
+  const furoTile = riverEnd.tile
+  if (furoTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
+
+  const [remain, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 3)
+  if (removed.length !== 3) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
+
+  state[opponent].river.splice(-1, 1)
+  state[me].decisions = []
+  state[me].hand.closed = remain
+  state[me].hand.called.push({ type: 'daiminkan', tiles: [furoTile, ...removed], calledTile: furoTile })
+
+  tsumo(state, me, 'lingshang')
+}
+
 export const pon = (state: GameState, me: PlayerType) => {
   const opponent = getOpponent(me)
+  const riverEnd = getRiverEnd(state[opponent])
+  if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
 
-  const opponentRiver = state[opponent].river
-  if (opponentRiver.length === 0) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
-
-  const furoTile = opponentRiver[opponentRiver.length - 1].tile
+  const furoTile = riverEnd.tile
   if (furoTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
   const [remain, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 2)
   if (removed.length !== 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
 
   state[opponent].river.splice(-1, 1)
+  state[me].decisions = []
   state[me].hand.closed = remain
   state[me].hand.called.push({ type: 'pon', tiles: [furoTile, ...removed], calledTile: furoTile })
-
-  state[me].decisions = []
 }
 
 export const skipAndTsumo = (state: GameState, me: PlayerType) => {

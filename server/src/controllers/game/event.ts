@@ -45,7 +45,6 @@ export const onAfterGiri = (state: GameState, me: PlayerType) => {
 }
 
 export const onAfterAnkan = (state: GameState, me: PlayerType) => {
-  state[me].decisions = []
   const opponent = getOpponent(me)
 
   state[opponent].decisions = calculateAfterOpponentKanDecisions(state, opponent)

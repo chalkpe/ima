@@ -4,7 +4,7 @@ import { database, Room, tileTypes } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 import { getVisibleState, initState } from '../controllers/game/state'
-import { ankan, giri, pon, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
+import { ankan, daiminkan, giri, pon, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
 
 const getRoom = (username: string, started = false) => {
   const room = database.rooms.find((room) => room.host === username || room.guest === username)
@@ -44,6 +44,14 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     pon(room.state, me)
+  }),
+
+  daiminkan: publicProcedure.mutation((opts) => {
+    const { username } = opts.ctx
+
+    const room = getRoom(username, true)
+    const me = getActiveMe(room, username)
+    daiminkan(room.state, me)
   }),
 
   ankan: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation((opts) => {

@@ -59,11 +59,12 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         direction="column-reverse"
         gap="0.5vmin"
         position="absolute"
+        justifyContent='end'
         {...(me ? { bottom: '2vmin', right: '2vmin' } : { top: '2vmin', left: '2vmin' })}
         sx={me ? {} : { transform: 'rotate(180deg)' }}
       >
         {hand.called.map((tileSet, index) => (
-          <Stack key={tileSet.tiles[0].type + tileSet.tiles[0].value + index} direction="row" gap={0} alignItems="end">
+          <Stack key={tileSet.tiles[0].type + tileSet.tiles[0].value + index} direction="row" gap={0} alignItems="end" justifyContent="end">
             {tileSet.type === 'ankan' ? (
               <>
                 <Mahgen size={5} sequence="0z" />
@@ -82,7 +83,15 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
                 <Mahgen size={5} sequence="0z" />
               </>
             ) : tileSet.type === 'pon' ? (
-              tileSet.tiles.map((tile, index) => (
+              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2]].map((tile, index) => (
+                <Mahgen
+                  key={tile.type + tile.value + index}
+                  size={5}
+                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
+                />
+              ))
+            ) : tileSet.type === 'daiminkan' ? (
+              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2], tileSet.tiles[3]].map((tile, index) => (
                 <Mahgen
                   key={tile.type + tile.value + index}
                   size={5}

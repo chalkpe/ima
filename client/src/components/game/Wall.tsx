@@ -15,9 +15,9 @@ const Wall: FC<WallProps> = ({ wall }) => {
   const lastIndex = wall.tiles[wall.tiles.length - 1].index
 
   const tiles = [
-    ...Array(firstIndex).fill(null),
+    ...Array(firstIndex - wall.firstTileIndex).fill(null),
     ...wall.tiles,
-    ...Array(wall.tilesCount - lastIndex - 1).fill(null),
+    ...Array(wall.lastTileIndex - lastIndex).fill(null),
   ] as (Tile | null)[]
 
   const lowerTiles = tiles.filter((_, index) => index % 2 === 1)

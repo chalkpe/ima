@@ -26,7 +26,7 @@ const Game = () => {
   const opponent = data.host === username ? 'guest' : 'host'
   return (
     <>
-      <Center state={data.state} />
+      <Center state={data.state} me={me} />
       <Wall wall={data.state.wall} />
       <KingTiles wall={data.state.wall} />
       

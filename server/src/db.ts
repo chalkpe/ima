@@ -31,31 +31,46 @@ export interface RiverTile {
 }
 
 export interface Decision {
-  type: 'tsumo' | 'pon' | 'chi' | 'kan' | 'riichi' | 'ron' | 'nuki' | 'skip'
-  tile: Tile
-  otherTiles: Tile[]
+  type:
+    | 'tsumo'
+    | 'pon'
+    | 'chi'
+    | 'gakan'
+    | 'ankan'
+    | 'daiminkan'
+    | 'riichi'
+    | 'ron'
+    | 'nuki'
+    | 'skip_and_tsumo'
+    | 'skip_chankan'
+  tile?: Tile
+  otherTiles?: Tile[]
 }
 
 export interface Player {
   river: RiverTile[]
   hand: Hand
   decisions: Decision[]
-  isAfterCall: boolean
 }
+
+export type WallType = 'haiyama' | 'lingshang'
 
 export interface Wall {
   tiles: Tile[]
-  tilesCount: number
+  firstTileIndex: number
+  lastTileIndex: number
   kingTiles: Tile[]
   supplementTiles: Tile[]
   doraCount: number
 }
 
+export type PlayerType = 'host' | 'guest'
+
 export interface GameState {
   host: Player
   guest: Player
   wall: Wall
-  turn: 'host' | 'guest'
+  turn: PlayerType
 }
 
 export interface Room {
@@ -78,6 +93,8 @@ export const database: Database = {
 }
 
 const getAttr = (count: number, value: number) => (count === 1 && value === 5 ? 'red' : 'normal')
+
+export const haipaiCounts = [4, 4, 4, 1]
 
 export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
   [

@@ -4,7 +4,9 @@ import { Room, database } from '../db'
 import { TRPCError } from '@trpc/server'
 
 export const lobbyRouter = router({
-  list: publicProcedure.query(() => database.rooms.map((room) => ({ host: room.host, guest: room.guest, started: room.started }))),
+  list: publicProcedure.query(() =>
+    database.rooms.map((room) => ({ host: room.host, guest: room.guest, started: room.started }))
+  ),
 
   create: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
@@ -23,15 +25,13 @@ export const lobbyRouter = router({
           river: [],
           hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
           decisions: [],
-          isAfterCall: false,
         },
         guest: {
           river: [],
           hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
           decisions: [],
-          isAfterCall: false,
         },
-        wall: { tiles: [], tilesCount: 0, kingTiles: [], supplementTiles: [], doraCount: 1 },
+        wall: { tiles: [], firstTileIndex: 0, lastTileIndex: 0, kingTiles: [], supplementTiles: [], doraCount: 1 },
         turn: 'host',
       },
     }
@@ -43,7 +43,6 @@ export const lobbyRouter = router({
     const { username } = opts.ctx
     const room = database.rooms.find((room) => room.host === username || room.guest === username)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
-
 
     if (room.host === username) {
       room.host = room.guest

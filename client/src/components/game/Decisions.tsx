@@ -13,11 +13,12 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const utils = trpc.useUtils()
   const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
-  const { mutate: skip } = trpc.game.skipAndTsumo.useMutation()
+  const { mutate: skipAndTsumo } = trpc.game.skipAndTsumo.useMutation()
+  const { mutate: skipChankan } = trpc.game.skipChankan.useMutation()
 
   const onClick = useCallback(
     (decision: Decision) => {
-      if (decision.type === 'kan') {
+      if (decision.type === 'ankan' && decision.tile) {
         const type = decision.tile.type
         const value = decision.tile.value
         if (type !== 'back') ankan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
@@ -27,24 +28,28 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         pon(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
 
-      if (decision.type === 'skip') {
-        skip(undefined, { onSuccess: () => utils.game.state.invalidate() })
+      if (decision.type === 'skip_and_tsumo') {
+        skipAndTsumo(undefined, { onSuccess: () => utils.game.state.invalidate() })
+      }
+
+      if (decision.type === 'skip_chankan') {
+        skipChankan(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
     },
-    [ankan, pon, skip, utils.game.state]
+    [ankan, pon, skipAndTsumo, skipChankan, utils.game.state]
   )
 
   return (
-    <Stack direction="row" gap="2vmin" justifyContent="center" position="absolute" bottom="12vmin" right="7vmin">
+    <Stack direction="row" gap="2vmin" justifyContent="center" position="absolute" bottom="12vmin" right="20vmin">
       {decisions.map((decision) => (
         <Button
-          key={decision.type + decision.tile.type + decision.tile.value}
+          key={decision.type + decision.tile?.type + decision.tile?.value}
           variant="contained"
           size="large"
           onClick={() => onClick(decision)}
         >
           {decision.type}
-          <Mahgen size={2} sequence={convertTileToCode(decision.tile)} />
+          {decision.tile && <Mahgen size={2} sequence={convertTileToCode(decision.tile)} />}
         </Button>
       ))}
     </Stack>

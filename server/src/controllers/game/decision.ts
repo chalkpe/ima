@@ -17,6 +17,8 @@ const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] =
 }
 
 const calculateGakanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state[me].riichi) return []
+
   const hand = state[me].hand
   const closedHand = getClosedHand(hand)
   const tileCounts = countTiles(closedHand)
@@ -27,6 +29,22 @@ const calculateGakanDecisions = (state: GameState, me: PlayerType): Decision[] =
     .filter((minkou) => minkou !== undefined)
     .map((minkou) => closedHand.filter((tile) => isEqualTile(tile, minkou.tiles[0])))
     .map(([tile]) => ({ type: 'gakan', tile }))
+}
+
+const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state[me].riichi) return []
+
+  if (state[me].hand.tsumo === undefined) return []
+  if (state[me].hand.called.filter((s) => s.type !== 'ankan').length > 0) return []
+
+  const hand = getClosedHand(state[me].hand)
+
+  return hand
+    .filter((tile, index) => hand.findIndex((t) => isStrictEqualTile(tile, t)) === index)
+    .map((tile) => partition(hand, (t) => t.index === tile.index))
+    .map(([removed, hand]) => [removed[0], calculateAgari(hand)] as const)
+    .filter(([_, result]) => result.status === 'tenpai')
+    .map(([removed]) => ({ type: 'riichi', tile: removed }))
 }
 
 const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -50,6 +68,8 @@ const calculateRonDecisions = (state: GameState, me: PlayerType): Decision[] => 
 }
 
 const calculatePonKanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state[me].riichi) return []
+
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
 
@@ -74,6 +94,8 @@ const calculatePonKanDecisions = (state: GameState, me: PlayerType): Decision[] 
 }
 
 const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state[me].riichi) return []
+
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
 
@@ -127,6 +149,7 @@ export const calculateAfterTsumoDecisions = (state: GameState, me: PlayerType) =
   return [
     ...calculateAnkanDecisions(state, me),
     ...calculateGakanDecisions(state, me),
+    ...calculateRiichiDecisions(state, me),
     ...calculateTsumoDecisions(state, me),
   ]
 }

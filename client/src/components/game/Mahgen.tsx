@@ -33,7 +33,7 @@ const MahgenElement: FC<MahgenProps> = ({ size, sequence, riverMode, style, ...r
       {...rest}
       src={src}
       style={
-        sequence.startsWith('_')
+        ['_', 'v'].includes(sequence[0])
           ? { ...style, width: 'fit-content', height: `${size}vmin` }
           : { ...style, width: `${size}vmin`, height: 'fit-content', userSelect: 'none' }
       }

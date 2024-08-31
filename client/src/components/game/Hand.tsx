@@ -17,7 +17,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
   const [hovered, setHovered] = useState<number | undefined>(undefined)
 
   const utils = trpc.useUtils()
-  const { mutate } = trpc.game.giri.useMutation()
+  const { mutate: giri } = trpc.game.giri.useMutation()
 
   return (
     <>
@@ -53,7 +53,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               sequence={convertTileToCode(tile)}
               onMouseEnter={() => setHovered(tile.order)}
               onMouseLeave={() => setHovered(undefined)}
-              onClick={() => mutate({ index: tile.order }, { onSuccess: () => utils.game.state.invalidate() })}
+              onClick={() => giri({ index: tile.index }, { onSuccess: () => utils.game.state.invalidate() })}
               style={{ transform: hovered === tile.order ? 'translateY(-1vmin)' : undefined }}
             />
           ))}
@@ -64,7 +64,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
             sequence={convertTileToCode(hand.tsumo)}
             onMouseEnter={() => setHovered(closed.length)}
             onMouseLeave={() => setHovered(undefined)}
-            onClick={() => mutate({ index: -1 }, { onSuccess: () => utils.game.state.invalidate() })}
+            onClick={() => giri({ index: hand.tsumo!.index }, { onSuccess: () => utils.game.state.invalidate() })}
             style={{ transform: hovered === closed.length ? 'translateY(-1vmin)' : undefined }}
           />
         ) : (

@@ -24,7 +24,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         direction="row"
         position="absolute"
         left="2.5vmin"
-        top="25vmin"
+        top="30vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {lowerTiles.map((tile) => (
@@ -35,7 +35,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         direction="row"
         position="absolute"
         left="2vmin"
-        top="25vmin"
+        top="30vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {upperTiles.map((tile) => (
@@ -46,7 +46,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         direction="row"
         position="absolute"
         left="2.5vmin"
-        top="18vmin"
+        top="23vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {upperSupplementTiles.map((tile, index) =>
@@ -61,7 +61,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         direction="row"
         position="absolute"
         left="2vmin"
-        top="18vmin"
+        top="23vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {lowerSupplementTiles.map((tile, index) =>

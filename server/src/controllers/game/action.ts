@@ -11,17 +11,9 @@ import {
 
 import { partition } from '../../helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
-import {
-  compareTile,
-  getUpperTile,
-  isEqualTile,
-  isKoutsu,
-  isSyuntsu,
-  removeTileFromHand,
-  removeTilesFromHand,
-} from '../../helpers/tile'
+import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '../../helpers/tile'
 
-import type { SimpleTile, Tile, TileType } from '../../types/tile'
+import type { Tile, TileType } from '../../types/tile'
 import type { GameState, PlayerType, WallType } from '../../types/game'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
@@ -170,19 +162,41 @@ export const giri = (state: GameState, me: PlayerType, index: number) => {
   if (state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo' || dec.type === 'skip_chankan'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions should be made' })
 
+  if (state[me].riichi && state[me].hand.tsumo?.index !== index)
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Riichi only can discard tsumo' })
+
   const opponent = getOpponent(me)
   onBeforeGiri(state, me)
 
-  const { tsumo } = state[me].hand
-  if (index === -1) {
-    if (!tsumo) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tsumo not found' })
-    state[me].river.push({ tile: tsumo, isTsumogiri: true, isRiichi: false })
-  } else {
-    const tile = state[me].hand.closed.splice(index, 1)[0]
-    if (!tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
-    state[me].river.push({ tile, isTsumogiri: false, isRiichi: false })
-    if (tsumo) state[me].hand.closed.push(tsumo)
-  }
+  const closedHand = getClosedHand(state[me].hand)
+  const [tiles, remain] = partition(closedHand, (t) => t.index === index)
+  if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+
+  const isRiichi = state[me].riichi && !state[me].river.some((r) => r.isRiichi)
+  state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi })
+
+  state[me].hand.closed = remain
+  state[me].hand.tsumo = undefined
+
+  onAfterGiri(state, me)
+  onBeforeTsumo(state, opponent)
+}
+
+export const riichi = (state: GameState, me: PlayerType, index: number) => {
+  if (state[me].riichi) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Riichi already declared' })
+
+  const closedHand = getClosedHand(state[me].hand)
+  const [tiles, remain] = partition(closedHand, (t) => t.index === index)
+  if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+
+  const opponent = getOpponent(me)
+  onBeforeGiri(state, me)
+
+  state[me].riichi = true
+  state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi: true })
+
+  state[me].hand.closed = remain
+  state[me].hand.tsumo = undefined
 
   onAfterGiri(state, me)
   onBeforeTsumo(state, opponent)

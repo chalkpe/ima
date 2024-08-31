@@ -24,16 +24,43 @@ export const lobbyRouter = router({
       state: {
         host: {
           river: [],
-          hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
+          hand: {
+            closed: [],
+            called: [],
+            tsumo: undefined,
+            tenpai: [],
+            giriMap: [],
+          },
           decisions: [],
+          riichi: false,
         },
         guest: {
           river: [],
-          hand: { closed: [], called: [], tsumo: undefined, tenpai: [] },
+          hand: {
+            closed: [],
+            called: [],
+            tsumo: undefined,
+            tenpai: [],
+            giriMap: [],
+          },
           decisions: [],
+          riichi: false,
         },
-        wall: { tiles: [], firstTileIndex: 0, lastTileIndex: 0, kingTiles: [], supplementTiles: [], doraCount: 1 },
+        wall: {
+          tiles: [],
+          firstTileIndex: 0,
+          lastTileIndex: 0,
+          kingTiles: [],
+          supplementTiles: [],
+          doraCount: 1,
+        },
         turn: 'host',
+        round: {
+          wind: 'east',
+          kyoku: 1,
+          honba: 0,
+          riichiSticks: 0,
+        },
       },
     }
 

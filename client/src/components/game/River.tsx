@@ -28,7 +28,7 @@ const River: FC<RiverProps> = ({ river, me }) => {
         <Box key={index} sx={{ display: 'flex', flexFlow: 'row' }}>
           {line.map((riverTile) => (
             <Mahgen
-              key={riverTile.tile.type + riverTile.tile.value + riverTile.tile.index}
+              key={riverTile.tile.index}
               size={5}
               riverMode
               sequence={convertRiverTileToCode(riverTile)}

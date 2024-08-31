@@ -18,6 +18,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const { mutate: daiminkan } = trpc.game.daiminkan.useMutation()
   const { mutate: skipAndTsumo } = trpc.game.skipAndTsumo.useMutation()
   const { mutate: skipChankan } = trpc.game.skipChankan.useMutation()
+  const { mutate: riichi } = trpc.game.riichi.useMutation()
 
   const onClick = useCallback(
     (decision: Decision) => {
@@ -58,8 +59,12 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
       if (decision.type === 'skip_chankan') {
         skipChankan(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
+
+      if (decision.type === 'riichi' && decision.tile) {
+        riichi({ index: decision.tile.index }, { onSuccess: () => utils.game.state.invalidate() })
+      }
     },
-    [ankan, chi, daiminkan, gakan, pon, skipAndTsumo, skipChankan, utils.game.state]
+    [ankan, chi, daiminkan, gakan, pon, riichi, skipAndTsumo, skipChankan, utils.game.state]
   )
 
   return (

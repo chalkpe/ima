@@ -11,6 +11,7 @@ export interface Hand {
   called: TileSet[]
   tsumo?: Tile
   tenpai: SimpleTile[][]
+  giriMap: boolean[]
 }
 
 export interface RiverTile {
@@ -40,6 +41,7 @@ export interface Player {
   river: RiverTile[]
   hand: Hand
   decisions: Decision[]
+  riichi: boolean
 }
 
 export type WallType = 'haiyama' | 'lingshang'
@@ -55,11 +57,21 @@ export interface Wall {
 
 export type PlayerType = 'host' | 'guest'
 
+export type Wind = 'east' | 'south' | 'west' | 'north'
+
+export interface Round {
+  wind: Wind
+  kyoku: number
+  honba: number
+  riichiSticks: number
+}
+
 export interface GameState {
   host: Player
   guest: Player
   wall: Wall
   turn: PlayerType
+  round: Round
 }
 
 export interface Room {

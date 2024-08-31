@@ -222,6 +222,10 @@ describe('agari', () => {
       expect(calc('11p1234s66z')).toBe('noten')
     })
 
+    test('should return noten if hand length is 10 and is invalid', () => {
+      expect(calc('122355s1166z')).toBe('noten')
+    })
+
     test('should return tenpai if hand length is 13 and is shabo', () => {
       expect(calc('123456789s5566z')).toBe(
         'tenpai: 5z => <shabo>5z5z<shabo>6z6z<shuntsu>1s2s3s<shuntsu>4s5s6s<shuntsu>7s8s9s, 6z => <shabo>5z5z<shabo>6z6z<shuntsu>1s2s3s<shuntsu>4s5s6s<shuntsu>7s8s9s'

@@ -57,6 +57,9 @@ type Kantsu = [SimpleTile, SimpleTile, SimpleTile, SimpleTile]
 type Mentsu = Syuntsu | Koutsu | Kantsu
 type MentsuType = 'shuntsu' | 'koutsu' | 'kantsu'
 
+const isMachiType = (type: string): type is MachiType =>
+  ['tanki', 'kanchan', 'penchan', 'ryanmen', 'shabo'].includes(type)
+
 export const getAllSyuntsu = (tile: SimpleTile): Mentsu[] => {
   const allSyuntsu: Mentsu[] = []
 
@@ -148,9 +151,9 @@ export const isAgariResultValid = (r: AgariResult): boolean => {
     case 'tenpai':
       return [...r.tenpai.values()].every((states) =>
         states.every((state) => {
-          const tanki = state.filter((set) => set.type === 'tanki')
+          const machi = state.filter((set) => isMachiType(set.type))
           const toitsu = state.filter((set) => set.type === 'toitsu')
-          return !tanki.length || (tanki.length === 1 && [0, 1, 6].includes(toitsu.length))
+          return [1, 2].includes(machi.length) && [0, 1, 6].includes(toitsu.length)
         })
       )
     case 'noten':
@@ -243,7 +246,10 @@ export const calculateAgari = (
         }
 
         for (const syuntsu of getAllSyuntsu(tile)) {
-          const [rest, removed] = removeTilesFromHand(hand, syuntsu.map((t) => [t, 1]))
+          const [rest, removed] = removeTilesFromHand(
+            hand,
+            syuntsu.map((t) => [t, 1])
+          )
           if (removed.every((r) => r.length === 1)) {
             const r = calculateAgari(rest, {
               ...result,

@@ -1,11 +1,12 @@
 import { simpleTileToTile } from '../../helpers/tile'
 import { backTile as simpleBackTile } from '../../helpers/code'
 import { availableTiles, getOpponent, haipaiCounts } from '../../helpers/game'
+import type { Tile } from '../../types/tile'
 import type { GameState, PlayerType } from '../../types/game'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
-  const backTile = simpleTileToTile(simpleBackTile)
+  const hideTile = (tile: Tile) => ({ ...simpleTileToTile(simpleBackTile), index: tile.index })
 
   return {
     ...state,
@@ -13,19 +14,19 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
       ...state[opponent],
       hand: {
         ...state[opponent].hand,
-        closed: state[opponent].hand.closed.map((tile) => ({ ...backTile, index: tile.index })),
-        tsumo: state[opponent].hand.tsumo ? { ...backTile, index: state[opponent].hand.tsumo.index } : undefined,
+        closed: state[opponent].hand.closed.map(hideTile),
+        tsumo: state[opponent].hand.tsumo ? hideTile(state[opponent].hand.tsumo) : undefined,
         tenpai: [],
       },
       decisions: [],
     },
     wall: {
       ...state.wall,
-      tiles: state.wall.tiles.map((tile) => ({ ...backTile, index: tile.index })),
+      tiles: state.wall.tiles.map(hideTile),
       kingTiles: state.wall.kingTiles.map((tile, index) =>
-        [9, 7, 5, 3, 1].slice(0, state.wall.doraCount).includes(index) ? tile : backTile
+        [9, 7, 5, 3, 1].slice(0, state.wall.doraCount).includes(index) ? tile : hideTile(tile)
       ),
-      supplementTiles: state.wall.supplementTiles.map(() => backTile),
+      supplementTiles: state.wall.supplementTiles.map(hideTile),
     },
   }
 }

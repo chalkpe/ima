@@ -1,19 +1,18 @@
-import { Button, CircularProgress, IconButton, List, ListItem } from '@mui/material'
-import { trpc } from '../utils/trpc'
-import { useNavigate } from 'react-router-dom'
-import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
-import useAuth from '../hooks/useAuth'
 import { useEffect } from 'react'
+import { Box, Button, CircularProgress, IconButton, List, ListItem } from '@mui/material'
+import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
+import { trpc } from '../utils/trpc'
+import useAuth from '../hooks/useAuth'
 
 const Lobby = () => {
   const navigate = useNavigate()
-  
   const { skip } = useAuth()
+  const utils = trpc.useUtils()
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
-  const { data: room, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
-
-  const { mutate: create } = trpc.lobby.create.useMutation()
-  const { mutate: join } = trpc.lobby.join.useMutation()
+  const { data: room, error } = trpc.lobby.room.useQuery(skip)
+  const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
+  const { mutate: join } = trpc.lobby.join.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   useEffect(() => {
     if (room && !error) {
@@ -22,17 +21,10 @@ const Lobby = () => {
   }, [room, navigate, error])
 
   return (
-    <>
+    <Box maxWidth="50vmin">
       <h1>로비</h1>
 
-      <Button
-        variant="contained"
-        onClick={() =>
-          create(undefined, {
-            onSuccess: () => navigate('/room'),
-          })
-        }
-      >
+      <Button variant="contained" onClick={() => create()}>
         방 생성
       </Button>
 
@@ -43,10 +35,7 @@ const Lobby = () => {
             <ListItem
               key={room.host}
               secondaryAction={
-                <IconButton
-                  edge="end"
-                  onClick={() => join({ host: room.host }, { onSuccess: () => navigate('/room') })}
-                >
+                <IconButton edge="end" onClick={() => join({ host: room.host })}>
                   {room.started ? <BlockOutlined /> : <CheckOutlined />}
                 </IconButton>
               }
@@ -56,9 +45,11 @@ const Lobby = () => {
           ))}
         </List>
       ) : (
-        <p><CircularProgress /></p>
+        <p>
+          <CircularProgress />
+        </p>
       )}
-    </>
+    </Box>
   )
 }
 

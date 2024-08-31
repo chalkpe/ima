@@ -9,8 +9,8 @@ const handler = applyWSSHandler({
   wss,
   router: appRouter,
   createContext,
-  onError({ error }) {
-    console.error(error)
+  onError(obj) {
+    console.error(obj.type, obj.path, obj.ctx?.username, obj.error.message)
   },
   keepAlive: { enabled: true, pingMs: 30000, pongWaitMs: 5000 },
 })

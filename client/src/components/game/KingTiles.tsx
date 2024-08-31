@@ -27,8 +27,8 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         top="25vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
-        {lowerTiles.map((tile, index) => (
-          <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+        {lowerTiles.map((tile) => (
+          <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
         ))}
       </Stack>
       <Stack
@@ -38,8 +38,8 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         top="25vmin"
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
-        {upperTiles.map((tile, index) => (
-          <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+        {upperTiles.map((tile) => (
+          <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
         ))}
       </Stack>
       <Stack
@@ -51,9 +51,9 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
       >
         {upperSupplementTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box width="3.5vmin" />
+            <Box key={index} width="3.5vmin" />
           )
         )}
       </Stack>
@@ -66,9 +66,9 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
       >
         {lowerSupplementTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box width="3.5vmin" />
+            <Box key={index} width="3.5vmin" />
           )
         )}
       </Stack>

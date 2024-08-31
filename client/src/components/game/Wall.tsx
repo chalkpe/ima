@@ -41,9 +41,9 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box width="3.5vmin" />
+            <Box key={index} width="3.5vmin" />
           )
         )}
       </Stack>
@@ -56,9 +56,9 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.type + tile.value + index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box width="3.5vmin" />
+            <Box key={index} width="3.5vmin" />
           )
         )}
       </Stack>

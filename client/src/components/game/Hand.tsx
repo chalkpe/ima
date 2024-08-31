@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from 'react'
-import { Box, Stack } from '@mui/material'
+import { Box, Paper, Stack } from '@mui/material'
 import Mahgen from './Mahgen'
 import Tenpai from './Tenpai'
 import { trpc } from '../../utils/trpc'
@@ -21,6 +21,19 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
 
   return (
     <>
+      {hand.tenpai.some((t, index) => t.length > 0 && index < closed.length) && (
+        <Paper
+          sx={{
+            position: 'absolute',
+            bottom: '24vmin',
+            left: '8vmin',
+            padding: '1vmin',
+          }}
+        >
+          Tenpai
+        </Paper>
+      )}
+
       {hovered !== undefined && (hovered < closed.length || hand.tsumo) && hand.tenpai[hovered] && (
         <Tenpai tenpai={hand.tenpai[hovered]} />
       )}

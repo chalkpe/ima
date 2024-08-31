@@ -33,6 +33,9 @@ const Root = () => {
               position: 'relative',
               width: '100vmin',
               height: '100vmin',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '10vmin',
               backgroundSize: 'cover',
               backgroundImage: `url(${background})`,
             }}

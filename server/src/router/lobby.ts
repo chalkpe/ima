@@ -43,7 +43,7 @@ export const lobbyRouter = router({
   leave: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
     const room = database.rooms.find((room) => room.host === username || room.guest === username)
-    if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
+    if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
 
     if (room.host === username) {
       room.host = room.guest

@@ -64,6 +64,10 @@ describe('agari', () => {
       expect(calc('11p1234s66z')).toBe('noten')
     })
 
+    test('should return noten if hand length is 8 and is 4 toitsu', () => {
+      expect(calc('4466s2244z')).toBe('noten')
+    })
+
     test('should return noten if hand length is 10 and is invalid', () => {
       expect(calc('122355s1166z')).toBe('noten')
     })

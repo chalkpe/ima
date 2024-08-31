@@ -69,7 +69,7 @@ export const isAgariResultValid = (r: AgariResult): boolean => {
         const one = agari.filter((set) => set.tiles.length === 1)
         const two = agari.filter((set) => set.tiles.length === 2)
         const three = agari.filter((set) => set.tiles.length === 3)
-        return one.length === 0 && (three.length === 0 || two.length <= 1)
+        return one.length === 0 && ((two.length === 7 && three.length === 0) || two.length <= 1)
       })
     case 'tenpai':
       return [...r.tenpai.values()].every((states) =>

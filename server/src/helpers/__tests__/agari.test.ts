@@ -1,52 +1,7 @@
-import {
-  agariResultToString,
-  calculateAgari,
-  getAllSyuntsu,
-  getLowerTile,
-  getTatsuMachi,
-  getUpperTile,
-  syuupaiTypes,
-  zihaiTypes,
-} from '../agari'
+import { agariResultToString, calculateAgari, getAllSyuntsu, getTatsuMachi } from '../agari'
 import { codeSyntaxToHand } from '../code'
 
 describe('agari', () => {
-  describe('getLowerTile', () => {
-    test.each(syuupaiTypes)('should return undefined if the tile is 1 (%s)', (type) => {
-      expect(getLowerTile({ type, value: 1 })).toBeUndefined()
-    })
-
-    test('should return undefined if the tile is invalid value', () => {
-      expect(getLowerTile({ type: 'man', value: 0 })).toBeUndefined()
-    })
-
-    test.each([2, 3, 4, 5, 6, 7, 8, 9])('should return the lower tile (%d)', (value) => {
-      expect(getLowerTile({ type: 'man', value })).toEqual({ type: 'man', value: value - 1 })
-    })
-
-    test.each(zihaiTypes)('should return undefined if the tile is not syuupai (%s)', (type) => {
-      expect(getLowerTile({ type, value: 2 })).toBeUndefined()
-    })
-  })
-
-  describe('getUpperTile', () => {
-    test.each(syuupaiTypes)('should return undefined if the tile is 9 (%s)', (type) => {
-      expect(getUpperTile({ type, value: 9 })).toBeUndefined()
-    })
-
-    test('should return undefined if the tile is invalid value', () => {
-      expect(getUpperTile({ type: 'man', value: 10 })).toBeUndefined()
-    })
-
-    test.each([1, 2, 3, 4, 5, 6, 7, 8])('should return the upper tile (%d)', (value) => {
-      expect(getUpperTile({ type: 'man', value })).toEqual({ type: 'man', value: value + 1 })
-    })
-
-    test.each(zihaiTypes)('should return undefined if the tile is not syuupai (%s)', (type) => {
-      expect(getUpperTile({ type, value: 2 })).toBeUndefined()
-    })
-  })
-
   describe('getTatsuMachi', () => {
     test('should return undefined if the tiles are not tatsu', () => {
       expect(
@@ -263,6 +218,16 @@ describe('agari', () => {
       )
     })
 
+    test('should return noten if hand length is 8 and is invalid', () => {
+      expect(calc('11p1234s66z')).toBe('noten')
+    })
+
+    test('should return tenpai if hand length is 13 and is shabo', () => {
+      expect(calc('123456789s5566z')).toBe(
+        'tenpai: 5z => <shabo>5z5z<shabo>6z6z<shuntsu>1s2s3s<shuntsu>4s5s6s<shuntsu>7s8s9s, 6z => <shabo>5z5z<shabo>6z6z<shuntsu>1s2s3s<shuntsu>4s5s6s<shuntsu>7s8s9s'
+      )
+    })
+
     test('should return tenpai if hand length is 13 and is chiitoitsu', () => {
       expect(calc('1122334455667z')).toBe(
         'tenpai: 7z => <tanki>7z<toitsu>1z1z<toitsu>2z2z<toitsu>3z3z<toitsu>4z4z<toitsu>5z5z<toitsu>6z6z'
@@ -289,7 +254,7 @@ describe('agari', () => {
 
     test('should return tenpai if hand length is 13 and is pure nine gate', () => {
       expect(calc('1112345678999m')).toBe(
-        'tenpai: 1m => <ryanmen>2m3m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>4m5m6m<shuntsu>7m8m9m, 2m => <tanki>2m<koutsu>1m1m1m<shuntsu>3m4m5m<shuntsu>6m7m8m<koutsu>9m9m9m, 3m => <toitsu>1m1m<ryanmen>4m5m<shuntsu>1m2m3m<shuntsu>6m7m8m<koutsu>9m9m9m, 4m => <ryanmen>5m6m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>7m8m9m or <ryanmen>2m3m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>4m5m6m<shuntsu>7m8m9m, 5m => <tanki>5m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>6m7m8m<koutsu>9m9m9m, 6m => <toitsu>1m1m<ryanmen>7m8m<shuntsu>1m2m3m<shuntsu>4m5m6m<koutsu>9m9m9m or <toitsu>1m1m<ryanmen>4m5m<shuntsu>1m2m3m<shuntsu>6m7m8m<koutsu>9m9m9m, 7m => <ryanmen>5m6m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>7m8m9m, 8m => <tanki>8m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>5m6m7m<koutsu>9m9m9m, 9m => <toitsu>1m1m<ryanmen>7m8m<shuntsu>1m2m3m<shuntsu>4m5m6m<koutsu>9m9m9m'
+        'tenpai: 1m => <ryanmen>2m3m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>4m5m6m<shuntsu>7m8m9m or <shabo>1m1m<shabo>9m9m<shuntsu>1m2m3m<shuntsu>4m5m6m<shuntsu>7m8m9m, 2m => <tanki>2m<koutsu>1m1m1m<shuntsu>3m4m5m<shuntsu>6m7m8m<koutsu>9m9m9m, 3m => <toitsu>1m1m<ryanmen>4m5m<shuntsu>1m2m3m<shuntsu>6m7m8m<koutsu>9m9m9m, 4m => <ryanmen>5m6m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>7m8m9m or <ryanmen>2m3m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>4m5m6m<shuntsu>7m8m9m, 5m => <tanki>5m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>6m7m8m<koutsu>9m9m9m, 6m => <toitsu>1m1m<ryanmen>7m8m<shuntsu>1m2m3m<shuntsu>4m5m6m<koutsu>9m9m9m or <toitsu>1m1m<ryanmen>4m5m<shuntsu>1m2m3m<shuntsu>6m7m8m<koutsu>9m9m9m, 7m => <ryanmen>5m6m<toitsu>9m9m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>7m8m9m, 8m => <tanki>8m<koutsu>1m1m1m<shuntsu>2m3m4m<shuntsu>5m6m7m<koutsu>9m9m9m, 9m => <shabo>1m1m<shabo>9m9m<shuntsu>1m2m3m<shuntsu>4m5m6m<shuntsu>7m8m9m or <toitsu>1m1m<ryanmen>7m8m<shuntsu>1m2m3m<shuntsu>4m5m6m<koutsu>9m9m9m'
       )
     })
 

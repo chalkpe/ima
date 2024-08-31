@@ -1,5 +1,5 @@
 import { codeSyntaxToHand } from '../code'
-import { countTiles, isEqualTile, removeTileFromHand } from '../tile'
+import { countTiles, getLowerTile, getUpperTile, isEqualTile, removeTileFromHand, removeTilesFromHand, syuupaiTypes, zihaiTypes } from '../tile'
 
 describe('tile', () => {
   describe('countTiles', () => {
@@ -41,6 +41,77 @@ describe('tile', () => {
       const [remain, removed] = removeTileFromHand(hand, target, 2)
       expect(remain).toEqual(codeSyntaxToHand('123456789999m'))
       expect(removed).toEqual(codeSyntaxToHand('11m'))
+    })
+  })
+
+  describe('removeTilesFromHand', () => {
+    test('should return the removed tiles', () => {
+      const hand = codeSyntaxToHand('11123456789999m')
+      const targets = [[codeSyntaxToHand('1m')[0], 2], [codeSyntaxToHand('9m')[0], 5]] as const
+
+      const [remain, removed] = removeTilesFromHand(hand, targets)
+      expect(remain).toEqual(codeSyntaxToHand('12345678m'))
+      expect(removed).toEqual([codeSyntaxToHand('11m'), codeSyntaxToHand('9999m')])
+    })
+    test('should return the removed tiles (syuntsu)', () => {
+      const hand = codeSyntaxToHand('11123456789999m')
+      const targets = [[codeSyntaxToHand('2m')[0], 1], [codeSyntaxToHand('3m')[0], 1], [codeSyntaxToHand('4m')[0], 1]] as const
+
+      const [remain, removed] = removeTilesFromHand(hand, targets)
+      expect(remain).toEqual(codeSyntaxToHand('11156789999m'))
+      expect(removed).toEqual([codeSyntaxToHand('2m'), codeSyntaxToHand('3m'), codeSyntaxToHand('4m')])
+    })
+    test('should return the removed tiles with duplicated target', () => {
+      const hand = codeSyntaxToHand('11123456789999m')
+      const targets = [[codeSyntaxToHand('9m')[0], 3], [codeSyntaxToHand('9m')[0], 2 ]] as const
+
+      const [remain, removed] = removeTilesFromHand(hand, targets)
+      expect(remain).toEqual(codeSyntaxToHand('1112345678m'))
+      expect(removed).toEqual([codeSyntaxToHand('999m'), codeSyntaxToHand('9m')])
+    })
+    test('should return the empty array if there is no target', () => {
+      const hand = codeSyntaxToHand('11123456789999m')
+      const targets = [[codeSyntaxToHand('1s')[0], 2], [codeSyntaxToHand('2s')[0], 3]] as const
+
+      const [remain, removed] = removeTilesFromHand(hand, targets)
+      expect(remain).toEqual(codeSyntaxToHand('11123456789999m'))
+      expect(removed).toEqual([[], []])
+    })
+  })
+
+  describe('getLowerTile', () => {
+    test.each(syuupaiTypes)('should return undefined if the tile is 1 (%s)', (type) => {
+      expect(getLowerTile({ type, value: 1 })).toBeUndefined()
+    })
+
+    test('should return undefined if the tile is invalid value', () => {
+      expect(getLowerTile({ type: 'man', value: 0 })).toBeUndefined()
+    })
+
+    test.each([2, 3, 4, 5, 6, 7, 8, 9])('should return the lower tile (%d)', (value) => {
+      expect(getLowerTile({ type: 'man', value })).toEqual({ type: 'man', value: value - 1 })
+    })
+
+    test.each(zihaiTypes)('should return undefined if the tile is not syuupai (%s)', (type) => {
+      expect(getLowerTile({ type, value: 2 })).toBeUndefined()
+    })
+  })
+
+  describe('getUpperTile', () => {
+    test.each(syuupaiTypes)('should return undefined if the tile is 9 (%s)', (type) => {
+      expect(getUpperTile({ type, value: 9 })).toBeUndefined()
+    })
+
+    test('should return undefined if the tile is invalid value', () => {
+      expect(getUpperTile({ type: 'man', value: 10 })).toBeUndefined()
+    })
+
+    test.each([1, 2, 3, 4, 5, 6, 7, 8])('should return the upper tile (%d)', (value) => {
+      expect(getUpperTile({ type: 'man', value })).toEqual({ type: 'man', value: value + 1 })
+    })
+
+    test.each(zihaiTypes)('should return undefined if the tile is not syuupai (%s)', (type) => {
+      expect(getUpperTile({ type, value: 2 })).toBeUndefined()
     })
   })
 })

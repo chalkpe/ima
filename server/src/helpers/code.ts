@@ -68,3 +68,14 @@ export const codeToTile = (code: Code): SimpleTile => {
 export const codeSyntaxToHand = (syntax: string): SimpleTile[] => {
   return [...syntax.matchAll(/(\d)(?=\d*([mpsz]))/g)].map((m) => codeToTile(`${m[1]}${m[2]}` as Code))
 }
+
+export const codeSuffixOrder: CodeSuffix[] = ['m', 'p', 's', 'z']
+
+export const compareCode = (a: Code, b: Code): number => {
+  return (
+    codeSuffixOrder.indexOf(a[1] as CodeSuffix) - codeSuffixOrder.indexOf(b[1] as CodeSuffix) ||
+    parseInt(a[0]) - parseInt(b[0])
+  )
+}
+
+

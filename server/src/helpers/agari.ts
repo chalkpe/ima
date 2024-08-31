@@ -1,56 +1,16 @@
-import { tileToCode } from './code'
-import { isEqualTile, kokushiTiles, removeTileFromHand } from './tile'
+import { compareCode, tileToCode } from './code'
+import {
+  compareTiles,
+  getLowerTile,
+  getUpperTile,
+  isEqualTile,
+  kokushiTiles,
+  removeTileFromHand,
+  removeTilesFromHand,
+} from './tile'
 
 import type { SimpleTile } from '../types/tile'
-import type { Code, CodeSuffix } from '../types/code'
-
-type SyuupaiType = 'man' | 'pin' | 'sou'
-type SyuupaiValue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-
-type ZihaiType = 'wind' | 'dragon'
-
-export const syuupaiTypes: SimpleTile['type'][] = ['man', 'pin', 'sou'] satisfies SyuupaiType[]
-export const syuupaiValues: SimpleTile['value'][] = [1, 2, 3, 4, 5, 6, 7, 8, 9] satisfies SyuupaiValue[]
-
-export const zihaiTypes: SimpleTile['type'][] = ['wind', 'dragon'] satisfies ZihaiType[]
-
-
-export const codeSuffixOrder: CodeSuffix[] = ['m', 'p', 's', 'z']
-
-export const compareCode = (a: Code, b: Code): number => {
-  return (
-    codeSuffixOrder.indexOf(a[1] as CodeSuffix) - codeSuffixOrder.indexOf(b[1] as CodeSuffix) ||
-    parseInt(a[0]) - parseInt(b[0])
-  )
-}
-
-
-
-export const tileTypeOrder: SimpleTile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon', 'back']
-
-export const compareTile = (a: SimpleTile, b: SimpleTile): number => {
-  return tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value
-}
-
-export const compareTiles = (a: SimpleTile[], b: SimpleTile[]): number => {
-  return a.length - b.length || a.reduce((res, tile, index) => res || compareTile(tile, b[index]), 0)
-}
-
-export const getLowerTile = (tile: SimpleTile): SimpleTile | undefined => {
-  if (!syuupaiTypes.includes(tile.type)) return
-  if (!syuupaiValues.includes(tile.value)) return
-  if (tile.value === syuupaiValues[0]) return
-
-  return { type: tile.type, value: tile.value - 1 }
-}
-
-export const getUpperTile = (tile: SimpleTile): SimpleTile | undefined => {
-  if (!syuupaiTypes.includes(tile.type)) return
-  if (!syuupaiValues.includes(tile.value)) return
-  if (tile.value === syuupaiValues[syuupaiValues.length - 1]) return
-
-  return { type: tile.type, value: tile.value + 1 }
-}
+import type { Code } from '../types/code'
 
 type Koritsu = [SimpleTile]
 type KoritsuType = 'koritsu' | 'kokushi'
@@ -177,18 +137,22 @@ export const mergeAgariResults = (result: AgariResult, r: AgariResult) => {
 }
 
 export const isAgariResultValid = (r: AgariResult): boolean => {
-  const one = r.state.filter((tileSet) => tileSet.tiles.length === 1)
-  const two = r.state.filter((tileSet) => tileSet.tiles.length === 2)
-  const three = r.state.filter((tileSet) => tileSet.tiles.length === 3)
-
   switch (r.status) {
     case 'agari':
-      return one.length === 0 && (three.length === 0 || two.length <= 1)
+      return r.agari.every((agari) => {
+        const one = agari.filter((set) => set.tiles.length === 1)
+        const two = agari.filter((set) => set.tiles.length === 2)
+        const three = agari.filter((set) => set.tiles.length === 3)
+        return one.length === 0 && (three.length === 0 || two.length <= 1)
+      })
     case 'tenpai':
-      if (two.length === 6) return one.length === 1 && three.length === 0
-      if (three.length === 4) return one.length === 1 && two.length === 0
-      if (three.length === 3) return one.length === 0 && two.length === 2
-      return two.length <= 2
+      return [...r.tenpai.values()].every((states) =>
+        states.every((state) => {
+          const tanki = state.filter((set) => set.type === 'tanki')
+          const toitsu = state.filter((set) => set.type === 'toitsu')
+          return !tanki.length || (tanki.length === 1 && [0, 1, 6].includes(toitsu.length))
+        })
+      )
     case 'noten':
       return false
   }
@@ -279,13 +243,11 @@ export const calculateAgari = (
         }
 
         for (const syuntsu of getAllSyuntsu(tile)) {
-          const [rest, removed] = removeTileFromHand(hand, syuntsu[0], 1)
-          const [rest2, removed2] = removeTileFromHand(rest, syuntsu[1], 1)
-          const [rest3, removed3] = removeTileFromHand(rest2, syuntsu[2], 1)
-          if (removed.length === 1 && removed2.length === 1 && removed3.length === 1) {
-            const r = calculateAgari(rest3, {
+          const [rest, removed] = removeTilesFromHand(hand, syuntsu.map((t) => [t, 1]))
+          if (removed.every((r) => r.length === 1)) {
+            const r = calculateAgari(rest, {
               ...result,
-              state: [...result.state, { type: 'shuntsu', tiles: [removed[0], removed2[0], removed3[0]] }],
+              state: [...result.state, { type: 'shuntsu', tiles: [removed[0][0], removed[1][0], removed[2][0]] }],
             })
             if (isAgariResultValid(r)) mergeAgariResults(result, r)
           }

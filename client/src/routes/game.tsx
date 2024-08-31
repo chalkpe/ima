@@ -16,7 +16,7 @@ const Game = () => {
 
   useEffect(() => {
     if (!data || error) {
-      navigate('/room')
+      navigate('/lobby')
     }
   }, [data, error, navigate])
 

@@ -98,18 +98,18 @@ export const getAllSyuntsu = (tile: SimpleTile): Mentsu[] => {
   if (lower) {
     const lowerLower = getLowerTile(lower)
     if (lowerLower) {
-      allSyuntsu.push([lowerLower, lower, tile])
+      allSyuntsu.push([lowerLower, lower, tile].map(simpleTileToTile) as Syuntsu)
     }
   }
 
   if (upper && lower) {
-    allSyuntsu.push([lower, tile, upper])
+    allSyuntsu.push([lower, tile, upper].map(simpleTileToTile) as Syuntsu)
   }
 
   if (upper) {
     const upperUpper = getUpperTile(upper)
     if (upperUpper) {
-      allSyuntsu.push([tile, upper, upperUpper])
+      allSyuntsu.push([tile, upper, upperUpper].map(simpleTileToTile) as Syuntsu)
     }
   }
 

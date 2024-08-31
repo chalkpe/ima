@@ -1,10 +1,11 @@
 import { agariResultToString, calculateAgari } from '../agari'
 import { codeSyntaxToHand } from '../code'
+import { simpleTileToTile } from '../tile'
 
 describe('agari', () => {
   describe('calculateAgari', () => {
     // shorthand for testing
-    const calc = (codeSyntax: string) => agariResultToString(calculateAgari(codeSyntaxToHand(codeSyntax)))
+    const calc = (codeSyntax: string) => agariResultToString(calculateAgari(codeSyntaxToHand(codeSyntax).map(simpleTileToTile)))
 
     test('should return agari if hand length is 0', () => {
       expect(calc('')).toBe('agari: ')

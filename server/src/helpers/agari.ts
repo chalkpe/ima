@@ -7,10 +7,12 @@ import {
   kokushiTiles,
   removeTileFromHand,
   removeTilesFromHand,
+  simpleTileToTile,
 } from './tile'
 
-import type { Machi, MachiType, SimpleTile, Tsu } from '../types/tile'
+import type { Machi, MachiType, SimpleTile, Tile, Tsu } from '../types/tile'
 import type { Code } from '../types/code'
+import type { AgariResult, AgariState, TenpaiState } from '../types/agari'
 
 const isMachiType = (type: string): type is MachiType =>
   ['tanki', 'kanchan', 'penchan', 'ryanmen', 'shabo'].includes(type)
@@ -26,15 +28,6 @@ export const tenpaiStateToString = (state: TenpaiState): string => {
     .join('')
 }
 
-type AgariState = Tsu[]
-type TenpaiState = (Tsu | Machi)[]
-
-interface AgariResult {
-  status: 'agari' | 'tenpai' | 'noten'
-  state: AgariState
-  agari: AgariState[]
-  tenpai: Map<Code, TenpaiState[]>
-}
 
 export const mergeAgariResults = (result: AgariResult, r: AgariResult) => {
   result.status = r.status
@@ -85,7 +78,7 @@ export const isAgariResultValid = (r: AgariResult): boolean => {
 }
 
 export const calculateAgari = (
-  hand: SimpleTile[],
+  hand: Tile[],
   result: AgariResult = { status: 'noten', state: [], agari: [], tenpai: new Map() }
 ): AgariResult => {
   switch (hand.length) {
@@ -186,7 +179,7 @@ export const calculateAgari = (
       if (result.agari.length) return { ...result, status: 'agari' }
       if (result.tenpai.size) return { ...result, status: 'tenpai' }
 
-      const ksTiles = kokushiTiles.map((ksTile) => [ksTile, removeTileFromHand(hand, ksTile, 2)[1]] as const)
+      const ksTiles = kokushiTiles.map(simpleTileToTile).map((ksTile) => [ksTile, removeTileFromHand(hand, ksTile, 2)[1]] as const)
 
       const zeroKsTiles = ksTiles.filter(([_, removed]) => removed.length === 0)
       const oneKsTiles = ksTiles.filter(([_, removed]) => removed.length === 1)

@@ -2,11 +2,17 @@ import type { RiverTile } from '../../../server/src/types/game'
 import type { SimpleTile, Tile } from '../../../server/src/types/tile'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
+const attributeOrder: Tile['attribute'][] = ['normal', 'red']
 
-export const sortTiles = <T extends SimpleTile>(tiles: T[]) => {
+export const sortTiles = (tiles: Tile[]) => {
   return tiles
     .map((tile, order) => ({ ...tile, order }))
-    .sort((a, b) => tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value)
+    .sort(
+      (a, b) =>
+        tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) ||
+        a.value - b.value ||
+        attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
+    )
 }
 
 export const convertTileToCode = (tile: Tile | SimpleTile) => {

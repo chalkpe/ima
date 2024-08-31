@@ -12,6 +12,7 @@ import {
   isSyuntsu,
   removeTileFromHand,
   removeTilesFromHand,
+  simpleTileToTile,
   syuupaiTypes,
   zihaiTypes,
 } from '../tile'
@@ -199,67 +200,67 @@ describe('tile', () => {
     test('should return true if the tiles are syuntsu', () => {
       expect(
         isSyuntsu([
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
         ])
       ).toBeTruthy()
       expect(
         isSyuntsu([
-          { type: 'pin', value: 3 },
-          { type: 'pin', value: 2 },
-          { type: 'pin', value: 1 },
+          simpleTileToTile({ type: 'pin', value: 3 }),
+          simpleTileToTile({ type: 'pin', value: 2 }),
+          simpleTileToTile({ type: 'pin', value: 1 }),
         ])
       ).toBeTruthy()
       expect(
         isSyuntsu([
-          { type: 'sou', value: 2 },
-          { type: 'sou', value: 1 },
-          { type: 'sou', value: 3 },
+          simpleTileToTile({ type: 'sou', value: 2 }),
+          simpleTileToTile({ type: 'sou', value: 1 }),
+          simpleTileToTile({ type: 'sou', value: 3 }),
         ])
       ).toBeTruthy()
     })
     test('should return false if the tiles are not syuntsu', () => {
       expect(
         isSyuntsu([
-          { type: 'man', value: 9 },
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
+          simpleTileToTile({ type: 'man', value: 9 }),
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
         ])
       ).toBeFalsy()
       expect(
         isSyuntsu([
-          { type: 'man', value: 8 },
-          { type: 'man', value: 9 },
-          { type: 'man', value: 1 },
+          simpleTileToTile({ type: 'man', value: 8 }),
+          simpleTileToTile({ type: 'man', value: 9 }),
+          simpleTileToTile({ type: 'man', value: 1 }),
         ])
       ).toBeFalsy()
       expect(
         isSyuntsu([
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
-          { type: 'man', value: 4 },
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 4 }),
         ])
       ).toBeFalsy()
       expect(
         isSyuntsu([
-          { type: 'man', value: -2 },
-          { type: 'man', value: -1 },
-          { type: 'man', value: 0 },
+          simpleTileToTile({ type: 'man', value: -2 }),
+          simpleTileToTile({ type: 'man', value: -1 }),
+          simpleTileToTile({ type: 'man', value: 0 }),
         ])
       ).toBeFalsy()
       expect(
         isSyuntsu([
-          { type: 'man', value: 9 },
-          { type: 'man', value: 10 },
-          { type: 'man', value: 11 },
+          simpleTileToTile({ type: 'man', value: 9 }),
+          simpleTileToTile({ type: 'man', value: 10 }),
+          simpleTileToTile({ type: 'man', value: 11 }),
         ])
       ).toBeFalsy()
       expect(
         isSyuntsu([
-          { type: 'wind', value: 1 },
-          { type: 'wind', value: 2 },
-          { type: 'wind', value: 3 },
+          simpleTileToTile({ type: 'wind', value: 1 }),
+          simpleTileToTile({ type: 'wind', value: 2 }),
+          simpleTileToTile({ type: 'wind', value: 3 }),
         ])
       ).toBeFalsy()
     })
@@ -268,55 +269,34 @@ describe('tile', () => {
   describe('getTatsuMachi', () => {
     test('should return undefined if the tiles are not tatsu', () => {
       expect(
-        getTatsuMachi([
-          { type: 'man', value: 1 },
-          { type: 'pin', value: 1 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'man', value: 1 }), simpleTileToTile({ type: 'pin', value: 1 })])
       ).toBeUndefined()
       expect(
-        getTatsuMachi([
-          { type: 'man', value: 1 },
-          { type: 'man', value: 1 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'man', value: 1 }), simpleTileToTile({ type: 'man', value: 1 })])
       ).toBeUndefined()
     })
 
     test('should return undefined if the tiles are invalid', () => {
       expect(
-        getTatsuMachi([
-          { type: 'man', value: 0 },
-          { type: 'man', value: 2 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'man', value: 0 }), simpleTileToTile({ type: 'man', value: 2 })])
       ).toBeUndefined()
       expect(
-        getTatsuMachi([
-          { type: 'man', value: 8 },
-          { type: 'man', value: 10 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'man', value: 8 }), simpleTileToTile({ type: 'man', value: 10 })])
       ).toBeUndefined()
     })
 
     test('should return kanchan if the tiles are kanchan', () => {
       expect(
-        getTatsuMachi([
-          { type: 'man', value: 1 },
-          { type: 'man', value: 3 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'man', value: 1 }), simpleTileToTile({ type: 'man', value: 3 })])
       ).toEqual({ type: 'kanchan', tiles: [{ type: 'man', value: 2 }] })
       expect(
-        getTatsuMachi([
-          { type: 'pin', value: 3 },
-          { type: 'pin', value: 1 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'pin', value: 3 }), simpleTileToTile({ type: 'pin', value: 1 })])
       ).toEqual({ type: 'kanchan', tiles: [{ type: 'pin', value: 2 }] })
     })
 
     test('should return ryanmen if the tiles are ryanmen', () => {
       expect(
-        getTatsuMachi([
-          { type: 'pin', value: 2 },
-          { type: 'pin', value: 3 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'pin', value: 2 }), simpleTileToTile({ type: 'pin', value: 3 })])
       ).toEqual({
         type: 'ryanmen',
         tiles: [
@@ -328,16 +308,10 @@ describe('tile', () => {
 
     test('should return penchan if the tiles are penchan', () => {
       expect(
-        getTatsuMachi([
-          { type: 'sou', value: 1 },
-          { type: 'sou', value: 2 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'sou', value: 1 }), simpleTileToTile({ type: 'sou', value: 2 })])
       ).toEqual({ type: 'penchan', tiles: [{ type: 'sou', value: 3 }] })
       expect(
-        getTatsuMachi([
-          { type: 'sou', value: 8 },
-          { type: 'sou', value: 9 },
-        ])
+        getTatsuMachi([simpleTileToTile({ type: 'sou', value: 8 }), simpleTileToTile({ type: 'sou', value: 9 })])
       ).toEqual({ type: 'penchan', tiles: [{ type: 'sou', value: 7 }] })
     })
   })
@@ -346,78 +320,78 @@ describe('tile', () => {
     test('should return all syuntsu (one)', () => {
       expect(getAllSyuntsu({ type: 'man', value: 1 })).toEqual([
         [
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
         ],
       ])
       expect(getAllSyuntsu({ type: 'man', value: 9 })).toEqual([
         [
-          { type: 'man', value: 7 },
-          { type: 'man', value: 8 },
-          { type: 'man', value: 9 },
+          simpleTileToTile({ type: 'man', value: 7 }),
+          simpleTileToTile({ type: 'man', value: 8 }),
+          simpleTileToTile({ type: 'man', value: 9 }),
         ],
       ])
     })
     test('should return all syuntsu (two)', () => {
       expect(getAllSyuntsu({ type: 'man', value: 2 })).toEqual([
         [
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
         ],
         [
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
-          { type: 'man', value: 4 },
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
+          simpleTileToTile({ type: 'man', value: 4 }),
         ],
       ])
       expect(getAllSyuntsu({ type: 'man', value: 8 })).toEqual([
         [
-          { type: 'man', value: 6 },
-          { type: 'man', value: 7 },
-          { type: 'man', value: 8 },
+          simpleTileToTile({ type: 'man', value: 6 }),
+          simpleTileToTile({ type: 'man', value: 7 }),
+          simpleTileToTile({ type: 'man', value: 8 }),
         ],
         [
-          { type: 'man', value: 7 },
-          { type: 'man', value: 8 },
-          { type: 'man', value: 9 },
+          simpleTileToTile({ type: 'man', value: 7 }),
+          simpleTileToTile({ type: 'man', value: 8 }),
+          simpleTileToTile({ type: 'man', value: 9 }),
         ],
       ])
     })
     test('should return all syuntsu (three)', () => {
       expect(getAllSyuntsu({ type: 'man', value: 3 })).toEqual([
         [
-          { type: 'man', value: 1 },
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
+          simpleTileToTile({ type: 'man', value: 1 }),
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
         ],
         [
-          { type: 'man', value: 2 },
-          { type: 'man', value: 3 },
-          { type: 'man', value: 4 },
+          simpleTileToTile({ type: 'man', value: 2 }),
+          simpleTileToTile({ type: 'man', value: 3 }),
+          simpleTileToTile({ type: 'man', value: 4 }),
         ],
         [
-          { type: 'man', value: 3 },
-          { type: 'man', value: 4 },
-          { type: 'man', value: 5 },
+          simpleTileToTile({ type: 'man', value: 3 }),
+          simpleTileToTile({ type: 'man', value: 4 }),
+          simpleTileToTile({ type: 'man', value: 5 }),
         ],
       ])
       expect(getAllSyuntsu({ type: 'man', value: 7 })).toEqual([
         [
-          { type: 'man', value: 5 },
-          { type: 'man', value: 6 },
-          { type: 'man', value: 7 },
+          simpleTileToTile({ type: 'man', value: 5 }),
+          simpleTileToTile({ type: 'man', value: 6 }),
+          simpleTileToTile({ type: 'man', value: 7 }),
         ],
         [
-          { type: 'man', value: 6 },
-          { type: 'man', value: 7 },
-          { type: 'man', value: 8 },
+          simpleTileToTile({ type: 'man', value: 6 }),
+          simpleTileToTile({ type: 'man', value: 7 }),
+          simpleTileToTile({ type: 'man', value: 8 }),
         ],
         [
-          { type: 'man', value: 7 },
-          { type: 'man', value: 8 },
-          { type: 'man', value: 9 },
+          simpleTileToTile({ type: 'man', value: 7 }),
+          simpleTileToTile({ type: 'man', value: 8 }),
+          simpleTileToTile({ type: 'man', value: 9 }),
         ],
       ])
     })

@@ -1,12 +1,4 @@
-import {
-  Code,
-  CodeNumber,
-  CodeSuffix,
-  SyuuhaiCodeNumber,
-  SyuupaiCodeSuffix,
-  ZihaiCodeNumber,
-  ZihaiCodeSuffix,
-} from '../types/code'
+import { Code, CodeSuffix, SyuuhaiCodeNumber, SyuupaiCodeSuffix, ZihaiCodeNumber, ZihaiCodeSuffix } from '../types/code'
 import { SimpleTile } from '../types/tile'
 
 export const backTile: SimpleTile = { type: 'back', value: 0 }
@@ -41,7 +33,6 @@ const isSyuuhaiCodeNumber = (number: string): number is SyuuhaiCodeNumber =>
 const isZihaiCodeNumber = (number: string): number is ZihaiCodeNumber =>
   ['0', '1', '2', '3', '4', '5', '6', '7'].includes(number)
 
-const isCodeSuffix = (suffix: string): suffix is CodeSuffix => ['m', 'p', 's', 'z'].includes(suffix)
 const isSyuuhaiSuffix = (suffix: CodeSuffix): suffix is SyuupaiCodeSuffix => ['m', 'p', 's'].includes(suffix)
 const isZihaiSuffix = (suffix: CodeSuffix): suffix is ZihaiCodeSuffix => suffix === 'z'
 
@@ -58,11 +49,9 @@ export const tileToCode = (tile: SimpleTile): Code => {
 
 export const codeToTile = (code: Code): SimpleTile => {
   const number = code[0]
-  const suffix = code[1]
+  const suffix = code[1] as CodeSuffix
 
-  if (!isCodeSuffix(suffix)) return backTile
   const maybeType = suffixTypeMap[suffix]
-
   if (isZihaiSuffix(suffix) && isZihaiCodeNumber(number) && typeof maybeType !== 'string') {
     const type = maybeType[number]
     return { type, value: parseInt(number) - valueBaseMap[type] }

@@ -1,6 +1,7 @@
 import { codeSyntaxToHand, tileToCode } from './code'
 import type { Code } from '../types/code'
 import type { SimpleTile, Tile, TileType } from '../types/tile'
+import { RiverTile } from '../types/game'
 
 export const tileTypes = ['man', 'pin', 'sou', 'wind', 'dragon'] as const satisfies TileType[]
 
@@ -19,6 +20,11 @@ export const removeTileFromHand = <T extends SimpleTile>(hand: T[], target: T, c
 export const simpleTileToTile = (tile: SimpleTile): Tile => ({
   ...tile,
   ...{ attribute: 'normal', background: 'white', index: -1 },
+})
+
+export const simpleTileToRiverTile = (tile: SimpleTile): RiverTile => ({
+  tile: simpleTileToTile(tile),
+  ...{ isRiichi: false, isTsumogiri: false },
 })
 
 export const kokushiTiles = codeSyntaxToHand('19m19p19s1234567z')

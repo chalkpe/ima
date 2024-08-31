@@ -43,7 +43,7 @@ const Wall: FC<WallProps> = ({ wall }) => {
           tile !== null ? (
             <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box key={index} width="3.5vmin" />
+            <Box key={'lower' + index} width="3.5vmin" />
           )
         )}
       </Stack>
@@ -58,7 +58,7 @@ const Wall: FC<WallProps> = ({ wall }) => {
           tile !== null ? (
             <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
           ) : (
-            <Box key={index} width="3.5vmin" />
+            <Box key={'upper' + index} width="3.5vmin" />
           )
         )}
       </Stack>

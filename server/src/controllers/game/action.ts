@@ -165,12 +165,11 @@ export const giri = (state: GameState, me: PlayerType, index: number) => {
   if (state[me].riichi && state[me].hand.tsumo?.index !== index)
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Riichi only can discard tsumo' })
 
-  const opponent = getOpponent(me)
-  onBeforeGiri(state, me)
-
   const closedHand = getClosedHand(state[me].hand)
   const [tiles, remain] = partition(closedHand, (t) => t.index === index)
   if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+
+  onBeforeGiri(state, me)
 
   const isRiichi = state[me].riichi && !state[me].river.some((r) => r.isRiichi)
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi })
@@ -179,7 +178,7 @@ export const giri = (state: GameState, me: PlayerType, index: number) => {
   state[me].hand.tsumo = undefined
 
   onAfterGiri(state, me)
-  onBeforeTsumo(state, opponent)
+  onBeforeTsumo(state, getOpponent(me))
 }
 
 export const riichi = (state: GameState, me: PlayerType, index: number) => {
@@ -189,7 +188,6 @@ export const riichi = (state: GameState, me: PlayerType, index: number) => {
   const [tiles, remain] = partition(closedHand, (t) => t.index === index)
   if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
 
-  const opponent = getOpponent(me)
   onBeforeGiri(state, me)
 
   state[me].riichi = true
@@ -199,5 +197,5 @@ export const riichi = (state: GameState, me: PlayerType, index: number) => {
   state[me].hand.tsumo = undefined
 
   onAfterGiri(state, me)
-  onBeforeTsumo(state, opponent)
+  onBeforeTsumo(state, getOpponent(me))
 }

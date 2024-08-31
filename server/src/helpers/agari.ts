@@ -1,6 +1,8 @@
-import type { SimpleTile } from '../db'
-import { Code, CodeSuffix, codeToTile, tileToCode } from './code'
-import { isEqualTile, kokushiTiles, removeTileFromHand } from './common'
+import { tileToCode } from './code'
+import { isEqualTile, kokushiTiles, removeTileFromHand } from './tile'
+
+import type { SimpleTile } from '../types/tile'
+import type { Code, CodeSuffix } from '../types/code'
 
 type SyuupaiType = 'man' | 'pin' | 'sou'
 type SyuupaiValue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
@@ -88,8 +90,12 @@ export const getTatsuMachi = (tatsu: Tatsu): TatsuMachi | undefined => {
   }
 }
 
-type Mentsu = [SimpleTile, SimpleTile, SimpleTile]
-type MentsuType = 'shuntsu' | 'koutsu'
+type Syuntsu = [SimpleTile, SimpleTile, SimpleTile]
+type Koutsu = [SimpleTile, SimpleTile, SimpleTile]
+type Kantsu = [SimpleTile, SimpleTile, SimpleTile, SimpleTile]
+
+type Mentsu = Syuntsu | Koutsu | Kantsu
+type MentsuType = 'shuntsu' | 'koutsu' | 'kantsu'
 
 export const getAllSyuntsu = (tile: SimpleTile): Mentsu[] => {
   const allSyuntsu: Mentsu[] = []

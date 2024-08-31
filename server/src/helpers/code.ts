@@ -1,20 +1,18 @@
-import type { SimpleTile } from '../db'
+import {
+  Code,
+  CodeNumber,
+  CodeSuffix,
+  SyuuhaiCodeNumber,
+  SyuupaiCodeSuffix,
+  ZihaiCodeNumber,
+  ZihaiCodeSuffix,
+} from '../types/code'
+import { SimpleTile } from '../types/tile'
 
-export type SyuupaiCodeSuffix = 'm' | 'p' | 's'
-export type SyuuhaiCodeNumber = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+export const backTile: SimpleTile = { type: 'back', value: 0 }
+export const backTileCode: Code = '0z'
 
-export type ZihaiCodeSuffix = 'z'
-export type ZihaiCodeNumber = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
-
-export type CodeSuffix = SyuupaiCodeSuffix | ZihaiCodeSuffix
-export type CodeNumber = SyuuhaiCodeNumber | ZihaiCodeNumber
-
-export type Code = `${SyuuhaiCodeNumber}${SyuupaiCodeSuffix}` | `${ZihaiCodeNumber}${ZihaiCodeSuffix}`
-
-export const backTile = { type: 'back', value: 0 } satisfies SimpleTile
-export const backTileCode = '0z' satisfies Code
-
-export const typeSuffixMap: Record<SimpleTile['type'], CodeSuffix> = {
+const typeSuffixMap: Record<SimpleTile['type'], CodeSuffix> = {
   man: 'm',
   pin: 'p',
   sou: 's',
@@ -22,14 +20,14 @@ export const typeSuffixMap: Record<SimpleTile['type'], CodeSuffix> = {
   dragon: 'z',
   back: 'z',
 }
-export const suffixTypeMap: Record<CodeSuffix, SimpleTile['type'] | Record<ZihaiCodeNumber, SimpleTile['type']>> = {
+const suffixTypeMap: Record<CodeSuffix, SimpleTile['type'] | Record<ZihaiCodeNumber, SimpleTile['type']>> = {
   m: 'man',
   p: 'pin',
   s: 'sou',
   z: { '0': 'back', '1': 'wind', '2': 'wind', '3': 'wind', '4': 'wind', '5': 'dragon', '6': 'dragon', '7': 'dragon' },
 }
 
-export const valueBaseMap: Record<SimpleTile['type'], number> = {
+const valueBaseMap: Record<SimpleTile['type'], number> = {
   man: 0,
   pin: 0,
   sou: 0,
@@ -38,13 +36,14 @@ export const valueBaseMap: Record<SimpleTile['type'], number> = {
   back: 0,
 }
 
-export const isSyuuhaiCodeNumber = (number: string): number is SyuuhaiCodeNumber =>
+const isSyuuhaiCodeNumber = (number: string): number is SyuuhaiCodeNumber =>
   ['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(number)
-export const isZihaiCodeNumber = (number: string): number is ZihaiCodeNumber =>
+const isZihaiCodeNumber = (number: string): number is ZihaiCodeNumber =>
   ['0', '1', '2', '3', '4', '5', '6', '7'].includes(number)
 
-export const isSyuuhaiSuffix = (suffix: CodeSuffix): suffix is SyuupaiCodeSuffix => ['m', 'p', 's'].includes(suffix)
-export const isZihaiSuffix = (suffix: CodeSuffix): suffix is ZihaiCodeSuffix => suffix === 'z'
+const isCodeSuffix = (suffix: string): suffix is CodeSuffix => ['m', 'p', 's', 'z'].includes(suffix)
+const isSyuuhaiSuffix = (suffix: CodeSuffix): suffix is SyuupaiCodeSuffix => ['m', 'p', 's'].includes(suffix)
+const isZihaiSuffix = (suffix: CodeSuffix): suffix is ZihaiCodeSuffix => suffix === 'z'
 
 export const tileToCode = (tile: SimpleTile): Code => {
   const number = (valueBaseMap[tile.type] + tile.value).toString()
@@ -58,10 +57,12 @@ export const tileToCode = (tile: SimpleTile): Code => {
 }
 
 export const codeToTile = (code: Code): SimpleTile => {
-  const number = code[0] as CodeNumber
-  const suffix = code[1] as CodeSuffix
+  const number = code[0]
+  const suffix = code[1]
 
+  if (!isCodeSuffix(suffix)) return backTile
   const maybeType = suffixTypeMap[suffix]
+
   if (isZihaiSuffix(suffix) && isZihaiCodeNumber(number) && typeof maybeType !== 'string') {
     const type = maybeType[number]
     return { type, value: parseInt(number) - valueBaseMap[type] }

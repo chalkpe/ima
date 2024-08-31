@@ -1,10 +1,11 @@
-import { availableTiles, GameState, haipaiCounts, PlayerType, Tile } from '../../db'
-import { kokushiTiles } from '../../helpers/common'
-
-const backTile: Tile = { type: 'back', value: 0, attribute: 'normal', background: 'white', index: 0 }
+import { simpleTileToTile } from '../../helpers/tile'
+import { backTile as simpleBackTile } from '../../helpers/code'
+import { availableTiles, haipaiCounts } from '../../helpers/game'
+import type { GameState, PlayerType } from '../../types/game'
 
 export const getVisibleState = (state: GameState, playerType: PlayerType): GameState => {
   const opponent = playerType === 'host' ? 'guest' : 'host'
+  const backTile = simpleTileToTile(simpleBackTile)
 
   return {
     ...state,

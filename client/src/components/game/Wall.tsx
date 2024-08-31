@@ -1,8 +1,10 @@
 import { FC } from 'react'
-import type { Tile, Wall } from '../../../../server/src/db'
+import { Box, Stack } from '@mui/material'
 import Mahgen from './Mahgen'
 import { convertTileToCode } from '../../utils/tile'
-import { Box, Stack } from '@mui/material'
+
+import type { Tile } from '../../../../server/src/types/tile'
+import type { Wall } from '../../../../server/src/types/game'
 
 interface WallProps {
   wall: Wall

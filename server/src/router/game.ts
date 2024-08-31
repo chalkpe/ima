@@ -1,23 +1,21 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
-import { database, Room, tileTypes } from '../db'
+import { database } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 import { getVisibleState, initState } from '../controllers/game/state'
 import { ankan, daiminkan, giri, pon, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
+import { getActiveMe } from '../helpers/game'
+import { tileTypes } from '../helpers/tile'
 
-const getRoom = (username: string, started = false) => {
+const getRoom = (username: string, started?: boolean) => {
   const room = database.rooms.find((room) => room.host === username || room.guest === username)
   if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: 'Room not found' })
-  if (started && !room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game not started' })
+  if (started === true && !room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game not started' })
+  if (started === false && room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game already started' })
   return room
 }
 
-const getActiveMe = (room: Room, username: string) => {
-  const me = room.host === username ? 'host' : 'guest'
-  if (room.state.turn !== me) throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your turn' })
-  return me
-}
 
 export const gameRouter = router({
   state: publicProcedure.query((opts) => {
@@ -29,12 +27,10 @@ export const gameRouter = router({
   start: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
 
-    const room = getRoom(username)
-
-    if (room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game already started' })
+    const room = getRoom(username, false)
     room.started = true
-    initState(room.state)
 
+    initState(room.state)
     tsumo(room.state, 'host', 'haiyama')
   }),
 

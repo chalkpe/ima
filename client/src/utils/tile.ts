@@ -1,4 +1,5 @@
-import type { RiverTile, SimpleTile, Tile } from '../../../server/src/db'
+import type { RiverTile } from '../../../server/src/types/game'
+import type { SimpleTile, Tile } from '../../../server/src/types/tile'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 
@@ -21,13 +22,14 @@ export const convertTileToCode = (tile: Tile | SimpleTile) => {
     case 'dragon':
       return `${tile.value + 4}z`
     case 'back':
+    default:
       return '0z'
   }
 }
 
 export const convertRiverTileToCode = (river: RiverTile) => {
   const code = convertTileToCode(river.tile)
-  
+
   if (river.isTsumogiri && river.isRiichi) return `v${code}`
   if (river.isTsumogiri) return `^${code}`
   if (river.isRiichi) return `_${code}`

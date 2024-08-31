@@ -1,8 +1,9 @@
 import { FC } from 'react'
-import type { SimpleTile } from '../../../../server/src/db'
 import { Paper, Stack } from '@mui/material'
 import { convertTileToCode, sortTiles } from '../../utils/tile'
 import Mahgen from './Mahgen'
+
+import type { SimpleTile } from '../../../../server/src/types/tile'
 
 interface TenpaiProps {
   tenpai: SimpleTile[]

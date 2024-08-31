@@ -1,14 +1,9 @@
-import { Decision, GameState, Player, PlayerType } from '../../db'
 import { calculateAgari } from '../../helpers/agari'
 import { tileToCode } from '../../helpers/code'
-import {
-  countTiles,
-  getClosedHand,
-  getOpponent,
-  getRiverEnd,
-  isEqualTile,
-  removeTileFromHand,
-} from '../../helpers/common'
+import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
+import { countTiles, isEqualTile, removeTileFromHand } from '../../helpers/tile'
+
+import type { Decision, GameState, PlayerType } from '../../types/game'
 
 const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] => {
   const closedHand = getClosedHand(state[me].hand)

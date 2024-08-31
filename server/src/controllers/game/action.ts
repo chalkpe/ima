@@ -1,14 +1,12 @@
 import { TRPCError } from '@trpc/server'
-import { GameState, PlayerType, TileType, WallType } from '../../db'
 import { onAfterAnkan, onAfterGiri, onAfterTsumo, onBeforeGiri, onBeforeTsumo } from './event'
-import {
-  getClosedHand,
-  getOpponent,
-  getRiverEnd,
-  isEqualTile,
-  partition,
-  removeTileFromHand,
-} from '../../helpers/common'
+
+import { partition } from '../../helpers/common'
+import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
+import { isEqualTile, removeTileFromHand } from '../../helpers/tile'
+
+import type { TileType } from '../../types/tile'
+import type { GameState, PlayerType, WallType } from '../../types/game'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   if (state[me].hand.tsumo) {

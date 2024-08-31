@@ -1,58 +1,16 @@
 import {
   agariResultToString,
-  backTile,
-  backTileCode,
   calculateAgari,
-  codeSyntaxToHand,
-  codeToTile,
   getAllSyuntsu,
   getLowerTile,
   getTatsuMachi,
   getUpperTile,
-  isEqualTile,
   syuupaiTypes,
-  tileToCode,
   zihaiTypes,
 } from '../agari'
+import { codeSyntaxToHand } from '../code'
 
 describe('agari', () => {
-  describe('tileToCode', () => {
-    test('should return the tile', () => {
-      expect(tileToCode({ type: 'man', value: 1 })).toEqual('1m')
-      expect(tileToCode({ type: 'pin', value: 2 })).toEqual('2p')
-      expect(tileToCode({ type: 'sou', value: 3 })).toEqual('3s')
-      expect(tileToCode({ type: 'wind', value: 1 })).toEqual('1z')
-      expect(tileToCode({ type: 'dragon', value: 1 })).toEqual('5z')
-      expect(tileToCode(backTile)).toEqual(backTileCode)
-    })
-  })
-
-  describe('codeToTile', () => {
-    test('should return the tile', () => {
-      expect(codeToTile('1m')).toEqual({ type: 'man', value: 1 })
-      expect(codeToTile('2p')).toEqual({ type: 'pin', value: 2 })
-      expect(codeToTile('3s')).toEqual({ type: 'sou', value: 3 })
-      expect(codeToTile('1z')).toEqual({ type: 'wind', value: 1 })
-      expect(codeToTile('5z')).toEqual({ type: 'dragon', value: 1 })
-      expect(codeToTile(backTileCode)).toEqual(backTile)
-    })
-  })
-
-  describe('isEqualTile', () => {
-    test('should return true if the tiles are same', () => {
-      expect(isEqualTile({ type: 'man', value: 1 }, { type: 'man', value: 1 })).toBeTruthy()
-    })
-    test('should return false if the tile type is different', () => {
-      expect(isEqualTile({ type: 'dragon', value: 1 }, { type: 'sou', value: 1 })).toBeFalsy()
-    })
-    test('should return false if the tile value is different', () => {
-      expect(isEqualTile({ type: 'pin', value: 1 }, { type: 'pin', value: 9 })).toBeFalsy()
-    })
-    test('should return false if the tiles are different', () => {
-      expect(isEqualTile({ type: 'wind', value: 1 }, { type: 'back', value: 0 })).toBeFalsy()
-    })
-  })
-
   describe('getLowerTile', () => {
     test.each(syuupaiTypes)('should return undefined if the tile is 1 (%s)', (type) => {
       expect(getLowerTile({ type, value: 1 })).toBeUndefined()

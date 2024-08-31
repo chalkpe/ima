@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Paper } from '@mui/material'
-import type { GameState, PlayerType } from '../../../../server/src/db'
+
+import type { GameState, PlayerType } from '../../../../server/src/types/game'
 
 interface CenterProps {
   state: GameState

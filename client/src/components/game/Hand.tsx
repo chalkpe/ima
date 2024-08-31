@@ -1,10 +1,11 @@
 import { FC, useMemo, useState } from 'react'
-import type { Hand } from '../../../../server/src/db'
-import { convertTileToCode, sortTiles } from '../../utils/tile'
-import Mahgen from './Mahgen'
 import { Box, Stack } from '@mui/material'
-import { trpc } from '../../utils/trpc'
+import Mahgen from './Mahgen'
 import Tenpai from './Tenpai'
+import { trpc } from '../../utils/trpc'
+import { convertTileToCode, sortTiles } from '../../utils/tile'
+
+import type { Hand } from '../../../../server/src/types/game'
 
 interface HandProps {
   hand: Hand

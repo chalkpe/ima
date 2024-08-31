@@ -1,8 +1,9 @@
 import { FC } from 'react'
-import type { RiverTile } from '../../../../server/src/db'
 import Mahgen from './Mahgen'
 import { Box } from '@mui/material'
 import { chunk, convertRiverTileToCode } from '../../utils/tile'
+
+import type { RiverTile } from '../../../../server/src/types/game'
 
 interface RiverProps {
   river: RiverTile[]

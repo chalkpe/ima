@@ -2,8 +2,8 @@ import { FC, useCallback } from 'react'
 import { Button, Stack } from '@mui/material'
 import Mahgen from './Mahgen'
 import { convertTileToCode } from '../../utils/tile'
-import type { Decision } from '../../../../server/src/db'
 import { trpc } from '../../utils/trpc'
+import type { Decision } from '../../../../server/src/types/game'
 
 interface DecisionsProps {
   decisions: Decision[]

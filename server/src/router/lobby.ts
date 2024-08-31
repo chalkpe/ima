@@ -1,7 +1,8 @@
 import z from 'zod'
 import { publicProcedure, router } from '../trpc'
-import { Room, database } from '../db'
+import { database } from '../db'
 import { TRPCError } from '@trpc/server'
+import type { Room } from '../types/game'
 
 export const lobbyRouter = router({
   list: publicProcedure.query(() =>

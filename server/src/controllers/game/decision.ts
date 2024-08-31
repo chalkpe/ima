@@ -1,7 +1,8 @@
 import { calculateAgari } from '../../helpers/agari'
-import { tileToCode } from '../../helpers/code'
+import { codeToTile, tileToCode } from '../../helpers/code'
 import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
 import { countTiles, isEqualTile, removeTileFromHand } from '../../helpers/tile'
+import { Code } from '../../types/code'
 
 import type { Decision, GameState, PlayerType } from '../../types/game'
 
@@ -16,13 +17,16 @@ const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] =
 }
 
 const calculateGakanDecisions = (state: GameState, me: PlayerType): Decision[] => {
-  const { tsumo } = state[me].hand
-  if (!tsumo) return []
+  const hand = state[me].hand
+  const closedHand = getClosedHand(hand)
+  const tileCounts = countTiles(closedHand)
 
-  const pon = state[me].hand.called.find(
-    (set) => set.type === 'pon' && set.calledTile && isEqualTile(set.calledTile, tsumo)
-  )
-  return pon ? [{ type: 'gakan', tile: tsumo }] : []
+  return Object.entries(tileCounts)
+    .filter(([_, count]) => count === 1)
+    .map(([code]) => hand.called.find((s) => s.type === 'pon' && s.calledTile && tileToCode(s.calledTile) === code))
+    .filter((minkou) => minkou !== undefined)
+    .map((minkou) => closedHand.filter((tile) => isEqualTile(tile, minkou.tiles[0])))
+    .map(([tile]) => ({ type: 'gakan', tile }))
 }
 
 const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {

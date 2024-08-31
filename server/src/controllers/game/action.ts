@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import { onAfterAnkan, onAfterGiri, onAfterTsumo, onBeforeGiri, onBeforeTsumo } from './event'
+import { onAfterAnkan, onAfterGakan, onAfterGiri, onAfterTsumo, onBeforeGiri, onBeforeTsumo, onHandChange } from './event'
 
 import { partition } from '../../helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
@@ -40,6 +40,29 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
   onAfterAnkan(state, me)
 }
 
+export const gakan = (state: GameState, me: PlayerType, type: TileType, value: number) => {
+  const closedHand = getClosedHand(state[me].hand)
+  
+  const [gakanTiles, otherTiles] = partition(closedHand, (tile) => isEqualTile(tile, { type, value }))
+  if (gakanTiles.length !== 1) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
+
+  const gakanTile = gakanTiles[0]
+  const minkou = state[me].hand.called.find(
+    (set) => set.type === 'pon' && set.calledTile && isEqualTile(set.calledTile, gakanTile)
+  )
+  if (!minkou) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Pon not found' })
+
+  state[me].decisions = []
+  state[me].hand.closed = otherTiles
+  state[me].hand.tsumo = undefined
+
+  minkou.type = 'gakan'
+  minkou.tiles.push(gakanTile)
+  minkou.calledTile = gakanTile
+
+  onAfterGakan(state, me)
+}
+
 export const daiminkan = (state: GameState, me: PlayerType) => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
@@ -70,10 +93,12 @@ export const pon = (state: GameState, me: PlayerType) => {
   const [remain, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 2)
   if (removed.length !== 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
 
-  state[opponent].river.splice(-1, 1)
   state[me].decisions = []
+  state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
   state[me].hand.called.push({ type: 'pon', tiles: [furoTile, ...removed], calledTile: furoTile })
+
+  onHandChange(state, me)
 }
 
 export const skipAndTsumo = (state: GameState, me: PlayerType) => {

@@ -12,10 +12,8 @@ import { getOpponent } from '../../helpers/game'
 import type { GameState, PlayerType } from '../../types/game'
 
 export const onHandChange = (state: GameState, me: PlayerType) => {
-  const { tsumo } = state[me].hand
-
   state[me].hand.tenpai = [
-    ...state[me].hand.closed.map((_, index, closed) => (tsumo ? [...closed.filter((_, i) => i !== index), tsumo] : [])),
+    ...state[me].hand.closed.map((_, index, closed) => [...closed.filter((_, i) => i !== index), ...(state[me].hand.tsumo ? [state[me].hand.tsumo] : [])]),
     state[me].hand.closed,
   ].map((hand) => [...calculateAgari(hand).tenpai.keys()].map(codeToTile))
 }
@@ -44,6 +42,18 @@ export const onAfterGiri = (state: GameState, me: PlayerType) => {
 }
 
 export const onAfterAnkan = (state: GameState, me: PlayerType) => {
+  onHandChange(state, me)
+  const opponent = getOpponent(me)
+
+  state[opponent].decisions = calculateAfterOpponentKanDecisions(state, opponent)
+  if (state[opponent].decisions.length > 0) {
+    state.turn = opponent
+  } else {
+    tsumo(state, me, 'lingshang')
+  }
+}
+
+export const onAfterGakan = (state: GameState, me: PlayerType) => {
   onHandChange(state, me)
   const opponent = getOpponent(me)
 

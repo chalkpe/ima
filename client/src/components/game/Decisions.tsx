@@ -13,6 +13,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const utils = trpc.useUtils()
   const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
+  const { mutate: gakan } = trpc.game.gakan.useMutation()
   const { mutate: daiminkan } = trpc.game.daiminkan.useMutation()
   const { mutate: skipAndTsumo } = trpc.game.skipAndTsumo.useMutation()
   const { mutate: skipChankan } = trpc.game.skipChankan.useMutation()
@@ -23,6 +24,12 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         const type = decision.tile.type
         const value = decision.tile.value
         if (type !== 'back') ankan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
+      }
+
+      if (decision.type === 'gakan' && decision.tile) {
+        const type = decision.tile.type
+        const value = decision.tile.value
+        if (type !== 'back') gakan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
       }
 
       if (decision.type === 'pon') {
@@ -41,7 +48,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         skipChankan(undefined, { onSuccess: () => utils.game.state.invalidate() })
       }
     },
-    [ankan, daiminkan, pon, skipAndTsumo, skipChankan, utils.game.state]
+    [ankan, daiminkan, gakan, pon, skipAndTsumo, skipChankan, utils.game.state]
   )
 
   return (

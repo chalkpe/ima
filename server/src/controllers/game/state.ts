@@ -1,10 +1,10 @@
 import { simpleTileToTile } from '../../helpers/tile'
 import { backTile as simpleBackTile } from '../../helpers/code'
-import { availableTiles, haipaiCounts } from '../../helpers/game'
+import { availableTiles, getOpponent, haipaiCounts } from '../../helpers/game'
 import type { GameState, PlayerType } from '../../types/game'
 
-export const getVisibleState = (state: GameState, playerType: PlayerType): GameState => {
-  const opponent = playerType === 'host' ? 'guest' : 'host'
+export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
+  const opponent = getOpponent(me)
   const backTile = simpleTileToTile(simpleBackTile)
 
   return {
@@ -13,8 +13,8 @@ export const getVisibleState = (state: GameState, playerType: PlayerType): GameS
       ...state[opponent],
       hand: {
         ...state[opponent].hand,
-        closed: state[opponent].hand.closed.map(() => backTile),
-        tsumo: state[opponent].hand.tsumo ? backTile : undefined,
+        closed: state[opponent].hand.closed.map((tile) => ({ ...backTile, index: tile.index })),
+        tsumo: state[opponent].hand.tsumo ? { ...backTile, index: state[opponent].hand.tsumo.index } : undefined,
         tenpai: [],
       },
       decisions: [],
@@ -31,7 +31,7 @@ export const getVisibleState = (state: GameState, playerType: PlayerType): GameS
 }
 
 export const initState = (state: GameState) => {
-  const tiles = availableTiles.slice() //.filter((tile) => tile.type !== 'man' || tile.value !== 1)
+  const tiles = availableTiles.slice().filter((tile) => tile.type !== 'sou' || tile.value !== 5)
   for (let i = tiles.length - 1; i > 0; i--) {
     const rand = Math.floor(Math.random() * (i + 1))
     ;[tiles[i], tiles[rand]] = [tiles[rand], tiles[i]]
@@ -50,10 +50,10 @@ export const initState = (state: GameState) => {
     state.guest.hand.closed.push(...tiles.splice(0, count))
   })
 
-  // state.host.hand.closed[0].type = 'man'
-  // state.host.hand.closed[0].value = 1
-  // state.host.hand.closed[1].type = 'man'
-  // state.host.hand.closed[1].value = 1
+  state.wall.tiles = tiles
+  state.wall.firstTileIndex = tiles[0].index
+  state.wall.lastTileIndex = tiles[tiles.length - 1].index
+
   // state.host.hand.closed[2].type = 'man'
   // state.host.hand.closed[2].value = 1
   // state.host.hand.closed[3].type = 'man'
@@ -64,7 +64,19 @@ export const initState = (state: GameState) => {
   //   tile.value = kokushiTiles[Math.min(index + 1, kokushiTiles.length - 1)].value
   // })
 
-  state.wall.tiles = tiles
-  state.wall.firstTileIndex = tiles[0].index
-  state.wall.lastTileIndex = tiles[tiles.length - 1].index
+  state.host.hand.closed[0].type = 'sou'
+  state.host.hand.closed[0].value = 5
+  state.host.hand.closed[0].attribute = 'normal'
+
+  state.host.hand.closed[1].type = 'sou'
+  state.host.hand.closed[1].value = 5
+  state.host.hand.closed[1].attribute = 'normal'
+
+  state.guest.hand.closed[0].type = 'sou'
+  state.guest.hand.closed[0].value = 5
+  state.guest.hand.closed[0].attribute = 'red'
+
+  state.wall.tiles[3].type = 'sou'
+  state.wall.tiles[3].value = 5
+  state.wall.tiles[3].attribute = 'normal'
 }

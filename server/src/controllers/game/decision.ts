@@ -1,8 +1,8 @@
 import { calculateAgari } from '../../helpers/agari'
-import { codeToTile, tileToCode } from '../../helpers/code'
+import { tileToCode } from '../../helpers/code'
+import { combination, combinations, partition } from '../../helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
-import { countTiles, isEqualTile, removeTileFromHand } from '../../helpers/tile'
-import { Code } from '../../types/code'
+import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from '../../helpers/tile'
 
 import type { Decision, GameState, PlayerType } from '../../types/game'
 
@@ -60,12 +60,38 @@ const calculatePonKanDecisions = (state: GameState, me: PlayerType): Decision[] 
   if (removed.length === 3)
     return [
       { type: 'daiminkan', tile: furoTile, otherTiles: removed },
-      { type: 'pon', tile: furoTile, otherTiles: removed },
+      ...combination(removed)
+        .filter(
+          (tiles, index, array) =>
+            array.findIndex((t) => isStrictEqualTile(t[0], tiles[0]) && isStrictEqualTile(t[1], tiles[1])) === index
+        )
+        .map((tiles) => ({ type: 'pon', tile: furoTile, otherTiles: tiles } satisfies Decision)),
     ]
 
   if (removed.length === 2) return [{ type: 'pon', tile: furoTile, otherTiles: removed }]
 
   return []
+}
+
+const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  const opponent = getOpponent(me)
+  const riverEnd = getRiverEnd(state[opponent])
+
+  if (!riverEnd) return []
+  const furoTile = riverEnd.tile
+
+  const closedHand = state[me].hand.closed
+  return getAllSyuntsu(furoTile)
+    .map((mentsu) => mentsu.filter((tile) => !isEqualTile(tile, furoTile)))
+    .map((tatsu) =>
+      tatsu.map((tile) =>
+        closedHand
+          .filter((t) => isEqualTile(tile, t))
+          .filter((t, index, array) => array.findIndex((tt) => isStrictEqualTile(t, tt)) === index)
+      )
+    )
+    .filter(([a, b]) => a.length > 0 && b.length > 0)
+    .flatMap((tatsu) => combinations(tatsu).map((tiles) => ({ type: 'chi', tile: furoTile, otherTiles: tiles })))
 }
 
 export const calculateAfterOpponentKanDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -89,7 +115,11 @@ export const calculateAfterOpponentKanDecisions = (state: GameState, me: PlayerT
 }
 
 export const calculateBeforeTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {
-  const decisions = [...calculateRonDecisions(state, me), ...calculatePonKanDecisions(state, me)]
+  const decisions = [
+    ...calculateRonDecisions(state, me),
+    ...calculatePonKanDecisions(state, me),
+    ...calculateChiDecisions(state, me),
+  ]
   return decisions.length > 0 ? [...decisions, { type: 'skip_and_tsumo' }] : []
 }
 

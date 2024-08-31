@@ -112,7 +112,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
                   <Mahgen size={5} sequence={'_' + convertTileToCode(tileSet.tiles[3])} />
                   <Mahgen size={5} sequence={'_' + convertTileToCode(tileSet.tiles[0])} />
                 </Stack>
-                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles[3])} />
+                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles[2])} />
               </>
             ) : tileSet.type === 'pon' ? (
               [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2]].map((tile, index) => (
@@ -124,6 +124,14 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               ))
             ) : tileSet.type === 'daiminkan' ? (
               [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2], tileSet.tiles[3]].map((tile, index) => (
+                <Mahgen
+                  key={tile.type + tile.value + index}
+                  size={5}
+                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
+                />
+              ))
+            ) : tileSet.type === 'chi' ? (
+              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2]].map((tile, index) => (
                 <Mahgen
                   key={tile.type + tile.value + index}
                   size={5}

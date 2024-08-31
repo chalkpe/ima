@@ -4,7 +4,7 @@ import { database } from '../db'
 import { publicProcedure, router } from '../trpc'
 
 import { getVisibleState, initState } from '../controllers/game/state'
-import { ankan, daiminkan, gakan, giri, pon, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
+import { ankan, chi, daiminkan, gakan, giri, pon, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
 import { getActiveMe } from '../helpers/game'
 import { tileTypes } from '../helpers/tile'
 
@@ -15,7 +15,6 @@ const getRoom = (username: string, started?: boolean) => {
   if (started === false && room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game already started' })
   return room
 }
-
 
 export const gameRouter = router({
   state: publicProcedure.query((opts) => {
@@ -34,12 +33,22 @@ export const gameRouter = router({
     tsumo(room.state, 'host', 'haiyama')
   }),
 
-  pon: publicProcedure.mutation((opts) => {
+  pon: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation((opts) => {
     const { username } = opts.ctx
+    const { tatsu } = opts.input
 
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
-    pon(room.state, me)
+    pon(room.state, me, tatsu)
+  }),
+
+  chi: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation((opts) => {
+    const { username } = opts.ctx
+    const { tatsu } = opts.input
+
+    const room = getRoom(username, true)
+    const me = getActiveMe(room, username)
+    chi(room.state, me, tatsu)
   }),
 
   daiminkan: publicProcedure.mutation((opts) => {

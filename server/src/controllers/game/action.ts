@@ -1,11 +1,27 @@
 import { TRPCError } from '@trpc/server'
-import { onAfterAnkan, onAfterGakan, onAfterGiri, onAfterTsumo, onBeforeGiri, onBeforeTsumo, onHandChange } from './event'
+import {
+  onAfterAnkan,
+  onAfterGakan,
+  onAfterGiri,
+  onAfterTsumo,
+  onBeforeGiri,
+  onBeforeTsumo,
+  onHandChange,
+} from './event'
 
 import { partition } from '../../helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
-import { isEqualTile, removeTileFromHand } from '../../helpers/tile'
+import {
+  compareTile,
+  getUpperTile,
+  isEqualTile,
+  isKoutsu,
+  isSyuntsu,
+  removeTileFromHand,
+  removeTilesFromHand,
+} from '../../helpers/tile'
 
-import type { TileType } from '../../types/tile'
+import type { SimpleTile, Tile, TileType } from '../../types/tile'
 import type { GameState, PlayerType, WallType } from '../../types/game'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
@@ -42,7 +58,7 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
 
 export const gakan = (state: GameState, me: PlayerType, type: TileType, value: number) => {
   const closedHand = getClosedHand(state[me].hand)
-  
+
   const [gakanTiles, otherTiles] = partition(closedHand, (tile) => isEqualTile(tile, { type, value }))
   if (gakanTiles.length !== 1) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
 
@@ -82,21 +98,52 @@ export const daiminkan = (state: GameState, me: PlayerType) => {
   tsumo(state, me, 'lingshang')
 }
 
-export const pon = (state: GameState, me: PlayerType) => {
+export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
   if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
 
-  const furoTile = riverEnd.tile
-  if (furoTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
+  const calledTile = riverEnd.tile
+  if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
-  const [remain, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 2)
-  if (removed.length !== 2) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
+  const a = state[me].hand.closed.find((tile) => tile.index === tatsu[0])
+  const b = state[me].hand.closed.find((tile) => tile.index === tatsu[1])
+  if (!a || !b) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+
+  const tiles = [calledTile, a, b] as [Tile, Tile, Tile]
+  if (!isKoutsu(tiles)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not valid' })
+
+  const remain = state[me].hand.closed.filter((tile) => !tatsu.includes(tile.index))
 
   state[me].decisions = []
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'pon', tiles: [furoTile, ...removed], calledTile: furoTile })
+  state[me].hand.called.push({ type: 'pon', tiles, calledTile })
+
+  onHandChange(state, me)
+}
+
+export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) => {
+  const opponent = getOpponent(me)
+  const riverEnd = getRiverEnd(state[opponent])
+  if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
+
+  const calledTile = riverEnd.tile
+  if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
+
+  const a = state[me].hand.closed.find((tile) => tile.index === tatsu[0])
+  const b = state[me].hand.closed.find((tile) => tile.index === tatsu[1])
+  if (!a || !b) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+
+  const tiles = [calledTile, a, b] as [Tile, Tile, Tile]
+  if (!isSyuntsu(tiles)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not valid' })
+
+  const remain = state[me].hand.closed.filter((tile) => !tatsu.includes(tile.index))
+
+  state[me].decisions = []
+  state[opponent].river.splice(-1, 1)
+  state[me].hand.closed = remain
+  state[me].hand.called.push({ type: 'chi', tiles, calledTile })
 
   onHandChange(state, me)
 }

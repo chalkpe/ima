@@ -1,98 +1,21 @@
 import { compareCode, tileToCode } from './code'
 import {
   compareTiles,
-  getLowerTile,
-  getUpperTile,
+  getAllSyuntsu,
+  getTatsuMachi,
   isEqualTile,
   kokushiTiles,
   removeTileFromHand,
   removeTilesFromHand,
 } from './tile'
 
-import type { SimpleTile } from '../types/tile'
+import type { Machi, MachiType, SimpleTile, Tsu } from '../types/tile'
 import type { Code } from '../types/code'
-
-type Koritsu = [SimpleTile]
-type KoritsuType = 'koritsu' | 'kokushi'
-type KoritsuMachiType = 'tanki'
-type KoritsuMachi = { type: KoritsuMachiType; tiles: [SimpleTile] }
-
-type Tatsu = [SimpleTile, SimpleTile]
-type TatsuType = 'tatsu' | 'toitsu'
-type TatsuMachiType = 'kanchan' | 'penchan' | 'ryanmen' | 'shabo'
-type TatsuMachi = { type: TatsuMachiType; tiles: [SimpleTile] | [SimpleTile, SimpleTile] }
-
-type MachiType = KoritsuMachiType | TatsuMachiType
-type Machi = KoritsuMachi | TatsuMachi
-
-export const getTatsuMachi = (tatsu: Tatsu): TatsuMachi | undefined => {
-  const [a, b] = tatsu
-  if (a.type !== b.type || a.value === b.value) return
-
-  const [first, second] = a.value < b.value ? [a, b] : [b, a]
-  const diff = second.value - first.value
-
-  if (diff === 2) {
-    const upper = getUpperTile(first)
-    const lower = getLowerTile(second)
-
-    if (!upper || !lower || !isEqualTile(upper, lower)) return
-    return { type: 'kanchan', tiles: [upper] }
-  }
-
-  if (diff === 1) {
-    const lower = getLowerTile(first)
-    const upper = getUpperTile(second)
-
-    if (lower && upper) return { type: 'ryanmen', tiles: [lower, upper] }
-    if (lower) return { type: 'penchan', tiles: [lower] }
-    if (upper) return { type: 'penchan', tiles: [upper] }
-  }
-}
-
-type Syuntsu = [SimpleTile, SimpleTile, SimpleTile]
-type Koutsu = [SimpleTile, SimpleTile, SimpleTile]
-type Kantsu = [SimpleTile, SimpleTile, SimpleTile, SimpleTile]
-
-type Mentsu = Syuntsu | Koutsu | Kantsu
-type MentsuType = 'shuntsu' | 'koutsu' | 'kantsu'
 
 const isMachiType = (type: string): type is MachiType =>
   ['tanki', 'kanchan', 'penchan', 'ryanmen', 'shabo'].includes(type)
 
-export const getAllSyuntsu = (tile: SimpleTile): Mentsu[] => {
-  const allSyuntsu: Mentsu[] = []
-
-  const lower = getLowerTile(tile)
-  const upper = getUpperTile(tile)
-
-  if (lower) {
-    const lowerLower = getLowerTile(lower)
-    if (lowerLower) {
-      allSyuntsu.push([lowerLower, lower, tile])
-    }
-  }
-
-  if (upper && lower) {
-    allSyuntsu.push([lower, tile, upper])
-  }
-
-  if (upper) {
-    const upperUpper = getUpperTile(upper)
-    if (upperUpper) {
-      allSyuntsu.push([tile, upper, upperUpper])
-    }
-  }
-
-  return allSyuntsu
-}
-
-type TileSet =
-  | { type: KoritsuType; tiles: Koritsu }
-  | { type: TatsuType; tiles: Tatsu }
-  | { type: MentsuType; tiles: Mentsu }
-
-export const tileSetToCode = (tileSet: TileSet | Machi): string => {
+export const tileSetToCode = (tileSet: Tsu | Machi): string => {
   return `<${tileSet.type}>` + tileSet.tiles.map(tileToCode).join('')
 }
 
@@ -103,8 +26,8 @@ export const tenpaiStateToString = (state: TenpaiState): string => {
     .join('')
 }
 
-type AgariState = TileSet[]
-type TenpaiState = (TileSet | Machi)[]
+type AgariState = Tsu[]
+type TenpaiState = (Tsu | Machi)[]
 
 interface AgariResult {
   status: 'agari' | 'tenpai' | 'noten'
@@ -272,8 +195,8 @@ export const calculateAgari = (
       if (zeroKsTiles.length === 0 && oneKsTiles.length === 12 && twoKsTiles.length === 1) {
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies TileSet)),
-          ...twoKsTiles.map(([ksTile]) => ({ type: 'toitsu', tiles: [ksTile, ksTile] } satisfies TileSet)),
+          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies Tsu)),
+          ...twoKsTiles.map(([ksTile]) => ({ type: 'toitsu', tiles: [ksTile, ksTile] } satisfies Tsu)),
         ]
 
         return {
@@ -288,8 +211,8 @@ export const calculateAgari = (
         const last = zeroKsTiles[0][0]
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies TileSet)),
-          ...twoKsTiles.map(([ksTile]) => ({ type: 'toitsu', tiles: [ksTile, ksTile] } satisfies TileSet)),
+          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies Tsu)),
+          ...twoKsTiles.map(([ksTile]) => ({ type: 'toitsu', tiles: [ksTile, ksTile] } satisfies Tsu)),
         ]
 
         return {
@@ -303,7 +226,7 @@ export const calculateAgari = (
       if (zeroKsTiles.length === 0 && oneKsTiles.length === 13 && twoKsTiles.length === 0) {
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies TileSet)),
+          ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies Tsu)),
         ]
 
         return {

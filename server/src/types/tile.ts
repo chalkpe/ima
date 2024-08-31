@@ -17,3 +17,29 @@ export interface Tile {
 export type SimpleTile = Pick<Tile, 'type' | 'value'>
 
 export type SyuupaiValue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+
+type Koritsu = [SimpleTile]
+type KoritsuType = 'koritsu' | 'kokushi'
+type KoritsuMachiType = 'tanki'
+type KoritsuMachi = { type: KoritsuMachiType; tiles: [SimpleTile] }
+
+export type Tatsu = [SimpleTile, SimpleTile]
+type TatsuType = 'tatsu' | 'toitsu'
+type TatsuMachiType = 'kanchan' | 'penchan' | 'ryanmen' | 'shabo'
+export type TatsuMachi = { type: TatsuMachiType; tiles: [SimpleTile] | [SimpleTile, SimpleTile] }
+
+export type MachiType = KoritsuMachiType | TatsuMachiType
+export type Machi = KoritsuMachi | TatsuMachi
+
+export type Syuntsu = [SimpleTile, SimpleTile, SimpleTile]
+export type Koutsu = [SimpleTile, SimpleTile, SimpleTile]
+type Kantsu = [SimpleTile, SimpleTile, SimpleTile, SimpleTile]
+
+export type Mentsu = Syuntsu | Koutsu | Kantsu
+type MentsuType = 'shuntsu' | 'koutsu' | 'kantsu'
+
+export type Tsu =
+  | { type: KoritsuType; tiles: Koritsu }
+  | { type: TatsuType; tiles: Tatsu }
+  | { type: MentsuType; tiles: Mentsu }

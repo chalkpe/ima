@@ -73,11 +73,11 @@ export const initState = (state: GameState) => {
   state.host.hand.closed[1].value = 5
   state.host.hand.closed[1].attribute = 'normal'
 
+  state.host.hand.closed[2].type = 'sou'
+  state.host.hand.closed[2].value = 5
+  state.host.hand.closed[2].attribute = 'red'
+
   state.guest.hand.closed[0].type = 'sou'
   state.guest.hand.closed[0].value = 5
-  state.guest.hand.closed[0].attribute = 'red'
-
-  state.wall.tiles[3].type = 'sou'
-  state.wall.tiles[3].value = 5
-  state.wall.tiles[3].attribute = 'normal'
+  state.guest.hand.closed[0].attribute = 'normal'
 }

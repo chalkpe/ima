@@ -26,7 +26,6 @@ export const tenpaiStateToString = (state: TenpaiState): string => {
     .join('')
 }
 
-
 export const mergeAgariResults = (result: AgariResult, r: AgariResult) => {
   result.status = r.status
 
@@ -177,7 +176,9 @@ export const calculateAgari = (
       if (result.agari.length) return { ...result, status: 'agari' }
       if (result.tenpai.size) return { ...result, status: 'tenpai' }
 
-      const ksTiles = kokushiTiles.map(simpleTileToTile).map((ksTile) => [ksTile, removeTileFromHand(hand, ksTile, 2)[1]] as const)
+      const ksTiles = kokushiTiles
+        .map(simpleTileToTile)
+        .map((ksTile) => [ksTile, removeTileFromHand(hand, ksTile, 2)[1]] as const)
 
       const zeroKsTiles = ksTiles.filter(([_, removed]) => removed.length === 0)
       const oneKsTiles = ksTiles.filter(([_, removed]) => removed.length === 1)
@@ -199,18 +200,17 @@ export const calculateAgari = (
       }
 
       if (zeroKsTiles.length === 1 && oneKsTiles.length === 11 && twoKsTiles.length === 1) {
-        const last = zeroKsTiles[0][0]
         const state = [
           ...result.state,
           ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies Tsu)),
           ...twoKsTiles.map(([ksTile]) => ({ type: 'toitsu', tiles: [ksTile, ksTile] } satisfies Tsu)),
         ]
-
+        const last = zeroKsTiles[0][0]
         return {
           ...result,
           status: 'tenpai',
           state,
-          tenpai: new Map([[tileToCode(last), [state]]]),
+          tenpai: new Map([[tileToCode(last), [[...state, { type: 'tanki', tiles: [last] }]]]]),
         }
       }
 
@@ -219,12 +219,13 @@ export const calculateAgari = (
           ...result.state,
           ...oneKsTiles.map(([ksTile]) => ({ type: 'kokushi', tiles: [ksTile] } satisfies Tsu)),
         ]
-
         return {
           ...result,
           status: 'tenpai',
           state,
-          tenpai: new Map(kokushiTiles.map((ksTile) => [tileToCode(ksTile), [state]])),
+          tenpai: new Map(
+            kokushiTiles.map((ksTile) => [tileToCode(ksTile), [[...state, { type: 'tanki', tiles: [ksTile] }]]])
+          ),
         }
       }
 

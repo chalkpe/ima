@@ -6,7 +6,7 @@ import type { TenpaiState } from '../types/agari'
 import type { Tile } from '../types/tile'
 import type { Tenpai } from '../types/tenpai'
 
-const calculateFuriten = (state: TenpaiState, river: RiverTile[], giriTile: Tile | null): boolean => {
+export const calculateFuriten = (state: TenpaiState, river: RiverTile[], giriTile: Tile | null): boolean => {
   const machi = state.find(isMachi)
   if (!machi) return false
 

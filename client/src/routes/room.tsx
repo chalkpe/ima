@@ -3,7 +3,7 @@ import { trpc } from '../utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { CheckOutlined } from '@mui/icons-material'
-import { Button, Checkbox, FormControlLabel, FormGroup, Stack } from '@mui/material'
+import { Button, Checkbox, CircularProgress, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material'
 
 const Room = () => {
   const navigate = useNavigate()
@@ -26,9 +26,11 @@ const Room = () => {
   return (
     <>
       {data ? (
-        <div>
+        <Stack direction="column" gap="2vmin">
           <Stack direction="row" alignItems="center" gap="2vmin">
-            <h1>방</h1>
+            <Typography fontSize="3vmin" fontWeight="bold">
+              방
+            </Typography>
 
             <Button
               variant="contained"
@@ -49,12 +51,33 @@ const Room = () => {
               </Button>
             )}
           </Stack>
-          <p>
-            방장: {data.host} {data.hostReady && <CheckOutlined />}
-          </p>
-          <p>
-            상대: {data.guest} {data.guestReady && <CheckOutlined />}
-          </p>
+
+          <div>
+            <Stack direction="row" sx={{ fontSize: '2vmin' }} alignItems="center" gap="1vmin">
+              <span>방장: {data.host}</span>
+              {data.host !== '' ? (
+                data.hostReady ? (
+                  <CheckOutlined sx={{ width: '2vmin ' }} />
+                ) : (
+                  <CircularProgress size="2vmin" />
+                )
+              ) : (
+                ''
+              )}
+            </Stack>
+            <Stack direction="row" sx={{ fontSize: '2vmin' }} alignItems="center" gap="1vmin">
+              <span>상대: {data.guest}</span>
+              {data.guest !== '' ? (
+                data.guestReady ? (
+                  <CheckOutlined sx={{ width: '2vmin ' }} />
+                ) : (
+                  <CircularProgress size="2vmin" />
+                )
+              ) : (
+                ''
+              )}
+            </Stack>
+          </div>
 
           <FormGroup>
             <FormControlLabel
@@ -67,7 +90,7 @@ const Room = () => {
               label="준비"
             />
           </FormGroup>
-        </div>
+        </Stack>
       ) : (
         <p>방 정보를 불러오는 중...</p>
       )}

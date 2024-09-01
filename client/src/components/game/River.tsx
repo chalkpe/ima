@@ -27,12 +27,7 @@ const River: FC<RiverProps> = ({ river, me }) => {
       {chunk(river, 6).map((line, index) => (
         <Box key={index} sx={{ display: 'flex', flexFlow: 'row' }}>
           {line.map((riverTile) => (
-            <Mahgen
-              key={riverTile.tile.index}
-              size={5}
-              riverMode
-              sequence={convertRiverTileToCode(riverTile)}
-            />
+            <Mahgen key={riverTile.tile.index} size={5} riverMode sequence={convertRiverTileToCode(riverTile)} />
           ))}
         </Box>
       ))}

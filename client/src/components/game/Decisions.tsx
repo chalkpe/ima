@@ -5,7 +5,6 @@ import { compareDecisions, convertTileToCode } from '../../utils/tile'
 import { trpc } from '../../utils/trpc'
 import type { Decision } from '../../../../server/src/types/game'
 
-
 const typeText: Record<Decision['type'], string> = {
   ankan: '안깡',
   gakan: '가깡',

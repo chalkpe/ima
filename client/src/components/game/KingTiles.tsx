@@ -14,7 +14,10 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
   const lowerTiles = wall.kingTiles.filter((_, index) => index % 2 === 0)
   const upperTiles = wall.kingTiles.filter((_, index) => index % 2 === 1)
 
-  const supplementTiles = [...Array(4 - wall.supplementTiles.length).fill(null), ...wall.supplementTiles] as (Tile | null)[]
+  const supplementTiles = [
+    ...Array(4 - wall.supplementTiles.length).fill(null),
+    ...wall.supplementTiles,
+  ] as (Tile | null)[]
   const lowerSupplementTiles = supplementTiles.filter((_, index) => index % 2 === 0)
   const upperSupplementTiles = supplementTiles.filter((_, index) => index % 2 === 1)
 

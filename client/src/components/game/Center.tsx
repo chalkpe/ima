@@ -9,7 +9,6 @@ interface CenterProps {
 }
 
 const Center: FC<CenterProps> = ({ state, me }) => {
-
   return (
     <Paper
       sx={{
@@ -22,7 +21,6 @@ const Center: FC<CenterProps> = ({ state, me }) => {
       }}
     >
       {state.wall.tiles.length}
-      
     </Paper>
   )
 }

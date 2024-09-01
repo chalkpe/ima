@@ -7,10 +7,10 @@ import type { Tile } from '../types/tile'
 import type { Tenpai } from '../types/tenpai'
 
 export const calculateFuriten = (state: TenpaiState, river: RiverTile[], giriTile: Tile | null): boolean => {
-  const machi = state.find(isMachi)
-  if (!machi) return false
+  const machi = state.filter(isMachi)
+  if (!machi.length) return false
 
-  const machiTiles = getMachiTiles(machi)
+  const machiTiles = machi.flatMap(getMachiTiles)
   if (!machiTiles.length) return false
 
   return machiTiles.every(

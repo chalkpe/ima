@@ -51,6 +51,12 @@ describe('tenpai', () => {
         { agariTile: c('4p')[0], giriTile: null, status: 'furiten' },
       ])
     })
+    test('returns result if tenpai but furiten (shabo)', () => {
+      expect(calculateTenpai(t('678s5566z'), r('6z'), null)).toMatchObject([
+        { agariTile: c('5z')[0], giriTile: null, status: 'furiten' },
+        { agariTile: c('6z')[0], giriTile: null, status: 'furiten' },
+      ])
+    })
     test('returns result if tenpai but furiten (multiple)', () => {
       expect(calculateTenpai(t('1234445556778s'), r('1p'), t('6s')[0])).toMatchObject([
         { agariTile: c('6s')[0], giriTile: t('6s')[0], status: 'furiten' },

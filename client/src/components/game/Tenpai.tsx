@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { Paper, Stack, Typography } from '@mui/material'
-import Mahgen from './Mahgen'
-import { compareSimpleTile, convertTileToCode } from '../../utils/tile'
+import TileWithCount from './TileWithCount'
+import { compareSimpleTile } from '../../utils/tile'
 
 import type { Tenpai } from '../../../../server/src/types/tenpai'
 
@@ -27,12 +27,8 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         {tenpaiList
           .sort((a, b) => compareSimpleTile(a.agariTile, b.agariTile))
           .map((tenpai) => (
-            <Stack direction="column" gap="1vmin">
-              <Mahgen
-                key={tenpai.agariTile.type + tenpai.agariTile.value}
-                size={5}
-                sequence={convertTileToCode(tenpai.agariTile)}
-              />
+            <Stack direction="column" gap="1vmin" key={tenpai.agariTile.type + tenpai.agariTile.value}>
+              <TileWithCount tile={tenpai.agariTile} size={5} />
               <Typography variant="h6" align="center">
                 {tenpai.status}
               </Typography>

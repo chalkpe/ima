@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server'
 import { database } from '../db'
 import { publicProcedure, router } from '../trpc'
 
-import { getVisibleState, initState } from '../controllers/game/state'
+import { getRemainingTileCount, getVisibleState, initState } from '../controllers/game/state'
 import { ankan, chi, daiminkan, gakan, giri, pon, riichi, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
 import { getActiveMe } from '../helpers/game'
 import { tileTypes } from '../helpers/tile'
@@ -23,6 +23,7 @@ export const gameRouter = router({
     const me = room.host === username ? 'host' : 'guest'
     return { ...room, state: getVisibleState(room.state, me) }
   }),
+
   start: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
 
@@ -31,6 +32,15 @@ export const gameRouter = router({
 
     initState(room.state)
     tsumo(room.state, 'host', 'haiyama')
+  }),
+
+  getRemainingTileCount: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).query((opts) => {
+    const { username } = opts.ctx
+    const { type, value } = opts.input
+
+    const room = getRoom(username, true)
+    const me = room.host === username ? 'host' : 'guest'
+    return getRemainingTileCount(room.state, me, { type, value })
   }),
 
   pon: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation((opts) => {

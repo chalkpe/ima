@@ -4,17 +4,16 @@ import {
   calculateAfterTsumoDecisions,
   calculateBeforeTsumoDecisions,
 } from './decision'
-
 import { getClosedHand, getOpponent } from '../../helpers/game'
+import { calculateTenpai } from '../../helpers/tenpai'
 
 import type { GameState, PlayerType } from '../../types/game'
-import { calculateTenpai } from '../../helpers/tenpai'
 
 export const onHandChange = (state: GameState, me: PlayerType) => {
   const isRiichi = state[me].riichi
   const closedHand = getClosedHand(state[me].hand)
-  const giriTiles = isRiichi ? [...(state[me].hand.tsumo ? [state[me].hand.tsumo] : []), null] : [...closedHand, null]
 
+  const giriTiles = isRiichi ? [...(state[me].hand.tsumo ? [state[me].hand.tsumo] : []), null] : [...closedHand, null]
   state[me].hand.tenpai = giriTiles.flatMap((giriTile) => {
     const hand = giriTile === null ? closedHand : closedHand.filter((t) => giriTile.index !== t.index)
     const tenpai = calculateTenpai(hand, state[me].river, giriTile)

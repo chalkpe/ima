@@ -12,13 +12,16 @@ import Decisions from '../components/game/Decisions'
 const Game = () => {
   const navigate = useNavigate()
   const { username, skip } = useAuth()
+  
+  const utils = trpc.useUtils()
   const { data, error } = trpc.game.state.useQuery(skip, { refetchInterval: 1000 })
 
   useEffect(() => {
+    utils.game.getRemainingTileCount.invalidate()
     if (!data || error) {
       navigate('/lobby')
     }
-  }, [data, error, navigate])
+  }, [data, error, navigate, utils.game.getRemainingTileCount])
 
   if (!data) return null
 

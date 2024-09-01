@@ -1,9 +1,24 @@
 import { FC, useCallback } from 'react'
 import { Button, Stack } from '@mui/material'
 import Mahgen from './Mahgen'
-import { convertTileToCode } from '../../utils/tile'
+import { compareDecisions, convertTileToCode } from '../../utils/tile'
 import { trpc } from '../../utils/trpc'
 import type { Decision } from '../../../../server/src/types/game'
+
+
+const typeText: Record<Decision['type'], string> = {
+  ankan: '안깡',
+  gakan: '가깡',
+  daiminkan: '대명깡',
+  pon: '퐁',
+  chi: '치',
+  nuki: '빼기',
+  riichi: '리치',
+  tsumo: '쯔모',
+  ron: '론',
+  skip_chankan: '스킵',
+  skip_and_tsumo: '스킵',
+}
 
 interface DecisionsProps {
   decisions: Decision[]
@@ -62,7 +77,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
 
   return (
     <Stack direction="row" gap="2vmin" justifyContent="center" position="absolute" bottom="12vmin" right="20vmin">
-      {decisions.map((decision) => (
+      {[...decisions].sort(compareDecisions).map((decision) => (
         <Button
           key={
             decision.type +
@@ -74,14 +89,14 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
           color={decision.type === 'tsumo' || decision.type === 'ron' ? 'error' : 'primary'}
           size="large"
           onClick={() => onClick(decision)}
-          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '2vmin' }}
         >
-          {decision.type.startsWith('skip') ? 'Skip' : decision.type}
+          {typeText[decision.type]}
           <span>
-            {decision.tile && <Mahgen size={2} sequence={convertTileToCode(decision.tile)} />}
+            {decision.tile && <Mahgen size={3} sequence={convertTileToCode(decision.tile)} />}
             {decision.otherTiles &&
               decision.otherTiles.map((tile) => (
-                <Mahgen key={tile.index} size={2} sequence={convertTileToCode(tile)} />
+                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
               ))}
           </span>
         </Button>

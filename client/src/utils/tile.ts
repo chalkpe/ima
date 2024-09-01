@@ -1,16 +1,14 @@
-import type { RiverTile } from '../../../server/src/types/game'
+import type { Decision, RiverTile } from '../../../server/src/types/game'
 import type { SimpleTile, Tile } from '../../../server/src/types/tile'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 const attributeOrder: Tile['attribute'][] = ['normal', 'red']
 
 export const compareSimpleTile = (a: SimpleTile, b: SimpleTile) =>
-  tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) ||
-  a.value - b.value
+  tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) || a.value - b.value
 
 export const compareTile = (a: Tile, b: Tile) =>
-  compareSimpleTile(a, b) ||
-  attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
+  compareSimpleTile(a, b) || attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
 
 export const sortTiles = (tiles: Tile[]) => tiles.map((tile, order) => ({ ...tile, order })).sort(compareTile)
 
@@ -47,4 +45,25 @@ export const chunk = (river: RiverTile[], size: number) => {
     result.push(river.slice(i, i + size))
   }
   return result
+}
+
+const decisionTypeOrder: Decision['type'][] = [
+  'ankan',
+  'gakan',
+  'daiminkan',
+  'pon',
+  'chi',
+  'nuki',
+  'riichi',
+  'tsumo',
+  'ron',
+  'skip_chankan',
+  'skip_and_tsumo',
+]
+
+export const compareDecisions = (a: Decision, b: Decision) => {
+  return (
+    decisionTypeOrder.indexOf(a.type) - decisionTypeOrder.indexOf(b.type) ||
+    (a.tile && !b.tile ? -1 : !a.tile && b.tile ? 1 : a.tile && b.tile ? compareTile(a.tile, b.tile) : 0)
+  )
 }

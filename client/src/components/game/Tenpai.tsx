@@ -5,6 +5,12 @@ import { compareSimpleTile } from '../../utils/tile'
 
 import type { Tenpai } from '../../../../server/src/types/tenpai'
 
+const statusText: Record<Tenpai['status'], string> = {
+  tenpai: '텐파이',
+  furiten: '후리텐',
+  muyaku: '역 없음',
+}
+
 interface TenpaiProps {
   tenpaiList: Tenpai[]
   current?: boolean
@@ -20,8 +26,8 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         padding: '1vmin',
       }}
     >
-      <Typography variant="h6" align="center">
-        {current ? 'Current' : 'This tile'}
+      <Typography fontSize="2.5vmin" align="center">
+        {current ? '현재' : ''}
       </Typography>
       <Stack direction="row" gap="1vmin">
         {tenpaiList
@@ -29,8 +35,8 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
           .map((tenpai) => (
             <Stack direction="column" gap="1vmin" key={tenpai.agariTile.type + tenpai.agariTile.value}>
               <TileWithCount tile={tenpai.agariTile} size={5} />
-              <Typography variant="h6" align="center">
-                {tenpai.status}
+              <Typography fontSize="2vmin" align="left">
+                {statusText[tenpai.status]}
               </Typography>
             </Stack>
           ))}

@@ -1,23 +1,21 @@
 import { FC } from 'react'
 import { Paper, Stack, Typography } from '@mui/material'
-import { convertTileToCode, sortTiles } from '../../utils/tile'
 import Mahgen from './Mahgen'
+import { compareSimpleTile, convertTileToCode } from '../../utils/tile'
 
-import type { SimpleTile } from '../../../../server/src/types/tile'
+import type { Tenpai } from '../../../../server/src/types/tenpai'
 
 interface TenpaiProps {
-  tenpai: SimpleTile[]
+  tenpaiList: Tenpai[]
   current?: boolean
 }
 
-const Tenpai: FC<TenpaiProps> = ({ tenpai, current }) => {
-  if (tenpai.length === 0) return null
-
+const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
   return (
     <Paper
       sx={{
         position: 'absolute',
-        bottom: current ? '10vmin' : '24vmin',
+        bottom: current ? '10vmin' : '28vmin',
         left: '8vmin',
         padding: '1vmin',
       }}
@@ -26,9 +24,20 @@ const Tenpai: FC<TenpaiProps> = ({ tenpai, current }) => {
         {current ? 'Current' : 'This tile'}
       </Typography>
       <Stack direction="row" gap="1vmin">
-        {sortTiles(tenpai).map((tile) => (
-          <Mahgen key={tile.type + tile.value} size={5} sequence={convertTileToCode(tile)} />
-        ))}
+        {tenpaiList
+          .sort((a, b) => compareSimpleTile(a.agariTile, b.agariTile))
+          .map((tenpai) => (
+            <Stack direction="column" gap="1vmin">
+              <Mahgen
+                key={tenpai.agariTile.type + tenpai.agariTile.value}
+                size={5}
+                sequence={convertTileToCode(tenpai.agariTile)}
+              />
+              <Typography variant="h6" align="center">
+                {tenpai.status}
+              </Typography>
+            </Stack>
+          ))}
       </Stack>
     </Paper>
   )

@@ -4,16 +4,15 @@ import type { SimpleTile, Tile } from '../../../server/src/types/tile'
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 const attributeOrder: Tile['attribute'][] = ['normal', 'red']
 
-export const sortTiles = (tiles: Tile[]) => {
-  return tiles
-    .map((tile, order) => ({ ...tile, order }))
-    .sort(
-      (a, b) =>
-        tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) ||
-        a.value - b.value ||
-        attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
-    )
-}
+export const compareSimpleTile = (a: SimpleTile, b: SimpleTile) =>
+  tileTypeOrder.indexOf(a.type) - tileTypeOrder.indexOf(b.type) ||
+  a.value - b.value
+
+export const compareTile = (a: Tile, b: Tile) =>
+  compareSimpleTile(a, b) ||
+  attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
+
+export const sortTiles = (tiles: Tile[]) => tiles.map((tile, order) => ({ ...tile, order })).sort(compareTile)
 
 export const convertTileToCode = (tile: Tile | SimpleTile) => {
   switch (tile.type) {

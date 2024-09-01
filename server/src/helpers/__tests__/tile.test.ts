@@ -1,9 +1,10 @@
-import { Koutsu } from '../../types/tile'
-import { codeSyntaxToHand } from '../code'
+import { Koritsu, Koutsu, Tatsu } from '../../types/tile'
+import { codeSyntaxToHand as c } from '../code'
 import {
   countTiles,
   getAllSyuntsu,
   getLowerTile,
+  getMachiTiles,
   getTatsuMachi,
   getUpperTile,
   isEqualTile,
@@ -20,7 +21,7 @@ import {
 describe('tile', () => {
   describe('countTiles', () => {
     test('should return the count of tiles', () => {
-      expect(countTiles(codeSyntaxToHand('11123456789999m'))).toEqual({
+      expect(countTiles(c('11123456789999m'))).toEqual({
         '1m': 3,
         '2m': 1,
         '3m': 1,
@@ -94,59 +95,59 @@ describe('tile', () => {
 
   describe('removeTileFromHand', () => {
     test('should return the removed tiles', () => {
-      const hand = codeSyntaxToHand('11123456789999m')
-      const target = codeSyntaxToHand('1m')[0]
+      const hand = c('11123456789999m')
+      const target = c('1m')[0]
 
       const [remain, removed] = removeTileFromHand(hand, target, 2)
-      expect(remain).toEqual(codeSyntaxToHand('123456789999m'))
-      expect(removed).toEqual(codeSyntaxToHand('11m'))
+      expect(remain).toEqual(c('123456789999m'))
+      expect(removed).toEqual(c('11m'))
     })
   })
 
   describe('removeTilesFromHand', () => {
     test('should return the removed tiles', () => {
-      const hand = codeSyntaxToHand('11123456789999m')
+      const hand = c('11123456789999m')
       const targets = [
-        [codeSyntaxToHand('1m')[0], 2],
-        [codeSyntaxToHand('9m')[0], 5],
+        [c('1m')[0], 2],
+        [c('9m')[0], 5],
       ] as const
 
       const [remain, removed] = removeTilesFromHand(hand, targets)
-      expect(remain).toEqual(codeSyntaxToHand('12345678m'))
-      expect(removed).toEqual([codeSyntaxToHand('11m'), codeSyntaxToHand('9999m')])
+      expect(remain).toEqual(c('12345678m'))
+      expect(removed).toEqual([c('11m'), c('9999m')])
     })
     test('should return the removed tiles (syuntsu)', () => {
-      const hand = codeSyntaxToHand('11123456789999m')
+      const hand = c('11123456789999m')
       const targets = [
-        [codeSyntaxToHand('2m')[0], 1],
-        [codeSyntaxToHand('3m')[0], 1],
-        [codeSyntaxToHand('4m')[0], 1],
+        [c('2m')[0], 1],
+        [c('3m')[0], 1],
+        [c('4m')[0], 1],
       ] as const
 
       const [remain, removed] = removeTilesFromHand(hand, targets)
-      expect(remain).toEqual(codeSyntaxToHand('11156789999m'))
-      expect(removed).toEqual([codeSyntaxToHand('2m'), codeSyntaxToHand('3m'), codeSyntaxToHand('4m')])
+      expect(remain).toEqual(c('11156789999m'))
+      expect(removed).toEqual([c('2m'), c('3m'), c('4m')])
     })
     test('should return the removed tiles with duplicated target', () => {
-      const hand = codeSyntaxToHand('11123456789999m')
+      const hand = c('11123456789999m')
       const targets = [
-        [codeSyntaxToHand('9m')[0], 3],
-        [codeSyntaxToHand('9m')[0], 2],
+        [c('9m')[0], 3],
+        [c('9m')[0], 2],
       ] as const
 
       const [remain, removed] = removeTilesFromHand(hand, targets)
-      expect(remain).toEqual(codeSyntaxToHand('1112345678m'))
-      expect(removed).toEqual([codeSyntaxToHand('999m'), codeSyntaxToHand('9m')])
+      expect(remain).toEqual(c('1112345678m'))
+      expect(removed).toEqual([c('999m'), c('9m')])
     })
     test('should return the empty array if there is no target', () => {
-      const hand = codeSyntaxToHand('11123456789999m')
+      const hand = c('11123456789999m')
       const targets = [
-        [codeSyntaxToHand('1s')[0], 2],
-        [codeSyntaxToHand('2s')[0], 3],
+        [c('1s')[0], 2],
+        [c('2s')[0], 3],
       ] as const
 
       const [remain, removed] = removeTilesFromHand(hand, targets)
-      expect(remain).toEqual(codeSyntaxToHand('11123456789999m'))
+      expect(remain).toEqual(c('11123456789999m'))
       expect(removed).toEqual([[], []])
     })
   })
@@ -189,10 +190,10 @@ describe('tile', () => {
 
   describe('isKoutsu', () => {
     test('should return true if the tiles are koutsu', () => {
-      expect(isKoutsu(codeSyntaxToHand('111m') as Koutsu)).toBeTruthy()
+      expect(isKoutsu(c('111m') as Koutsu)).toBeTruthy()
     })
     test('should return false if the tiles are not koutsu', () => {
-      expect(isKoutsu(codeSyntaxToHand('123m') as Koutsu)).toBeFalsy()
+      expect(isKoutsu(c('123m') as Koutsu)).toBeFalsy()
     })
   })
 
@@ -394,6 +395,39 @@ describe('tile', () => {
           simpleTileToTile({ type: 'man', value: 9 }),
         ],
       ])
+    })
+  })
+
+  describe('getMachiTiles', () => {
+    test('should return the machi tiles (tanki)', () => {
+      expect(getMachiTiles({ type: 'tanki', tiles: c('4z') as Koritsu })).toEqual(c('4z'))
+      expect(getMachiTiles({ type: 'tanki', tiles: c('44z') as Koritsu })).toEqual([]) // invalid
+    })
+    test('should return the machi tiles (shabo)', () => {
+      expect(getMachiTiles({ type: 'shabo', tiles: c('11s') as Tatsu })).toEqual(c('1s'))
+      expect(getMachiTiles({ type: 'shabo', tiles: c('12s') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'shabo', tiles: c('1s') as Tatsu })).toEqual([]) // invalid
+    })
+    test('should return the machi tiles (kanchan)', () => {
+      expect(getMachiTiles({ type: 'kanchan', tiles: c('24m') as Tatsu })).toEqual(c('3m'))
+      expect(getMachiTiles({ type: 'kanchan', tiles: c('23m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'kanchan', tiles: c('2m') as Tatsu })).toEqual([]) // invalid
+    })
+    test('should return the machi tiles (penchan)', () => {
+      expect(getMachiTiles({ type: 'penchan', tiles: c('12m') as Tatsu })).toEqual(c('3m'))
+      expect(getMachiTiles({ type: 'penchan', tiles: c('89m') as Tatsu })).toEqual(c('7m'))
+      expect(getMachiTiles({ type: 'penchan', tiles: c('18m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'penchan', tiles: c('29m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'penchan', tiles: c('23m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'penchan', tiles: c('1m') as Tatsu })).toEqual([]) // invalid
+    })
+    test('should return the machi tiles (ryanmen)', () => {
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('23m') as Tatsu })).toEqual(c('14m'))
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('78m') as Tatsu })).toEqual(c('69m'))
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('12m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('22m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('24m') as Tatsu })).toEqual([]) // invalid
+      expect(getMachiTiles({ type: 'ryanmen', tiles: c('1m') as Tatsu })).toEqual([]) // invalid
     })
   })
 })

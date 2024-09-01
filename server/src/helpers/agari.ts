@@ -4,6 +4,7 @@ import {
   getAllSyuntsu,
   getTatsuMachi,
   isEqualTile,
+  isMachiType,
   kokushiTiles,
   removeTileFromHand,
   removeTilesFromHand,
@@ -13,9 +14,6 @@ import {
 import type { Machi, MachiType, SimpleTile, Tile, Tsu } from '../types/tile'
 import type { Code } from '../types/code'
 import type { AgariResult, AgariState, TenpaiState } from '../types/agari'
-
-const isMachiType = (type: string): type is MachiType =>
-  ['tanki', 'kanchan', 'penchan', 'ryanmen', 'shabo'].includes(type)
 
 export const tileSetToCode = (tileSet: Tsu | Machi): string => {
   return `<${tileSet.type}>` + tileSet.tiles.map(tileToCode).join('')

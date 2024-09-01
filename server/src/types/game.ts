@@ -1,4 +1,5 @@
-import type { SimpleTile, Tile } from './tile'
+import type { Tenpai } from './tenpai'
+import type { Tile } from './tile'
 
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
@@ -10,7 +11,7 @@ export interface Hand {
   closed: Tile[]
   called: TileSet[]
   tsumo?: Tile
-  tenpai: SimpleTile[][]
+  tenpai: Tenpai[]
   giriMap: boolean[]
 }
 

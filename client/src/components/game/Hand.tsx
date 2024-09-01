@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
 import Mahgen from './Mahgen'
 import Tenpai from './Tenpai'
@@ -14,30 +14,34 @@ interface HandProps {
 
 const Hand: FC<HandProps> = ({ hand, me }) => {
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
-  const [hovered, setHovered] = useState<number | undefined>(undefined)
+
+  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined)
+
+  const currentTenpai = useMemo(() => hand.tenpai.find((tenpai) => tenpai.giriTile === null), [hand.tenpai])
+  const tedashiTenpai = useMemo(
+    () => hand.tenpai.filter((tenpai) => hoveredIndex !== undefined && tenpai.giriTile?.index === hoveredIndex),
+    [hand.tenpai, hoveredIndex]
+  )
+  const tsumogiriTenpai = useMemo(
+    () => hand.tenpai.filter((tenpai) => tenpai.giriTile?.index === hand.tsumo?.index),
+    [hand.tenpai, hand.tsumo?.index]
+  )
 
   const utils = trpc.useUtils()
   const { mutate: giri } = trpc.game.giri.useMutation()
 
+  useEffect(() => {
+    setHoveredIndex(undefined)
+  }, [hand.tsumo])
+
   return (
     <>
-      {hand.tenpai.some((t, index) => t.length > 0 && index < closed.length) && (
-        <Paper
-          sx={{
-            position: 'absolute',
-            bottom: '24vmin',
-            left: '8vmin',
-            padding: '1vmin',
-          }}
-        >
-          Tenpai
-        </Paper>
+      {currentTenpai && (
+        <Paper sx={{ position: 'absolute', bottom: '28vmin', left: '8vmin', padding: '1vmin' }}>Tenpai</Paper>
       )}
 
-      {hovered !== undefined && (hovered < closed.length || hand.tsumo) && hand.tenpai[hovered] && (
-        <Tenpai tenpai={hand.tenpai[hovered]} />
-      )}
-      {!hand.tsumo && hand.tenpai[closed.length] && <Tenpai tenpai={hand.tenpai[closed.length]} current />}
+      {tedashiTenpai.length > 0 && <Tenpai tenpaiList={tedashiTenpai} />}
+      {tsumogiriTenpai.length > 0 && <Tenpai tenpaiList={tsumogiriTenpai} current />}
 
       <Stack
         direction={me ? 'row' : 'row-reverse'}
@@ -48,13 +52,13 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         <Stack direction="row" gap={0}>
           {closed.map((tile) => (
             <Mahgen
-              key={tile.type + tile.value + tile.order}
+              key={tile.index}
               size={5}
               sequence={convertTileToCode(tile)}
-              onMouseEnter={() => setHovered(tile.order)}
-              onMouseLeave={() => setHovered(undefined)}
+              onMouseEnter={() => setHoveredIndex(tile.index)}
+              onMouseLeave={() => setHoveredIndex(undefined)}
               onClick={() => giri({ index: tile.index }, { onSuccess: () => utils.game.state.invalidate() })}
-              style={{ transform: hovered === tile.order ? 'translateY(-1vmin)' : undefined }}
+              style={{ transform: hoveredIndex === tile.index ? 'translateY(-1vmin)' : undefined }}
             />
           ))}
         </Stack>
@@ -62,10 +66,10 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
           <Mahgen
             size={5}
             sequence={convertTileToCode(hand.tsumo)}
-            onMouseEnter={() => setHovered(closed.length)}
-            onMouseLeave={() => setHovered(undefined)}
+            onMouseEnter={() => setHoveredIndex(hand.tsumo!.index)}
+            onMouseLeave={() => setHoveredIndex(undefined)}
             onClick={() => giri({ index: hand.tsumo!.index }, { onSuccess: () => utils.game.state.invalidate() })}
-            style={{ transform: hovered === closed.length ? 'translateY(-1vmin)' : undefined }}
+            style={{ transform: hoveredIndex === hand.tsumo!.index ? 'translateY(-1vmin)' : undefined }}
           />
         ) : (
           <Box width="5vmin" />

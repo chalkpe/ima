@@ -18,7 +18,7 @@ export type SimpleTile = Pick<Tile, 'type' | 'value'>
 
 export type SyuupaiValue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
-type Koritsu = [Tile]
+export type Koritsu = [Tile]
 type KoritsuType = 'koritsu' | 'kokushi'
 type KoritsuMachiType = 'tanki'
 type KoritsuMachi = { type: KoritsuMachiType; tiles: [SimpleTile] }

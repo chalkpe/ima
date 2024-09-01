@@ -1,7 +1,22 @@
 import { codeSyntaxToHand, tileToCode } from './code'
 import type { Code } from '../types/code'
 import type { RiverTile } from '../types/game'
-import type { Koutsu, Mentsu, SimpleTile, Syuntsu, SyuupaiType, SyuupaiValue, Tatsu, TatsuMachi, Tile, TileType, ZihaiType } from '../types/tile'
+import type {
+  Koutsu,
+  Machi,
+  MachiType,
+  Mentsu,
+  SimpleTile,
+  Syuntsu,
+  SyuupaiType,
+  SyuupaiValue,
+  Tatsu,
+  TatsuMachi,
+  Tile,
+  TileType,
+  Tsu,
+  ZihaiType,
+} from '../types/tile'
 
 export const tileTypes = ['man', 'pin', 'sou', 'wind', 'dragon'] as const satisfies TileType[]
 
@@ -10,7 +25,8 @@ export const countTiles = (hand: SimpleTile[]): Record<Code, number> =>
 
 export const isEqualTile = (a: SimpleTile, b: SimpleTile): boolean => a.type === b.type && a.value === b.value
 
-export const isStrictEqualTile = (a: Tile, b: Tile): boolean => isEqualTile(a, b) && a.attribute === b.attribute && a.background === b.background
+export const isStrictEqualTile = (a: Tile, b: Tile): boolean =>
+  isEqualTile(a, b) && a.attribute === b.attribute && a.background === b.background
 
 export const removeTileFromHand = <T extends SimpleTile>(hand: T[], target: T, count: number): [T[], T[]] => {
   return hand.reduce(
@@ -138,5 +154,45 @@ export const getTatsuMachi = (tatsu: Tatsu): TatsuMachi | undefined => {
     if (lower && upper) return { type: 'ryanmen', tiles: [lower, upper] }
     if (lower) return { type: 'penchan', tiles: [lower] }
     if (upper) return { type: 'penchan', tiles: [upper] }
+  }
+}
+
+const machiTypes: string[] = ['tanki', 'kanchan', 'penchan', 'ryanmen', 'shabo'] satisfies MachiType[]
+
+export const isMachiType = (type: string): type is MachiType => machiTypes.includes(type)
+
+export const isMachi = (set: Tsu | Machi): set is Machi => isMachiType(set.type)
+
+export const getMachiTiles = (machi: Machi): SimpleTile[] => {
+  const tiles = machi.tiles.sort(compareTile)
+
+  switch (machi.type) {
+    case 'tanki': {
+      if (tiles.length !== 1) return []
+      return [machi.tiles[0]]
+    }
+    case 'shabo': {
+      if (tiles.length !== 2) return []
+      const [first, second] = tiles
+      return isEqualTile(first, second) ? [first] : []
+    }
+    case 'kanchan': {
+      if (tiles.length !== 2) return []
+      const [upper, lower] = [getUpperTile(tiles[0]), getLowerTile(tiles[1])]
+      return upper && lower && isEqualTile(upper, lower) ? [upper] : []
+    }
+    case 'penchan': {
+      if (tiles.length !== 2) return []
+      const [a, b] = tiles
+      const [lower, second, first, upper] = [getLowerTile(a), getUpperTile(a), getLowerTile(b), getUpperTile(b)]
+      if (!first || !second || !isEqualTile(first, a) || !isEqualTile(second, b)) return []
+      return lower && !upper ? [lower] : upper && !lower ? [upper] : []
+    }
+    case 'ryanmen': {
+      if (tiles.length !== 2) return []
+      const [a, b] = tiles
+      const [lower, second, first, upper] = [getLowerTile(a), getUpperTile(a), getLowerTile(b), getUpperTile(b)]
+      return lower && upper && first && second && isEqualTile(first, a) && isEqualTile(second, b) ? [lower, upper] : []
+    }
   }
 }

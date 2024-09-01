@@ -1,32 +1,50 @@
 import { codeToTile } from './code'
 import { calculateAgari } from './agari'
-import { getMachiTiles, isEqualTile, isMachi } from './tile'
-import type { RiverTile } from '../types/game'
+import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from './tile'
+import type { GameState, Hand, PlayerType, RiverTile } from '../types/game'
 import type { TenpaiState } from '../types/agari'
 import type { Tile } from '../types/tile'
 import type { Tenpai } from '../types/tenpai'
+import { calculateYaku } from './yaku'
+import { getClosedHand } from './game'
 
-export const calculateFuriten = (state: TenpaiState, river: RiverTile[], giriTile: Tile | null): boolean => {
-  const machi = state.filter(isMachi)
+export const calculateFuriten = (
+  state: GameState,
+  me: PlayerType,
+  tenpai: TenpaiState,
+  giriTile: Tile | null
+): boolean => {
+  const machi = tenpai.filter(isMachi)
   if (!machi.length) return false
 
   const machiTiles = machi.flatMap(getMachiTiles)
   if (!machiTiles.length) return false
 
   return machiTiles.every(
-    (tile) => !river.some((r) => isEqualTile(r.tile, tile)) && (giriTile === null || !isEqualTile(giriTile, tile))
+    (t) => !state[me].river.some((r) => isEqualTile(r.tile, t)) && (giriTile === null || !isEqualTile(giriTile, t))
   )
 }
 
-export const calculateTenpai = (hand: Tile[], river: RiverTile[], giriTile: Tile | null): Tenpai[] | undefined => {
-  const result = calculateAgari(hand)
+export const calculateTenpai = (
+  state: GameState,
+  me: PlayerType,
+  hand: Hand,
+  giriTile: Tile | null
+): Tenpai[] | undefined => {
+  const result = calculateAgari(getClosedHand(hand))
   if (result.status !== 'tenpai') return
 
   const tenpai: Tenpai[] = [...result.tenpai.entries()].map(([code, states]) => ({
     giriTile,
     agariTile: codeToTile(code),
-    status: states.every((state) => calculateFuriten(state, river, giriTile)) ? 'tenpai' : 'furiten',
+    status: calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code))).every((yaku) => yaku.isExtra)
+      ? 'muyaku'
+      : states.every((s) => calculateFuriten(state, me, s,  giriTile))
+      ? 'tenpai'
+      : 'furiten',
   }))
 
-  return tenpai.some((t) => t.status === 'furiten') ? tenpai.map((t) => ({ ...t, status: 'furiten' })) : tenpai
+  return tenpai.some((t) => t.status === 'furiten')
+    ? tenpai.map((t) => ({ ...t, status: t.status === 'tenpai' ? 'furiten' : t.status }))
+    : tenpai
 }

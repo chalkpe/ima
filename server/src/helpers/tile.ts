@@ -1,6 +1,6 @@
 import { codeSyntaxToHand, tileToCode } from './code'
 import type { Code } from '../types/code'
-import type { RiverTile } from '../types/game'
+import type { RiverTile, Wind } from '../types/game'
 import type {
   Koutsu,
   Machi,
@@ -195,4 +195,52 @@ export const getMachiTiles = (machi: Machi): SimpleTile[] => {
       return lower && upper && first && second && isEqualTile(first, a) && isEqualTile(second, b) ? [lower, upper] : []
     }
   }
+}
+
+const windMap: Record<number, Wind> = { 1: 'east', 2: 'south', 3: 'west', 4: 'north' }
+
+export const getTileWind = (tile: SimpleTile): Wind | undefined => (tile.type === 'wind' ? windMap[tile.value] : undefined)
+
+export const isYakuhai = (tile: SimpleTile, bakaze: Wind, jikaze: Wind) =>
+  tile.type === 'dragon' || (tile.type === 'wind' && [bakaze, jikaze].includes(windMap[tile.value]))
+
+
+export const isYaochuuhai = (tile: SimpleTile) => tile.type === 'dragon' || tile.type === 'wind' || tile.value === 1 || tile.value === 9
+
+export const tileNames: Record<Code, string> = {
+  '1m': '1만',
+  '2m': '2만',
+  '3m': '3만',
+  '4m': '4만',
+  '5m': '5만',
+  '6m': '6만',
+  '7m': '7만',
+  '8m': '8만',
+  '9m': '9만',
+  '1p': '1통',
+  '2p': '2통',
+  '3p': '3통',
+  '4p': '4통',
+  '5p': '5통',
+  '6p': '6통',
+  '7p': '7통',
+  '8p': '8통',
+  '9p': '9통',
+  '1s': '1삭',
+  '2s': '2삭',
+  '3s': '3삭',
+  '4s': '4삭',
+  '5s': '5삭',
+  '6s': '6삭',
+  '7s': '7삭',
+  '8s': '8삭',
+  '9s': '9삭',
+  '0z': '?',
+  '1z': '동',
+  '2z': '남',
+  '3z': '서',
+  '4z': '북',
+  '5z': '백',
+  '6z': '발',
+  '7z': '중',
 }

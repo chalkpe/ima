@@ -6,7 +6,7 @@ import { publicProcedure, router } from '../trpc'
 import { database, ee } from '../db'
 
 import { getRemainingTileCount, getVisibleState, initState } from '../controllers/game/state'
-import { ankan, chi, daiminkan, gakan, giri, pon, riichi, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
+import { ankan, callRon, callTsumo, chi, daiminkan, gakan, giri, pon, riichi, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
 
 import { tileTypes } from '../helpers/tile'
 import { getActiveMe } from '../helpers/game'
@@ -130,6 +130,26 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     skipChankan(room.state, me)
+
+    ee.emit('update', room.host)
+  }),
+
+  callTsumo: publicProcedure.mutation((opts) => {
+    const { username } = opts.ctx
+
+    const room = getRoom(username, true)
+    const me = getActiveMe(room, username)
+    callTsumo(room.state, me)
+
+    ee.emit('update', room.host)
+  }),
+
+  callRon: publicProcedure.mutation((opts) => {
+    const { username } = opts.ctx
+
+    const room = getRoom(username, true)
+    const me = getActiveMe(room, username)
+    callRon(room.state, me)
 
     ee.emit('update', room.host)
   }),

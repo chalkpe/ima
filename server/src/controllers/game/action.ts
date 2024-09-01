@@ -15,6 +15,7 @@ import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '../../help
 
 import type { Tile, TileType } from '../../types/tile'
 import type { GameState, PlayerType, WallType } from '../../types/game'
+import { calculateYaku } from '../../helpers/yaku'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   if (state[me].hand.tsumo) {
@@ -26,9 +27,11 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
     if (state.wall.doraCount === 4) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot tsumo now' })
     state.wall.doraCount += 1
 
+    state[me].jun += 1
     state[me].hand.tsumo = state.wall.kingTiles.splice(0, 1)[0]
     state.wall.supplementTiles.push(state.wall.tiles.splice(-1, 1)[0])
   } else {
+    state[me].jun += 1
     state[me].hand.tsumo = state.wall.tiles.splice(0, 1)[0]
   }
 
@@ -43,7 +46,7 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
   state[me].decisions = []
   state[me].hand.closed = otherTiles
   state[me].hand.tsumo = undefined
-  state[me].hand.called.push({ type: 'ankan', tiles: ankanTiles })
+  state[me].hand.called.push({ type: 'ankan', tiles: ankanTiles, jun: state[me].jun })
 
   onAfterAnkan(state, me)
 }
@@ -85,7 +88,12 @@ export const daiminkan = (state: GameState, me: PlayerType) => {
   state[opponent].river.splice(-1, 1)
   state[me].decisions = []
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'daiminkan', tiles: [furoTile, ...removed], calledTile: furoTile })
+  state[me].hand.called.push({
+    type: 'daiminkan',
+    tiles: [furoTile, ...removed],
+    calledTile: furoTile,
+    jun: state[me].jun,
+  })
 
   tsumo(state, me, 'lingshang')
 }
@@ -110,7 +118,7 @@ export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].decisions = []
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'pon', tiles, calledTile })
+  state[me].hand.called.push({ type: 'pon', tiles, calledTile, jun: state[me].jun })
 
   onHandChange(state, me)
 }
@@ -135,7 +143,7 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].decisions = []
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'chi', tiles, calledTile })
+  state[me].hand.called.push({ type: 'chi', tiles, calledTile, jun: state[me].jun })
 
   onHandChange(state, me)
 }
@@ -158,6 +166,55 @@ export const skipChankan = (state: GameState, me: PlayerType) => {
   tsumo(state, opponent, 'lingshang')
 }
 
+export const callTsumo = (state: GameState, me: PlayerType) => {
+  if (!state[me].decisions.some((dec) => dec.type === 'tsumo'))
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
+
+  if (!state[me].hand.tsumo) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo tile' })
+
+  const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo)
+  if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
+
+  state[me].decisions = []
+  state.scoreboard = {
+    winner: me,
+    score: 0,
+    fu: 0,
+    han: yaku.reduce((han, yaku) => han + yaku.han, 0),
+    yakuman: 0,
+    yaku,
+    hostConfirmed: false,
+    guestConfirmed: false,
+  }
+}
+
+export const callRon = (state: GameState, me: PlayerType) => {
+  if (!state[me].decisions.some((dec) => dec.type === 'ron'))
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ron decision' })
+
+  const opponent = getOpponent(me)
+  const riverEnd = getRiverEnd(state[opponent])
+  if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
+
+  const calledTile = riverEnd.tile
+  if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
+
+  const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
+  if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
+
+  state[me].decisions = []
+  state.scoreboard = {
+    winner: me,
+    score: 0,
+    fu: 0,
+    han: yaku.reduce((han, yaku) => han + yaku.han, 0),
+    yakuman: 0,
+    yaku,
+    hostConfirmed: false,
+    guestConfirmed: false,
+  }
+}
+
 export const giri = (state: GameState, me: PlayerType, index: number) => {
   if (state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo' || dec.type === 'skip_chankan'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions should be made' })
@@ -171,7 +228,7 @@ export const giri = (state: GameState, me: PlayerType, index: number) => {
 
   onBeforeGiri(state, me)
 
-  const isRiichi = state[me].riichi && !state[me].river.some((r) => r.isRiichi)
+  const isRiichi = state[me].riichi !== null && !state[me].river.some((r) => r.isRiichi)
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi })
 
   state[me].hand.closed = remain
@@ -190,7 +247,7 @@ export const riichi = (state: GameState, me: PlayerType, index: number) => {
 
   onBeforeGiri(state, me)
 
-  state[me].riichi = true
+  state[me].riichi = state[me].jun
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi: true })
 
   state[me].hand.closed = remain

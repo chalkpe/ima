@@ -23,6 +23,7 @@ export const lobbyRouter = router({
       started: false,
       state: {
         host: {
+          wind: 'east',
           river: [],
           hand: {
             closed: [],
@@ -32,9 +33,12 @@ export const lobbyRouter = router({
             giriMap: [],
           },
           decisions: [],
-          riichi: false,
+          jun: 0,
+          riichi: null,
+          score: 0,
         },
         guest: {
+          wind: 'west',
           river: [],
           hand: {
             closed: [],
@@ -44,7 +48,9 @@ export const lobbyRouter = router({
             giriMap: [],
           },
           decisions: [],
-          riichi: false,
+          jun: 0,
+          riichi: null,
+          score: 0,
         },
         wall: {
           tiles: [],

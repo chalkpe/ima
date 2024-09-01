@@ -42,3 +42,5 @@ export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
     ),
   ].flat()
 )
+
+export const isMenzenHand = (hand: Hand) => hand.called.filter((s) => s.type !== 'ankan').length === 0

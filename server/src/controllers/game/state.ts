@@ -1,4 +1,4 @@
-import { countTiles, isEqualTile, simpleTileToTile } from '../../helpers/tile'
+import { isEqualTile, simpleTileToTile } from '../../helpers/tile'
 import { backTile as simpleBackTile } from '../../helpers/code'
 import { availableTiles, getClosedHand, getOpponent, haipaiCounts } from '../../helpers/game'
 import type { SimpleTile, Tile } from '../../types/tile'

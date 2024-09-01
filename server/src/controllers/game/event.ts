@@ -15,8 +15,11 @@ export const onHandChange = (state: GameState, me: PlayerType) => {
 
   const giriTiles = isRiichi ? [...(state[me].hand.tsumo ? [state[me].hand.tsumo] : []), null] : [...closedHand, null]
   state[me].hand.tenpai = giriTiles.flatMap((giriTile) => {
-    const hand = giriTile === null ? closedHand : closedHand.filter((t) => giriTile.index !== t.index)
-    const tenpai = calculateTenpai(hand, state[me].river, giriTile)
+    const hand =
+      giriTile === null
+        ? { ...state[me].hand, closed: closedHand, tsumo: undefined }
+        : { ...state[me].hand, closed: closedHand.filter((t) => giriTile.index !== t.index), tsumo: undefined }
+    const tenpai = calculateTenpai(state, me, hand, giriTile)
     return tenpai ? tenpai : []
   })
 }

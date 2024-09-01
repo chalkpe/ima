@@ -1,8 +1,9 @@
 import { calculateAgari } from '../../helpers/agari'
 import { tileToCode } from '../../helpers/code'
 import { combination, combinations, partition } from '../../helpers/common'
-import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
+import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from '../../helpers/game'
 import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from '../../helpers/tile'
+import { calculateYaku } from '../../helpers/yaku'
 
 import type { Decision, GameState, PlayerType } from '../../types/game'
 
@@ -35,7 +36,7 @@ const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] 
   if (state[me].riichi) return []
 
   if (state[me].hand.tsumo === undefined) return []
-  if (state[me].hand.called.filter((s) => s.type !== 'ankan').length > 0) return []
+  if (!isMenzenHand(state[me].hand)) return []
 
   const hand = getClosedHand(state[me].hand)
 
@@ -52,7 +53,10 @@ const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decision[] =
   const hand = getClosedHand(state[me].hand)
 
   const result = calculateAgari(hand)
-  return result.status === 'agari' ? [{ type: 'tsumo', tile: state[me].hand.tsumo }] : []
+  return result.status === 'agari' &&
+    calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo).some((yaku) => !yaku.isExtra)
+    ? [{ type: 'tsumo', tile: state[me].hand.tsumo }]
+    : []
 }
 
 const calculateRonDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -64,7 +68,10 @@ const calculateRonDecisions = (state: GameState, me: PlayerType): Decision[] => 
   const hand = [...state[me].hand.closed, ronTile]
 
   const result = calculateAgari(hand)
-  return result.status === 'agari' ? [{ type: 'ron', tile: ronTile }] : []
+  return result.status === 'agari' &&
+    calculateYaku(state, me, state[me].hand, 'ron', ronTile).some((yaku) => !yaku.isExtra)
+    ? [{ type: 'ron', tile: ronTile }]
+    : []
 }
 
 const calculatePonKanDecisions = (state: GameState, me: PlayerType): Decision[] => {

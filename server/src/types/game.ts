@@ -1,8 +1,10 @@
 import type { Tenpai } from './tenpai'
 import type { Tile } from './tile'
+import type { Yaku } from './yaku'
 
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
+  jun: number
   tiles: Tile[]
   calledTile?: Tile
 }
@@ -39,10 +41,13 @@ export interface Decision {
 }
 
 export interface Player {
+  wind: Wind
   river: RiverTile[]
   hand: Hand
   decisions: Decision[]
-  riichi: boolean
+  jun: number
+  riichi: number | null
+  score: number
 }
 
 export type WallType = 'haiyama' | 'lingshang'
@@ -67,12 +72,24 @@ export interface Round {
   riichiSticks: number
 }
 
+export interface Scoreboard {
+  winner: PlayerType
+  score: number
+  fu: number
+  han: number
+  yakuman: number
+  yaku: Yaku[]
+  hostConfirmed: boolean
+  guestConfirmed: boolean
+}
+
 export interface GameState {
   host: Player
   guest: Player
   wall: Wall
   turn: PlayerType
   round: Round
+  scoreboard?: Scoreboard
 }
 
 export interface Room {

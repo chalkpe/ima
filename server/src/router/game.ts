@@ -1,12 +1,15 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
-import { database } from '../db'
+import { observable } from '@trpc/server/observable'
 import { publicProcedure, router } from '../trpc'
+
+import { database, ee } from '../db'
 
 import { getRemainingTileCount, getVisibleState, initState } from '../controllers/game/state'
 import { ankan, chi, daiminkan, gakan, giri, pon, riichi, skipAndTsumo, skipChankan, tsumo } from '../controllers/game/action'
-import { getActiveMe } from '../helpers/game'
+
 import { tileTypes } from '../helpers/tile'
+import { getActiveMe } from '../helpers/game'
 
 const getRoom = (username: string, started?: boolean) => {
   const room = database.rooms.find((room) => room.host === username || room.guest === username)
@@ -24,6 +27,18 @@ export const gameRouter = router({
     return { ...room, state: getVisibleState(room.state, me) }
   }),
 
+  onStateChange: publicProcedure.subscription((opts) => {
+    const { username } = opts.ctx
+    const room = getRoom(username)
+
+    return observable<void>((emit) => {
+      const onUpdate = (host: string) => host === room.host && emit.next()
+
+      ee.on('update', onUpdate)
+      return () => ee.off('update', onUpdate)
+    })
+  }),
+
   start: publicProcedure.mutation((opts) => {
     const { username } = opts.ctx
 
@@ -32,6 +47,8 @@ export const gameRouter = router({
 
     initState(room.state)
     tsumo(room.state, 'host', 'haiyama')
+
+    ee.emit('update', room.host)
   }),
 
   getRemainingTileCount: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).query((opts) => {
@@ -50,6 +67,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     pon(room.state, me, tatsu)
+
+    ee.emit('update', room.host)
   }),
 
   chi: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation((opts) => {
@@ -59,6 +78,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     chi(room.state, me, tatsu)
+
+    ee.emit('update', room.host)
   }),
 
   daiminkan: publicProcedure.mutation((opts) => {
@@ -67,6 +88,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     daiminkan(room.state, me)
+
+    ee.emit('update', room.host)
   }),
 
   ankan: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation((opts) => {
@@ -76,6 +99,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     ankan(room.state, me, type, value)
+
+    ee.emit('update', room.host)
   }),
 
   gakan: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation((opts) => {
@@ -85,6 +110,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     gakan(room.state, me, type, value)
+
+    ee.emit('update', room.host)
   }),
 
   skipAndTsumo: publicProcedure.mutation((opts) => {
@@ -93,6 +120,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     skipAndTsumo(room.state, me)
+
+    ee.emit('update', room.host)
   }),
 
   skipChankan: publicProcedure.mutation((opts) => {
@@ -101,6 +130,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     skipChankan(room.state, me)
+
+    ee.emit('update', room.host)
   }),
 
   giri: publicProcedure.input(z.object({ index: z.number() })).mutation((opts) => {
@@ -110,6 +141,8 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     giri(room.state, me, index)
+
+    ee.emit('update', room.host)
   }),
 
   riichi: publicProcedure.input(z.object({ index: z.number() })).mutation((opts) => {
@@ -119,5 +152,7 @@ export const gameRouter = router({
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
     riichi(room.state, me, index)
+
+    ee.emit('update', room.host)
   }),
 })

@@ -27,7 +27,6 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
     [hand.tenpai, hand.tsumo?.index]
   )
 
-  const utils = trpc.useUtils()
   const { mutate: giri } = trpc.game.giri.useMutation()
 
   useEffect(() => {
@@ -57,7 +56,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               sequence={convertTileToCode(tile)}
               onMouseEnter={() => setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
-              onClick={() => giri({ index: tile.index }, { onSuccess: () => utils.game.state.invalidate() })}
+              onClick={() => giri({ index: tile.index })}
               style={{ transform: hoveredIndex === tile.index ? 'translateY(-1vmin)' : undefined }}
             />
           ))}
@@ -68,7 +67,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
             sequence={convertTileToCode(hand.tsumo)}
             onMouseEnter={() => setHoveredIndex(hand.tsumo!.index)}
             onMouseLeave={() => setHoveredIndex(undefined)}
-            onClick={() => giri({ index: hand.tsumo!.index }, { onSuccess: () => utils.game.state.invalidate() })}
+            onClick={() => giri({ index: hand.tsumo!.index })}
             style={{ transform: hoveredIndex === hand.tsumo!.index ? 'translateY(-1vmin)' : undefined }}
           />
         ) : (

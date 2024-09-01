@@ -30,7 +30,7 @@ const Entry: FC = () => {
           fullWidth
           autoFocus
           value={input}
-          onChange={(e) => setInput(e.target.value.replace(/[^A-Za-z0-9]/g, ''))}
+          onChange={(e) => setInput(e.target.value.trim())}
           onKeyDown={(e) => e.key === 'Enter' && onEnter()}
         />
         <Button disabled={!input} fullWidth variant="contained" onClick={onEnter}>

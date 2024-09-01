@@ -10,7 +10,6 @@ interface DecisionsProps {
 }
 
 const Decisions: FC<DecisionsProps> = ({ decisions }) => {
-  const utils = trpc.useUtils()
   const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: chi } = trpc.game.chi.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
@@ -25,46 +24,40 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
       if (decision.type === 'ankan' && decision.tile) {
         const type = decision.tile.type
         const value = decision.tile.value
-        if (type !== 'back') ankan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
+        if (type !== 'back') ankan({ type, value })
       }
 
       if (decision.type === 'gakan' && decision.tile) {
         const type = decision.tile.type
         const value = decision.tile.value
-        if (type !== 'back') gakan({ type, value }, { onSuccess: () => utils.game.state.invalidate() })
+        if (type !== 'back') gakan({ type, value })
       }
 
       if (decision.type === 'pon' && decision.otherTiles) {
-        pon(
-          { tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] },
-          { onSuccess: () => utils.game.state.invalidate() }
-        )
+        pon({ tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] })
       }
 
       if (decision.type === 'chi' && decision.otherTiles) {
-        chi(
-          { tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] },
-          { onSuccess: () => utils.game.state.invalidate() }
-        )
+        chi({ tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] })
       }
 
       if (decision.type === 'daiminkan') {
-        daiminkan(undefined, { onSuccess: () => utils.game.state.invalidate() })
+        daiminkan(undefined)
       }
 
       if (decision.type === 'skip_and_tsumo') {
-        skipAndTsumo(undefined, { onSuccess: () => utils.game.state.invalidate() })
+        skipAndTsumo(undefined)
       }
 
       if (decision.type === 'skip_chankan') {
-        skipChankan(undefined, { onSuccess: () => utils.game.state.invalidate() })
+        skipChankan(undefined)
       }
 
       if (decision.type === 'riichi' && decision.tile) {
-        riichi({ index: decision.tile.index }, { onSuccess: () => utils.game.state.invalidate() })
+        riichi({ index: decision.tile.index })
       }
     },
-    [ankan, chi, daiminkan, gakan, pon, riichi, skipAndTsumo, skipChankan, utils.game.state]
+    [ankan, chi, daiminkan, gakan, pon, riichi, skipAndTsumo, skipChankan]
   )
 
   return (

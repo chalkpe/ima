@@ -12,16 +12,21 @@ import Decisions from '../components/game/Decisions'
 const Game = () => {
   const navigate = useNavigate()
   const { username, skip } = useAuth()
-  
+
   const utils = trpc.useUtils()
-  const { data, error } = trpc.game.state.useQuery(skip, { refetchInterval: 1000 })
+  const { data, error } = trpc.game.state.useQuery(skip)
+  trpc.game.onStateChange.useSubscription(skip, {
+    onData: () => {
+      utils.game.state.invalidate()
+      utils.game.getRemainingTileCount.invalidate()
+    },
+  })
 
   useEffect(() => {
-    utils.game.getRemainingTileCount.invalidate()
     if (!data || error) {
       navigate('/lobby')
     }
-  }, [data, error, navigate, utils.game.getRemainingTileCount])
+  }, [data, error, navigate])
 
   if (!data) return null
 
@@ -32,7 +37,7 @@ const Game = () => {
       <Center state={data.state} me={me} />
       <Wall wall={data.state.wall} />
       <KingTiles wall={data.state.wall} />
-      
+
       <Hand hand={data.state[opponent].hand} />
       <River river={data.state[opponent].river} />
 

@@ -46,7 +46,7 @@ const Game = () => {
       <Hand hand={data.state[me].hand} me />
 
       <Decisions decisions={data.state[me].decisions} />
-      <Scoreboard scoreboard={data.state.scoreboard} />
+      <Scoreboard data={data} />
     </>
   )
 }

@@ -2,13 +2,15 @@ import type { GameState } from '../../types/game'
 import type { Syuntsu } from '../../types/tile'
 import type { AgariType } from '../../types/yaku'
 import { codeSyntaxToHand } from '../code'
-import { initialState } from '../game'
+import { createInitialState } from '../game'
 import { isSyuntsu, simpleTileToTile } from '../tile'
 import { calculateYaku } from '../yaku'
 
 describe('yaku', () => {
   describe('calculateYaku', () => {
     let index = 0
+    const initialState = createInitialState()
+
     const c = (code: string) =>
       codeSyntaxToHand(code)
         .map(simpleTileToTile)

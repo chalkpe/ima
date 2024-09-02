@@ -77,12 +77,13 @@ export interface Round {
 export interface Scoreboard {
   winner: PlayerType
   score: number
-  fu: number
   han: number
   yakuman: number
   yaku: Yaku[]
   hostConfirmed: boolean
   guestConfirmed: boolean
+  doraTiles: Tile[]
+  uraDoraTiles: Tile[]
 }
 
 export interface GameState {

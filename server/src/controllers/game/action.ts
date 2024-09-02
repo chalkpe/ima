@@ -10,7 +10,7 @@ import {
 } from './event'
 
 import { partition } from '../../helpers/common'
-import { getClosedHand, getOpponent, getRiverEnd } from '../../helpers/game'
+import { getClosedHand, getDoraTiles, getOpponent, getRiverEnd, getUraDoraTiles } from '../../helpers/game'
 import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '../../helpers/tile'
 
 import type { Tile, TileType } from '../../types/tile'
@@ -179,12 +179,16 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
   state.scoreboard = {
     winner: me,
     score: 0,
-    fu: 0,
     han: yaku.reduce((han, yaku) => han + yaku.han, 0),
-    yakuman: 0,
+    yakuman: yaku
+      .filter((y) => y.isYakuman)
+      .map((y) => Math.floor(y.han / 13))
+      .reduce((a, b) => a + b, 0),
     yaku,
     hostConfirmed: false,
     guestConfirmed: false,
+    doraTiles: getDoraTiles(state.wall),
+    uraDoraTiles: getUraDoraTiles(state.wall),
   }
 }
 
@@ -206,12 +210,16 @@ export const callRon = (state: GameState, me: PlayerType) => {
   state.scoreboard = {
     winner: me,
     score: 0,
-    fu: 0,
     han: yaku.reduce((han, yaku) => han + yaku.han, 0),
-    yakuman: 0,
+    yakuman: yaku
+      .filter((y) => y.isYakuman)
+      .map((y) => Math.floor(y.han / 13))
+      .reduce((a, b) => a + b, 0),
     yaku,
     hostConfirmed: false,
     guestConfirmed: false,
+    doraTiles: getDoraTiles(state.wall),
+    uraDoraTiles: getUraDoraTiles(state.wall),
   }
 }
 

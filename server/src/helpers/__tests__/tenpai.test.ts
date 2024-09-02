@@ -3,9 +3,10 @@ import { simpleTileToRiverTile, simpleTileToTile } from '../tile'
 import { calculateFuriten, calculateTenpai } from '../tenpai'
 import type { TenpaiState } from '../../types/agari'
 import type { Koritsu, Syuntsu, Tatsu } from '../../types/tile'
-import { initialState } from '../game'
+import { createInitialState } from '../game'
 
 describe('tenpai', () => {
+  const initialState = createInitialState()
   const c = (tiles: string) => codeSyntaxToHand(tiles)
   const t = (tiles: string) => codeSyntaxToHand(tiles).map(simpleTileToTile)
   const h = (tiles: string) => ({ ...initialState.host.hand, closed: codeSyntaxToHand(tiles).map(simpleTileToTile) })

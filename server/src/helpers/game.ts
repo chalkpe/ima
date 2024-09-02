@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server'
 import type { Tile } from '../types/tile'
 import type { GameState, Hand, Player, PlayerType, RiverTile, Room, Wall } from '../types/game'
 
-export const initialState: GameState = {
+export const createInitialState = (): GameState => ({
   host: {
     wind: 'east',
     river: [],
@@ -48,7 +48,7 @@ export const initialState: GameState = {
     honba: 0,
     riichiSticks: 0,
   },
-}
+})
 
 export const getOpponent = (me: PlayerType): PlayerType => (me === 'host' ? 'guest' : 'host')
 
@@ -63,6 +63,7 @@ export const getRiverEnd = (player: Player): RiverTile | undefined => {
 
 export const getActiveMe = (room: Room, username: string) => {
   const me = room.host === username ? 'host' : 'guest'
+  if (room.state.scoreboard) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Game ended' })
   if (room.state.turn !== me) throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your turn' })
   return me
 }

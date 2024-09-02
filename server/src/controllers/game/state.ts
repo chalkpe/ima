@@ -32,7 +32,7 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
 }
 
 export const initState = (state: GameState) => {
-  const tiles = availableTiles.slice()
+  const tiles = availableTiles.map((tile) => ({ ...tile }))
   for (let i = tiles.length - 1; i > 0; i--) {
     const rand = Math.floor(Math.random() * (i + 1))
     ;[tiles[i], tiles[rand]] = [tiles[rand], tiles[i]]

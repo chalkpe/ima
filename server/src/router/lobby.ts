@@ -2,7 +2,7 @@ import z from 'zod'
 import { publicProcedure, router } from '../trpc'
 import { database } from '../db'
 import { TRPCError } from '@trpc/server'
-import { initialState } from '../helpers/game'
+import { createInitialState } from '../helpers/game'
 import type { Room } from '../types/game'
 
 export const lobbyRouter = router({
@@ -22,7 +22,7 @@ export const lobbyRouter = router({
       guest: '',
       guestReady: false,
       started: false,
-      state: initialState,
+      state: createInitialState(),
     }
 
     database.rooms.push(room)

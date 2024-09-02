@@ -13,8 +13,14 @@ const calculateYakuOfAgari = (
   agariTile: Tile,
   agariState: AgariState
 ): Yaku[] => {
+  const menzen = agariState.every((tsu) => !tsu.open)
+
   const agariTsu = agariState.find((tsu) => tsu.tiles.some((tile) => tile.index === agariTile.index))
   if (!agariTsu) return []
+
+  if (agariType === 'ron') {
+    agariTsu.open = true
+  }
 
   const params: YakuPredicateParams = {
     agariType,
@@ -23,14 +29,19 @@ const calculateYakuOfAgari = (
     agariTsu,
     bakaze: state.round.wind,
     jikaze: state[me].wind,
-    menzen: agariState.every((tsu) => !tsu.open),
+    menzen,
     riichi: state[me].riichi,
     doraTiles: getDoraTiles(state.wall),
     uraDoraTiles: getUraDoraTiles(state.wall),
   }
-  return yakuPredicates.map((predicate) => predicate(params))
+
+  const result = yakuPredicates
+    .map((predicate) => predicate(params))
     .filter((res): res is Yaku | Yaku[] => res !== false)
-    .flatMap((res) => Array.isArray(res) ? res : [res])
+    .flatMap((res) => (Array.isArray(res) ? res : [res]))
+
+  if (!result.some((yaku) => yaku.isYakuman)) return result
+  return result.filter((yaku) => yaku.isYakuman)
 }
 
 export const tileSetToTsu = (s: TileSet): Tsu => {

@@ -1,7 +1,27 @@
 import { partition } from '../common'
 import { tileToCode } from '../code'
-import { getTatsuMachi, getTileWind, isEqualTile, isStrictEqualTile, isYakuhai, isYaochuuhai, tileNames } from '../tile'
+import {
+  compareTile,
+  getDoraTile,
+  getTatsuMachi,
+  getTileWind,
+  isEqualTile,
+  isStrictEqualTile,
+  isYakuhai,
+  isYaochuuhai,
+  tileNames,
+} from '../tile'
 import type { YakuPredicate } from '../../types/yaku'
+import { availableTiles } from '../game'
+
+const isKokushimusou: YakuPredicate = ({ agariState, agariTsu }) => {
+  const [kokushi, toitsu] = partition(agariState, (tsu) => tsu.type === 'kokushi')
+
+  if (kokushi.length !== 12 || toitsu.length !== 1 || toitsu[0].type !== 'toitsu') return false
+  return agariTsu.type === 'kokushi'
+    ? { name: '국사무쌍', han: 13, isYakuman: true }
+    : { name: '국사무쌍 13면 대기', han: 26, isYakuman: true }
+}
 
 const isMenzenTsumo: YakuPredicate = ({ agariType, menzen }) =>
   agariType === 'tsumo' && menzen && { name: '멘젠쯔모', han: 1 }
@@ -65,8 +85,37 @@ const isItsu: YakuPredicate = ({ agariState, menzen }) => {
   return others.length === 0 ? { name: '청일색', han: menzen ? 6 : 5 } : { name: '혼일색', han: menzen ? 3 : 2 }
 }
 
+const isIipeikou: YakuPredicate = ({ agariState }) => {
+  const syuntsuCounts = agariState
+    .filter((tsu) => tsu.type === 'shuntsu')
+    .map((tsu) => tsu.tiles.sort(compareTile).map(tileToCode).join(''))
+    .reduce((map, code) => ({ ...map, [code]: (map[code] || 0) + 1 }), {} as Record<string, number>)
+
+  const iipeikou = Object.values(syuntsuCounts).filter((count) => count === 2)
+  if (iipeikou.length === 0) return false
+  return iipeikou.length === 2 ? { name: '량페코', han: 3 } : { name: '이페코', han: 1 }
+}
+
+const isSanankou: YakuPredicate = ({ agariState, agariTsu }) => {
+  const ankou = agariState.filter((tsu) => (tsu.type === 'koutsu' || tsu.type === 'kantsu') && !tsu.open)
+  if (ankou.length === 4) {
+    return agariTsu.type === 'toitsu'
+      ? { name: '스안커단기', han: 26, isYakuman: true }
+      : { name: '스안커', han: 13, isYakuman: true }
+  }
+  if (ankou.length === 3) {
+    return { name: '산안커', han: 2 }
+  }
+  return false
+}
+
 const isDora: YakuPredicate = ({ agariState, doraTiles }) => {
-  const count = agariState.map((tsu) => tsu.tiles.filter((tile) => doraTiles.some((dora) => isEqualTile(tile, dora))).length)
+  const count = agariState
+    .map(
+      (tsu) =>
+        tsu.tiles.filter((tile) => doraTiles.some((dora) => isEqualTile(tile, getDoraTile(dora, availableTiles))))
+          .length
+    )
     .reduce((a, b) => a + b)
 
   return count > 0 ? { name: '도라', han: count } : false
@@ -84,13 +133,18 @@ const isUraDora: YakuPredicate = ({ riichi, agariState, uraDoraTiles }) => {
   if (riichi === null) return false
 
   const count = agariState
-    .map((tsu) => tsu.tiles.filter((tile) => uraDoraTiles.some((dora) => isEqualTile(tile, dora))).length)
+    .map(
+      (tsu) =>
+        tsu.tiles.filter((tile) => uraDoraTiles.some((dora) => isEqualTile(tile, getDoraTile(dora, availableTiles))))
+          .length
+    )
     .reduce((a, b) => a + b)
 
   return count > 0 ? { name: '뒷도라', han: count } : false
 }
 
 const yakuPredicates: YakuPredicate[] = [
+  isKokushimusou,
   isMenzenTsumo,
   isRiichi,
   isChiitoitsu,
@@ -99,6 +153,8 @@ const yakuPredicates: YakuPredicate[] = [
   isTanyao,
   isToitoi,
   isItsu,
+  isIipeikou,
+  isSanankou,
   isDora,
   isAkaDora,
   isUraDora,

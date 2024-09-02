@@ -6,6 +6,7 @@ export interface Yaku {
   name: string
   han: number
   isExtra?: boolean
+  isYakuman?: boolean
 }
 
 export type AgariType = 'tsumo' | 'ron' | 'test'

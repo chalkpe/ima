@@ -1,8 +1,10 @@
 import { Koritsu, Koutsu, Tatsu } from '../../types/tile'
 import { codeSyntaxToHand as c } from '../code'
+import { availableTiles } from '../game'
 import {
   countTiles,
   getAllSyuntsu,
+  getDoraTile,
   getLowerTile,
   getMachiTiles,
   getTatsuMachi,
@@ -428,6 +430,21 @@ describe('tile', () => {
       expect(getMachiTiles({ type: 'ryanmen', tiles: c('22m') as Tatsu })).toEqual([]) // invalid
       expect(getMachiTiles({ type: 'ryanmen', tiles: c('24m') as Tatsu })).toEqual([]) // invalid
       expect(getMachiTiles({ type: 'ryanmen', tiles: c('1m') as Tatsu })).toEqual([]) // invalid
+    })
+  })
+
+  describe('getDoraTile', () => {
+    test('should return the dora tile', () => {
+      expect(getDoraTile(c('1m')[0], availableTiles)).toEqual(c('9m')[0])
+      expect(getDoraTile(c('9m')[0], availableTiles)).toEqual(c('1m')[0])
+      expect(getDoraTile(c('1p')[0], availableTiles)).toEqual(c('9p')[0])
+      expect(getDoraTile(c('9p')[0], availableTiles)).toEqual(c('1p')[0])
+      expect(getDoraTile(c('1s')[0], availableTiles)).toEqual(c('2s')[0])
+      expect(getDoraTile(c('9s')[0], availableTiles)).toEqual(c('1s')[0])
+      expect(getDoraTile(c('1z')[0], availableTiles)).toEqual(c('2z')[0])
+      expect(getDoraTile(c('4z')[0], availableTiles)).toEqual(c('1z')[0])
+      expect(getDoraTile(c('5z')[0], availableTiles)).toEqual(c('6z')[0])
+      expect(getDoraTile(c('7z')[0], availableTiles)).toEqual(c('5z')[0])
     })
   })
 })

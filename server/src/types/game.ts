@@ -40,13 +40,15 @@ export interface Decision {
   otherTiles?: Tile[]
 }
 
+export type RiichiState = number | null
+
 export interface Player {
   wind: Wind
   river: RiverTile[]
   hand: Hand
   decisions: Decision[]
   jun: number
-  riichi: number | null
+  riichi: RiichiState
   score: number
 }
 

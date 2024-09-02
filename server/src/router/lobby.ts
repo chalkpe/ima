@@ -2,6 +2,7 @@ import z from 'zod'
 import { publicProcedure, router } from '../trpc'
 import { database } from '../db'
 import { TRPCError } from '@trpc/server'
+import { initialState } from '../helpers/game'
 import type { Room } from '../types/game'
 
 export const lobbyRouter = router({
@@ -21,53 +22,7 @@ export const lobbyRouter = router({
       guest: '',
       guestReady: false,
       started: false,
-      state: {
-        host: {
-          wind: 'east',
-          river: [],
-          hand: {
-            closed: [],
-            called: [],
-            tsumo: undefined,
-            tenpai: [],
-            giriMap: [],
-          },
-          decisions: [],
-          jun: 0,
-          riichi: null,
-          score: 0,
-        },
-        guest: {
-          wind: 'west',
-          river: [],
-          hand: {
-            closed: [],
-            called: [],
-            tsumo: undefined,
-            tenpai: [],
-            giriMap: [],
-          },
-          decisions: [],
-          jun: 0,
-          riichi: null,
-          score: 0,
-        },
-        wall: {
-          tiles: [],
-          firstTileIndex: 0,
-          lastTileIndex: 0,
-          kingTiles: [],
-          supplementTiles: [],
-          doraCount: 1,
-        },
-        turn: 'host',
-        round: {
-          wind: 'east',
-          kyoku: 1,
-          honba: 0,
-          riichiSticks: 0,
-        },
-      },
+      state: initialState,
     }
 
     database.rooms.push(room)

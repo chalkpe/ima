@@ -81,6 +81,14 @@ export const getUpperTile = (tile: SimpleTile): SimpleTile | undefined => {
   return { type: tile.type, value: tile.value + 1 }
 }
 
+export const getDoraTile = (tile: SimpleTile, availableTiles: Tile[]): SimpleTile => {
+  const next = { type: tile.type, value: tile.value + 1 }
+  if (availableTiles.some((t) => isEqualTile(t, next))) return next
+
+  const { type, value } = availableTiles.filter((t) => t.type === tile.type && t.value !== tile.value).sort((a, b) => a.value - b.value)[0]
+  return { type, value }
+}
+
 export const tileTypeOrder: SimpleTile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon', 'back']
 
 export const compareTile = (a: SimpleTile, b: SimpleTile): number => {

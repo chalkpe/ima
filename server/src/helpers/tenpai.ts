@@ -1,7 +1,7 @@
 import { codeToTile } from './code'
 import { calculateAgari } from './agari'
 import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from './tile'
-import type { GameState, Hand, PlayerType, RiverTile } from '../types/game'
+import type { GameState, Hand, PlayerType } from '../types/game'
 import type { TenpaiState } from '../types/agari'
 import type { Tile } from '../types/tile'
 import type { Tenpai } from '../types/tenpai'
@@ -39,7 +39,7 @@ export const calculateTenpai = (
     agariTile: codeToTile(code),
     status: calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code))).every((yaku) => yaku.isExtra)
       ? 'muyaku'
-      : states.every((s) => calculateFuriten(state, me, s,  giriTile))
+      : states.every((s) => calculateFuriten(state, me, s, giriTile))
       ? 'tenpai'
       : 'furiten',
   }))

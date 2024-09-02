@@ -1,6 +1,54 @@
-import type { Tile } from '../types/tile'
-import type { Hand, Player, PlayerType, RiverTile, Room } from '../types/game'
 import { TRPCError } from '@trpc/server'
+import type { Tile } from '../types/tile'
+import type { GameState, Hand, Player, PlayerType, RiverTile, Room, Wall } from '../types/game'
+
+export const initialState: GameState = {
+  host: {
+    wind: 'east',
+    river: [],
+    hand: {
+      closed: [],
+      called: [],
+      tsumo: undefined,
+      tenpai: [],
+      giriMap: [],
+    },
+    decisions: [],
+    jun: 0,
+    riichi: null,
+    score: 0,
+  },
+  guest: {
+    wind: 'west',
+    river: [],
+    hand: {
+      closed: [],
+      called: [],
+      tsumo: undefined,
+      tenpai: [],
+      giriMap: [],
+    },
+    decisions: [],
+    jun: 0,
+    riichi: null,
+    score: 0,
+  },
+  wall: {
+    tiles: [],
+    firstTileIndex: 0,
+    lastTileIndex: 0,
+    kingTiles: [],
+    supplementTiles: [],
+    doraCount: 1,
+  },
+  turn: 'host',
+  round: {
+    wind: 'east',
+    kyoku: 1,
+    honba: 0,
+    riichiSticks: 0,
+  },
+}
 
 export const getOpponent = (me: PlayerType): PlayerType => (me === 'host' ? 'guest' : 'host')
 
@@ -44,3 +92,12 @@ export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
 )
 
 export const isMenzenHand = (hand: Hand) => hand.called.filter((s) => s.type !== 'ankan').length === 0
+
+export const doraIndices = [9, 7, 5, 3, 1]
+export const uraDoraIndices = [8, 6, 4, 2, 0]
+
+export const getDoraTiles = (wall: Wall): Tile[] =>
+  wall.kingTiles.filter((_, index) => doraIndices.slice(0, wall.doraCount).includes(index))
+
+export const getUraDoraTiles = (wall: Wall): Tile[] =>
+  wall.kingTiles.filter((_, index) => uraDoraIndices.slice(0, wall.doraCount).includes(index))

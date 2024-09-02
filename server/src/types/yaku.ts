@@ -1,5 +1,5 @@
 import type { AgariState } from './agari'
-import type { GameState, Hand, PlayerType } from './game'
+import type { RiichiState, Wind } from './game'
 import type { Tile, Tsu } from './tile'
 
 export interface Yaku {
@@ -11,13 +11,16 @@ export interface Yaku {
 export type AgariType = 'tsumo' | 'ron' | 'test'
 
 export interface YakuPredicateParams {
-  state: GameState
-  me: PlayerType
-  hand: Hand
   agariType: AgariType
   agariTile: Tile
   agariState: AgariState
   agariTsu: Tsu
+  bakaze: Wind
+  jikaze: Wind
+  menzen: boolean
+  riichi: RiichiState
+  doraTiles: Tile[]
+  uraDoraTiles: Tile[]
 }
 
 export type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false

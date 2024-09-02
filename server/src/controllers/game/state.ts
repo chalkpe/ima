@@ -1,6 +1,6 @@
 import { isEqualTile, simpleTileToTile } from '../../helpers/tile'
 import { backTile as simpleBackTile } from '../../helpers/code'
-import { availableTiles, getClosedHand, getOpponent, haipaiCounts } from '../../helpers/game'
+import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '../../helpers/game'
 import type { SimpleTile, Tile } from '../../types/tile'
 import type { GameState, PlayerType } from '../../types/game'
 
@@ -24,7 +24,7 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
       ...state.wall,
       tiles: state.wall.tiles.map(hideTile),
       kingTiles: state.wall.kingTiles.map((tile, index) =>
-        [9, 7, 5, 3, 1].slice(0, state.wall.doraCount).includes(index) ? tile : hideTile(tile)
+        doraIndices.slice(0, state.wall.doraCount).includes(index) ? tile : hideTile(tile)
       ),
       supplementTiles: state.wall.supplementTiles.map(hideTile),
     },

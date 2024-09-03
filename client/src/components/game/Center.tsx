@@ -24,7 +24,7 @@ const Center: FC<CenterProps> = ({ state, me }) => {
       {state.round.wind} {state.round.kyoku}국 {state.round.honba}본장 <br />
       tiles left: {state.wall.tiles.length} <br />
       me: {state[me].wind}, {state[me].score}점 <br />
-      op: {state[op].wind}, {state[me].score}점
+      op: {state[op].wind}, {state[op].score}점
     </Paper>
   )
 }

@@ -85,7 +85,9 @@ export const getDoraTile = (tile: SimpleTile, availableTiles: Tile[]): SimpleTil
   const next = { type: tile.type, value: tile.value + 1 }
   if (availableTiles.some((t) => isEqualTile(t, next))) return next
 
-  const { type, value } = availableTiles.filter((t) => t.type === tile.type && t.value !== tile.value).sort((a, b) => a.value - b.value)[0]
+  const { type, value } = availableTiles
+    .filter((t) => t.type === tile.type && t.value !== tile.value)
+    .sort((a, b) => a.value - b.value)[0]
   return { type, value }
 }
 
@@ -207,13 +209,23 @@ export const getMachiTiles = (machi: Machi): SimpleTile[] => {
 
 const windMap: Record<number, Wind> = { 1: 'east', 2: 'south', 3: 'west', 4: 'north' }
 
-export const getTileWind = (tile: SimpleTile): Wind | undefined => (tile.type === 'wind' ? windMap[tile.value] : undefined)
+export const getTileWind = (tile: SimpleTile): Wind | undefined =>
+  tile.type === 'wind' ? windMap[tile.value] : undefined
 
 export const isYakuhai = (tile: SimpleTile, bakaze: Wind, jikaze: Wind) =>
   tile.type === 'dragon' || (tile.type === 'wind' && [bakaze, jikaze].includes(windMap[tile.value]))
 
+export const isSyuupai = (tile: SimpleTile) => syuupaiTypes.includes(tile.type)
 
-export const isYaochuuhai = (tile: SimpleTile) => tile.type === 'dragon' || tile.type === 'wind' || tile.value === 1 || tile.value === 9
+export const isWindHai = (tile: SimpleTile) => tile.type === 'wind'
+
+export const isDragonHai = (tile: SimpleTile) => tile.type === 'dragon'
+
+export const isZihai = (tile: SimpleTile) => isWindHai(tile) || isDragonHai(tile)
+
+export const isYaochuuhai = (tile: SimpleTile) => isZihai(tile) || tile.value === 1 || tile.value === 9
+
+export const getTilesValueString = (tiles: SimpleTile[]) => tiles.sort(compareTile).map((tile) => tile.value).join('')
 
 export const tileNames: Record<Code, string> = {
   '1m': '1만',

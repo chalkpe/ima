@@ -16,6 +16,7 @@ export interface YakuPredicateParams {
   agariTile: Tile
   agariState: AgariState
   agariTsu: Tsu
+  jun: number
   bakaze: Wind
   jikaze: Wind
   menzen: boolean

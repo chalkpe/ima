@@ -16,7 +16,7 @@ const calculateYakuOfAgari = (
   const menzen = agariState.every((tsu) => !tsu.open)
 
   const agariTsu = agariState.find((tsu) => tsu.tiles.some((tile) => tile.index === agariTile.index))
-  if (!agariTsu) return []
+  /* istanbul ignore next */ if (!agariTsu) return []
 
   if (agariType === 'ron') {
     agariTsu.open = true
@@ -27,6 +27,7 @@ const calculateYakuOfAgari = (
     agariTile,
     agariState,
     agariTsu,
+    jun: state[me].jun,
     bakaze: state.round.wind,
     jikaze: state[me].wind,
     menzen,

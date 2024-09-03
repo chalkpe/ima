@@ -39,7 +39,19 @@ describe('yaku', () => {
     })
 
     test('muyaku', () => {
-      expect(calc('234m234p23344s11z5s', [], 'ron')).toMatchObject([])
+      expect(calc('234m345p23344s11z5s', [], 'ron')).toMatchObject([])
+    })
+
+    test('tenhou', () => {
+      expect(
+        calc('234m345p23344s11z5s', [], 'tsumo', { ...initialState, host: { ...initialState.host, jun: 1 } })
+      ).toMatchObject([{ name: '천화', han: 13, isYakuman: true }])
+    })
+
+    test('chiihou', () => {
+      expect(
+        calc('234m345p23344s11z5s', [], 'tsumo', { ...initialState, host: { ...initialState.host, jun: 1, wind: 'west' } })
+      ).toMatchObject([{ name: '지화', han: 13, isYakuman: true }])
     })
 
     test('kokushi', () => {
@@ -50,19 +62,19 @@ describe('yaku', () => {
     })
 
     test('menzen tsumo', () => {
-      expect(calc('234m234p23344s55z5s', [], 'tsumo')).toMatchObject([{ name: '멘젠쯔모', han: 1 }])
+      expect(calc('234m345p23344s55z5s', [], 'tsumo')).toMatchObject([{ name: '멘젠쯔모', han: 1 }])
       expect(calc('234p23344s55z5s', ['22222m'], 'tsumo')).toMatchObject([{ name: '멘젠쯔모', han: 1 }])
-      expect(calc('234p23344s55z5s', ['234m'], 'tsumo')).toMatchObject([])
+      expect(calc('234p23344s55z5s', ['345m'], 'tsumo')).toMatchObject([])
     })
 
     test('pinfu', () => {
-      expect(calc('234m234p23344s44z5s', [], 'ron')).toMatchObject([{ name: '핑후', han: 1 }])
-      expect(calc('234m234p24567s44z3s', [], 'ron')).toMatchObject([])
-      expect(calc('222m234p23344s44z5s', [], 'ron')).toMatchObject([])
-      expect(calc('234p23344s44z5s', ['234m'], 'ron')).toMatchObject([])
-      expect(calc('234m234p23344s11z5s', [], 'ron')).toMatchObject([])
+      expect(calc('234m345p23344s44z5s', [], 'ron')).toMatchObject([{ name: '핑후', han: 1 }])
+      expect(calc('234m345p24567s44z3s', [], 'ron')).toMatchObject([])
+      expect(calc('222m345p23344s44z5s', [], 'ron')).toMatchObject([])
+      expect(calc('234p23344s44z5s', ['345m'], 'ron')).toMatchObject([])
+      expect(calc('234m345p23344s11z5s', [], 'ron')).toMatchObject([])
       expect(
-        calc('234m234p23344s11z5s', [], 'ron', {
+        calc('345m234p23344s11z5s', [], 'ron', {
           ...initialState,
           round: { ...initialState.round, wind: 'south' },
           host: { ...initialState.host, wind: 'west' },
@@ -71,19 +83,19 @@ describe('yaku', () => {
     })
 
     test('tanyao', () => {
-      expect(calc('2346m567p345678s6m', [], 'ron')).toMatchObject([{ name: '탕야오', han: 1 }])
-      expect(calc('6m345678s6m', ['234m', '567p'], 'ron')).toMatchObject([{ name: '탕야오', han: 1 }])
+      expect(calc('2346m678p345678s6m', [], 'ron')).toMatchObject([{ name: '탕야오', han: 1 }])
+      expect(calc('6m345678s6m', ['234m', '678p'], 'ron')).toMatchObject([{ name: '탕야오', han: 1 }])
     })
 
     test('men pin', () => {
-      expect(calc('234m234p23344s44z5s', [], 'tsumo')).toMatchObject([
+      expect(calc('345m234p23344s44z5s', [], 'tsumo')).toMatchObject([
         { name: '멘젠쯔모', han: 1 },
         { name: '핑후', han: 1 },
       ])
     })
 
     test('men pin tan', () => {
-      expect(calc('234m234p2334466s5s', [], 'tsumo')).toMatchObject([
+      expect(calc('345m234p2334466s5s', [], 'tsumo')).toMatchObject([
         { name: '멘젠쯔모', han: 1 },
         { name: '핑후', han: 1 },
         { name: '탕야오', han: 1 },
@@ -92,10 +104,10 @@ describe('yaku', () => {
 
     test('riichi', () => {
       expect(
-        calc('234m234p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 1 } })
+        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 1 } })
       ).toMatchObject([{ name: '더블리치', han: 2 }])
       expect(
-        calc('234m234p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 2 } })
+        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 2 } })
       ).toMatchObject([{ name: '리치', han: 1 }])
     })
 
@@ -115,6 +127,11 @@ describe('yaku', () => {
       expect(calc('2345553444m3m', ['111m'], 'ron')).toMatchObject([{ name: '청일색', han: 5 }])
     })
 
+    test('ryuuiisou', () => {
+      expect(calc('33344466688s', ['222s'], 'ron')).toMatchObject([{ name: '녹일색', han: 13, isYakuman: true }])
+      expect(calc('22334466688s666z', [], 'ron')).toMatchObject([{ name: '녹일색', han: 13, isYakuman: true }])
+    })
+
     test('iipeikou', () => {
       expect(calc('112233444m555p66z', [], 'ron')).toMatchObject([{ name: '이페코', han: 1 }])
     })
@@ -127,6 +144,25 @@ describe('yaku', () => {
       ])
       expect(calc('222m333p22233s44z4z', [], 'tsumo')).toMatchObject([{ name: '스안커', han: 13, isYakuman: true }])
       expect(calc('222m333p222333s44z', [], 'tsumo')).toMatchObject([{ name: '스안커단기', han: 26, isYakuman: true }])
+    })
+
+    test('ittsuu', () => {
+      expect(calc('123456789m11p444z', [], 'ron')).toMatchObject([{ name: '일기통관', han: 2 }])
+      expect(calc('123456789p11m444z', [], 'ron')).toMatchObject([{ name: '일기통관', han: 2 }])
+      expect(calc('123456789s11m444z', [], 'ron')).toMatchObject([{ name: '일기통관', han: 2 }])
+      expect(calc('456789m11p444z', ['123m'], 'ron')).toMatchObject([{ name: '일기통관', han: 1 }])
+      expect(calc('456789p11m444z', ['123p'], 'ron')).toMatchObject([{ name: '일기통관', han: 1 }])
+      expect(calc('456789s11m444z', ['123s'], 'ron')).toMatchObject([{ name: '일기통관', han: 1 }])
+    })
+
+    test('sanshoku doujun', () => {
+      expect(calc('234m234p234s44422z', [], 'ron')).toMatchObject([{ name: '삼색동순', han: 2 }])
+      expect(calc('234s44422z', ['234m', '234p'], 'ron')).toMatchObject([{ name: '삼색동순', han: 1 }])
+    })
+
+    test('sanshoku doukou', () => {
+      expect(calc('222m222p22345s22z2s', [], 'ron')).toMatchObject([{ name: '삼색동각', han: 2 }])
+      expect(calc('222345s22z', ['222m', '222p'], 'ron')).toMatchObject([{ name: '삼색동각', han: 2 }])
     })
 
     test('yakuhai', () => {
@@ -151,6 +187,86 @@ describe('yaku', () => {
           host: { ...initialState.host, wind: 'west' },
         })
       ).toMatchObject([{ name: '자풍: 서', han: 1 }])
+    })
+
+    test('yaochuuhai (tsuuiisou)', () => {
+      expect(calc('11122233366776z', [], 'ron')).toMatchObject([{ name: '자일색', han: 13, isYakuman: true }])
+    })
+
+    test('yaochuuhai (chinroutou)', () => {
+      expect(calc('111999m11199p11s9p', [], 'ron')).toMatchObject([{ name: '청노두', han: 13, isYakuman: true }])
+    })
+
+    test('yaochuuhai (honroutou)', () => {
+      expect(calc('999m11199p11z9p', ['111m'], 'ron')).toMatchObject([
+        { name: '또이또이', han: 2 },
+        { name: '혼노두', han: 2 },
+      ])
+    })
+
+    test('yaochuuhai (junchan)', () => {
+      expect(calc('123789m123789p11s', [], 'ron')).toMatchObject([{ name: '준찬타', han: 3 }])
+      expect(calc('789m123789p11s', ['123m'], 'ron')).toMatchObject([{ name: '준찬타', han: 2 }])
+    })
+
+    test('yaochuuhai (chanta)', () => {
+      expect(calc('123789m123789p11z', [], 'ron')).toMatchObject([{ name: '찬타', han: 2 }])
+      expect(calc('789m123789p11z', ['123m'], 'ron')).toMatchObject([{ name: '찬타', han: 1 }])
+    })
+
+    test('sankantsu', () => {
+      expect(calc('12355m', ['1111p', '2222p', '33333p'], 'ron')).toMatchObject([{ name: '산깡쯔', han: 2 }])
+    })
+
+    test('suukantsu', () => {
+      expect(calc('55m', ['1111m', '1111p', '2222p', '33333p'], 'ron')).toMatchObject([
+        { name: '스깡쯔', han: 13, isYakuman: true },
+      ])
+    })
+
+    test('daisangen', () => {
+      expect(calc('123p44s555666777z', [], 'ron')).toMatchObject([{ name: '대삼원', han: 13, isYakuman: true }])
+    })
+
+    test('shousangen', () => {
+      expect(calc('123p456s55566677z', [], 'ron')).toMatchObject([
+        { name: '역패: 백', han: 1 },
+        { name: '역패: 발', han: 1 },
+        { name: '소삼원', han: 2 },
+      ])
+      expect(calc('123p456s55577766z', [], 'ron')).toMatchObject([
+        { name: '역패: 백', han: 1 },
+        { name: '역패: 중', han: 1 },
+        { name: '소삼원', han: 2 },
+      ])
+      expect(calc('123p456s56667775z', [], 'ron')).toMatchObject([
+        { name: '역패: 발', han: 1 },
+        { name: '역패: 중', han: 1 },
+        { name: '소삼원', han: 2 },
+      ])
+    })
+
+    test('tsuuiisou daisangen', () => {
+      expect(calc('55566677722z', ['111z'], 'ron')).toMatchObject([
+        { name: '자일색', han: 13, isYakuman: true },
+        { name: '대삼원', han: 13, isYakuman: true },
+      ])
+    })
+
+    test('daisuushii', () => {
+      expect(calc('1s111333444z1s', ['2222z'], 'ron')).toMatchObject([{ name: '대사희', han: 26, isYakuman: true }])
+    })
+
+    test('shousuushii', () => {
+      expect(calc('11s11122233344z1s', [], 'ron')).toMatchObject([{ name: '소사희', han: 13, isYakuman: true }])
+    })
+
+    test('chuuren poutou', () => {
+      expect(calc('11223456789991s', [], 'ron')).toMatchObject([{ name: '구련보등', han: 13, isYakuman: true }])
+    })
+
+    test('junsei chuuren poutou', () => {
+      expect(calc('11123456789999m', [], 'ron')).toMatchObject([{ name: '순정구련보등', han: 26, isYakuman: true }])
     })
 
     test('dora', () => {

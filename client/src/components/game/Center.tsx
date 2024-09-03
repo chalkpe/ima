@@ -9,6 +9,7 @@ interface CenterProps {
 }
 
 const Center: FC<CenterProps> = ({ state, me }) => {
+  const op = me === 'host' ? 'guest' : 'host'
   return (
     <Paper
       sx={{
@@ -20,9 +21,10 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         backgroundColor: state.turn === me ? 'green' : 'red',
       }}
     >
-      left: {state.wall.tiles.length} <br />
-      me: {state[me].score} <br />
-      op: {state[me === 'host' ? 'guest' : 'host'].score}
+      {state.round.wind} {state.round.kyoku}국 {state.round.honba}본장 <br />
+      tiles left: {state.wall.tiles.length} <br />
+      me: {state[me].wind}, {state[me].score}점 <br />
+      op: {state[op].wind}, {state[me].score}점
     </Paper>
   )
 }

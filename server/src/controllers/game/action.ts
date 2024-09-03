@@ -202,8 +202,8 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
     yakuman > 0
       ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
       : oya
-      ? eastScoreTable[han]
-      : westScoreTable[han]
+      ? eastScoreTable[Math.min(13, han)]
+      : westScoreTable[Math.min(13, han)]
 
   state[me].decisions = []
   state.scoreboard = {
@@ -247,8 +247,8 @@ export const callRon = (state: GameState, me: PlayerType) => {
     yakuman > 0
       ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
       : oya
-      ? eastScoreTable[han]
-      : westScoreTable[han]
+      ? eastScoreTable[Math.min(13, han)]
+      : westScoreTable[Math.min(13, han)]
 
   state[me].decisions = []
   state.scoreboard = {

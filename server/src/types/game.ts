@@ -1,6 +1,6 @@
 import type { Tenpai } from './tenpai'
 import type { Tile } from './tile'
-import type { Yaku } from './yaku'
+import type { AgariType, Yaku } from './yaku'
 
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
@@ -74,17 +74,29 @@ export interface Round {
   riichiSticks: number
 }
 
-export interface Scoreboard {
+export interface AgariScoreboard {
+  type: 'agari'
   winner: PlayerType
+  hand: Hand
+  agariType: AgariType
   score: number
   han: number
   yakuman: number
   yaku: Yaku[]
-  hostConfirmed: boolean
-  guestConfirmed: boolean
   doraTiles: Tile[]
   uraDoraTiles: Tile[]
+  hostConfirmed: boolean
+  guestConfirmed: boolean
 }
+
+export interface RyuukyokuScoreboard {
+  type: 'ryuukyoku'
+  tenpai: PlayerType[]
+  hostConfirmed: boolean
+  guestConfirmed: boolean
+}
+
+export type Scoreboard = AgariScoreboard | RyuukyokuScoreboard
 
 export interface GameState {
   host: Player
@@ -101,5 +113,6 @@ export interface Room {
   guest: string
   guestReady: boolean
   started: boolean
+  ended: boolean
   state: GameState
 }

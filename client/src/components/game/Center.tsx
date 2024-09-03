@@ -20,7 +20,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         backgroundColor: state.turn === me ? 'green' : 'red',
       }}
     >
-      {state.wall.tiles.length}
+      left: {state.wall.tiles.length} <br />
+      me: {state[me].score} <br />
+      op: {state[me === 'host' ? 'guest' : 'host'].score}
     </Paper>
   )
 }

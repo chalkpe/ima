@@ -2,7 +2,8 @@ import { isEqualTile, simpleTileToTile } from '../../helpers/tile'
 import { backTile as simpleBackTile } from '../../helpers/code'
 import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '../../helpers/game'
 import type { SimpleTile, Tile } from '../../types/tile'
-import type { GameState, PlayerType } from '../../types/game'
+import type { GameState, PlayerType, Room } from '../../types/game'
+import { tsumo } from './action'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
@@ -38,16 +39,30 @@ export const initState = (state: GameState) => {
     ;[tiles[i], tiles[rand]] = [tiles[rand], tiles[i]]
   }
 
-  tiles.forEach((tile, index) => (tile.index = index))
+  const now = Date.now()
+  tiles.forEach((tile, index) => (tile.index = index + now))
 
+  state.wall.doraCount = 1
   state.wall.kingTiles = tiles.splice(0, 14)
   state.wall.supplementTiles = []
 
   state.host.hand.closed = []
   state.host.hand.tsumo = undefined
+  state.host.hand.called = []
+  state.host.hand.tenpai = []
+  state.host.decisions = []
+  state.host.river = []
+  state.host.riichi = null
+  state.host.jun = 0
 
   state.guest.hand.closed = []
   state.guest.hand.tsumo = undefined
+  state.guest.hand.called = []
+  state.guest.hand.tenpai = []
+  state.guest.decisions = []
+  state.guest.river = []
+  state.guest.riichi = null
+  state.guest.jun = 0
 
   haipaiCounts.forEach((count) => {
     state.host.hand.closed.push(...tiles.splice(0, count))
@@ -77,4 +92,78 @@ export const getRemainingTileCount = (state: GameState, me: PlayerType, tile: Si
   ].filter((t) => isEqualTile(t, tile))
 
   return fullTiles.length - visibleTiles.length
+}
+
+export const confirmScoreboard = (room: Room, me: PlayerType) => {
+  const state = room.state
+  const scoreboard = state.scoreboard
+
+  if (!scoreboard) throw new Error('Scoreboard is not ready')
+  me === 'host' ? (scoreboard.hostConfirmed = true) : (scoreboard.guestConfirmed = true)
+
+  if (scoreboard.hostConfirmed && scoreboard.guestConfirmed) {
+    if (scoreboard.type === 'agari') {
+      if (state.round.wind === state[scoreboard.winner].wind) {
+        state.round.honba += 1
+      } else {
+        state.round.honba = 0
+        state.round.kyoku += 1
+        if (state.round.kyoku > 2) {
+          state.round.honba = 0
+          state.round.kyoku = 1
+          const nextWind =
+            state.round.wind === 'east'
+              ? 'south'
+              : state.round.wind === 'south'
+              ? 'west'
+              : state.round.wind === 'west'
+              ? 'north'
+              : undefined
+          if (!nextWind) {
+            room.ended = true
+            return
+          }
+        }
+      }
+
+      state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000
+      state.round.riichiSticks = 0
+    } else {
+      state.round.honba += 1
+      if (!scoreboard.tenpai.includes(me)) {
+        state.round.kyoku += 1
+        if (state.round.kyoku > 2) {
+          state.round.kyoku = 1
+          const nextWind =
+            state.round.wind === 'east'
+              ? 'south'
+              : state.round.wind === 'south'
+              ? 'west'
+              : state.round.wind === 'west'
+              ? 'north'
+              : undefined
+          if (!nextWind) {
+            room.ended = true
+            return
+          }
+        }
+      }
+
+      if (scoreboard.tenpai.length === 1) {
+        const winner = scoreboard.tenpai[0]
+        state[winner].score += 1000
+        state[getOpponent(winner)].score -= 1000
+      }
+    }
+
+    state.scoreboard = undefined
+    const next = state[me].wind === 'east' ? getOpponent(me) : me
+    state[me].wind = next === me ? 'east' : 'west'
+    state[getOpponent(me)].wind = next === me ? 'west' : 'east'
+    
+    initState(state)
+    state.turn = next
+    tsumo(state, next, 'haiyama')
+
+  }
 }

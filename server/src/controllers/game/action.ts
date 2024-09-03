@@ -16,6 +16,7 @@ import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '../../help
 import type { Tile, TileType } from '../../types/tile'
 import type { GameState, PlayerType, WallType } from '../../types/game'
 import { calculateYaku } from '../../helpers/yaku'
+import { calculateTenpai } from '../../helpers/tenpai'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   if (state[me].hand.tsumo) {
@@ -31,6 +32,18 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
     state[me].hand.tsumo = state.wall.kingTiles.splice(0, 1)[0]
     state.wall.supplementTiles.push(state.wall.tiles.splice(-1, 1)[0])
   } else {
+    if (state.wall.tiles.length === 0) {
+      state.scoreboard = {
+        type: 'ryuukyoku',
+        hostConfirmed: false,
+        guestConfirmed: false,
+        tenpai: (['host', 'guest'] as const).filter(
+          (p) => calculateTenpai(state, p, state[p].hand, null) !== undefined
+        ),
+      }
+      return
+    }
+
     state[me].jun += 1
     state[me].hand.tsumo = state.wall.tiles.splice(0, 1)[0]
   }
@@ -166,6 +179,9 @@ export const skipChankan = (state: GameState, me: PlayerType) => {
   tsumo(state, opponent, 'lingshang')
 }
 
+const eastScoreTable = [0, 1500, 2900, 5800, 11600, 12000, 18000, 18000, 24000, 24000, 24000, 36000, 36000, 48000]
+const westScoreTable = [0, 1000, 2000, 3900, 7700, 8000, 12000, 12000, 16000, 16000, 16000, 24000, 24000, 32000]
+
 export const callTsumo = (state: GameState, me: PlayerType) => {
   if (!state[me].decisions.some((dec) => dec.type === 'tsumo'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
@@ -175,15 +191,29 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
   const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo)
   if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
 
+  const oya = state[me].wind === 'east'
+  const han = yaku.reduce((han, yaku) => han + yaku.han, 0)
+  const yakuman = yaku
+    .filter((y) => y.isYakuman)
+    .map((y) => Math.floor(y.han / 13))
+    .reduce((a, b) => a + b, 0)
+
+  const score =
+    yakuman > 0
+      ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
+      : oya
+      ? eastScoreTable[han]
+      : westScoreTable[han]
+
   state[me].decisions = []
   state.scoreboard = {
+    type: 'agari',
     winner: me,
-    score: 0,
-    han: yaku.reduce((han, yaku) => han + yaku.han, 0),
-    yakuman: yaku
-      .filter((y) => y.isYakuman)
-      .map((y) => Math.floor(y.han / 13))
-      .reduce((a, b) => a + b, 0),
+    hand: state[me].hand,
+    agariType: 'tsumo',
+    score,
+    han,
+    yakuman,
     yaku,
     hostConfirmed: false,
     guestConfirmed: false,
@@ -206,15 +236,29 @@ export const callRon = (state: GameState, me: PlayerType) => {
   const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
   if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
 
+  const oya = state[me].wind === 'east'
+  const han = yaku.reduce((han, yaku) => han + yaku.han, 0)
+  const yakuman = yaku
+    .filter((y) => y.isYakuman)
+    .map((y) => Math.floor(y.han / 13))
+    .reduce((a, b) => a + b, 0)
+
+  const score =
+    yakuman > 0
+      ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
+      : oya
+      ? eastScoreTable[han]
+      : westScoreTable[han]
+
   state[me].decisions = []
   state.scoreboard = {
+    type: 'agari',
     winner: me,
-    score: 0,
-    han: yaku.reduce((han, yaku) => han + yaku.han, 0),
-    yakuman: yaku
-      .filter((y) => y.isYakuman)
-      .map((y) => Math.floor(y.han / 13))
-      .reduce((a, b) => a + b, 0),
+    hand: { ...state[me].hand, tsumo: calledTile },
+    agariType: 'ron',
+    score,
+    han,
+    yakuman,
     yaku,
     hostConfirmed: false,
     guestConfirmed: false,

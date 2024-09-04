@@ -67,7 +67,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               sequence={convertTileToCode(tile)}
               onMouseEnter={() => me && setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
-              onClick={() => giri({ index: tile.index })}
+              onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
               style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : undefined }}
             />
           ))}
@@ -79,7 +79,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               sequence={convertTileToCode(hand.tsumo)}
               onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
-              onClick={() => giri({ index: hand.tsumo!.index })}
+              onDoubleClick={() => me && hoveredIndex === hand.tsumo!.index && giri({ index: hand.tsumo!.index })}
               style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : undefined }}
             />
           ) : (

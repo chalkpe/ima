@@ -66,7 +66,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
               <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
             ))}
           </Stack>
-          <Stack direction="row" gap={0}>
+          <Stack direction="row" gap="0.5vmin">
             {scoreboard.hand.called.map((tileSet) => (
               <TileSet
                 key={tileSet.type + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}

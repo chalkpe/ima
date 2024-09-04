@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import Mahgen from './Mahgen'
+import Mahgen from '../tile/Mahgen'
 import { Box } from '@mui/material'
 import { chunk, convertRiverTileToCode } from '../../utils/tile'
 

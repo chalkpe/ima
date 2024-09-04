@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react'
 import { Button, Stack } from '@mui/material'
-import Mahgen from './Mahgen'
+import Mahgen from '../tile/Mahgen'
 import { compareDecisions, convertTileToCode } from '../../utils/tile'
 import { trpc } from '../../utils/trpc'
 import type { Decision } from '../../../../server/src/types/game'

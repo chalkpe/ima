@@ -1,12 +1,12 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
-import Mahgen from './Mahgen'
+import Mahgen from '../tile/Mahgen'
 import Tenpai from './Tenpai'
 import { trpc } from '../../utils/trpc'
 import { convertTileToCode, sortTiles } from '../../utils/tile'
 
 import type { Hand } from '../../../../server/src/types/game'
-import TileSet from './TileSet'
+import TileSet from '../tile/TileSet'
 
 interface HandProps {
   hand: Hand

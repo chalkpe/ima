@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Paper, Stack, Typography } from '@mui/material'
-import TileWithCount from './TileWithCount'
+import TileWithCount from '../tile/TileWithCount'
 import { compareSimpleTile } from '../../utils/tile'
 
 import type { Tenpai } from '../../../../server/src/types/tenpai'

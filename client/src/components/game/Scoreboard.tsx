@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { Button, Paper, Stack, Typography } from '@mui/material'
-import Mahgen from './Mahgen'
+import Mahgen from '../tile/Mahgen'
 import { compareTile, convertTileToCode } from '../../utils/tile'
 import { trpc } from '../../utils/trpc'
 import type { PlayerType, Room } from '../../../../server/src/types/game'
-import TileSet from './TileSet'
+import TileSet from '../tile/TileSet'
 
 interface ScoreboardProps {
   data: Room

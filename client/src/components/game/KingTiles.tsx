@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from './Mahgen'
+import Mahgen from '../tile/Mahgen'
 import { convertTileToCode } from '../../utils/tile'
 
 import type { Wall } from '../../../../server/src/types/game'

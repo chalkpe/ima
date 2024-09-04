@@ -5,7 +5,8 @@ import { simpleTileToTile } from '../tile'
 describe('agari', () => {
   describe('calculateAgari', () => {
     // shorthand for testing
-    const calc = (codeSyntax: string) => agariResultToString(calculateAgari(codeSyntaxToHand(codeSyntax).map(simpleTileToTile)))
+    const calc = (codeSyntax: string) =>
+      agariResultToString(calculateAgari(codeSyntaxToHand(codeSyntax).map(simpleTileToTile)))
 
     test('should return agari if hand length is 0', () => {
       expect(calc('')).toBe('agari: ')
@@ -85,10 +86,18 @@ describe('agari', () => {
       )
     })
 
+    test('should return noten if hand length is 13 and is invalid chiitoitsu', () => {
+      expect(calc('1122334455666z')).toBe('noten')
+    })
+
     test('should return agari if hand length is 14 and is chiitoitsu', () => {
       expect(calc('11223344556677z')).toBe(
         'agari: <toitsu>1z1z<toitsu>2z2z<toitsu>3z3z<toitsu>4z4z<toitsu>5z5z<toitsu>6z6z<toitsu>7z7z'
       )
+    })
+
+    test('should return noten if hand length is 14 and is invalid chiitoitsu', () => {
+      expect(calc('11223344556666z')).toBe('noten')
     })
 
     test('should return multiple agari if hand length is 14 and is chiitoitsu or ryanpeikou', () => {

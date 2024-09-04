@@ -84,7 +84,7 @@ export const calculateAgari = (
     }
     case 1: {
       const [a] = hand
-      if (result.state.some((state) => state.type === 'koutsu' && isEqualTile(state.tiles[0], a))) {
+      if (result.state.some((tsu) => (tsu.type === 'koutsu' || tsu.type === 'toitsu') && isEqualTile(tsu.tiles[0], a))) {
         return { ...result, status: 'noten' }
       }
       return {
@@ -115,6 +115,13 @@ export const calculateAgari = (
         }
 
         const state: AgariState = [...result.state, { type: 'toitsu', tiles: [a, b] }]
+        if (
+          state
+            .filter((tsu) => tsu.type === 'toitsu')
+            .some((toitsu, i, a) => a.findIndex((tsu) => isEqualTile(tsu.tiles[0], toitsu.tiles[0])) !== i)
+        )
+          return { ...result, status: 'noten' }
+
         return {
           ...result,
           status: 'agari',

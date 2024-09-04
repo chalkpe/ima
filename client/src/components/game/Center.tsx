@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { Paper } from '@mui/material'
 
 import type { GameState, PlayerType } from '../../../../server/src/types/game'
+import { getWindName } from '../../utils/game'
 
 interface CenterProps {
   state: GameState
@@ -18,13 +19,13 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         left: '32.5vmin',
         width: '35vmin',
         height: '20vmin',
-        backgroundColor: state.turn === me ? 'green' : 'red',
+        backgroundColor: state.turn === me ? 'green' : 'gray',
       }}
     >
-      {state.round.wind} {state.round.kyoku}국 {state.round.honba}본장 <br />
+      {getWindName(state.round.wind)}{state.round.kyoku}국 {state.round.honba}본장 <br />
       tiles left: {state.wall.tiles.length} <br />
-      me: {state[me].wind}, {state[me].score}점 <br />
-      op: {state[op].wind}, {state[op].score}점
+      op: {getWindName(state[op].wind)}, {state[op].score}점 <br />
+      me: {getWindName(state[me].wind)}, {state[me].score}점
     </Paper>
   )
 }

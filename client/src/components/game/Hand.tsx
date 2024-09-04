@@ -6,6 +6,7 @@ import { trpc } from '../../utils/trpc'
 import { convertTileToCode, sortTiles } from '../../utils/tile'
 
 import type { Hand } from '../../../../server/src/types/game'
+import TileSet from './TileSet'
 
 interface HandProps {
   hand: Hand
@@ -84,69 +85,11 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         sx={me ? {} : { transform: 'rotate(180deg)' }}
       >
         {hand.called.map((tileSet, index) => (
-          <Stack
-            key={tileSet.tiles[0].type + tileSet.tiles[0].value + index}
-            direction="row"
-            gap={0}
-            alignItems="end"
-            justifyContent="end"
-          >
-            {tileSet.type === 'ankan' ? (
-              <>
-                <Mahgen size={5} sequence="0z" />
-                <Mahgen
-                  size={5}
-                  sequence={convertTileToCode(
-                    tileSet.tiles.find((tile) => tile.attribute === 'red') ?? tileSet.tiles[0]
-                  )}
-                />
-                <Mahgen
-                  size={5}
-                  sequence={convertTileToCode(
-                    tileSet.tiles.find((tile) => tile.attribute !== 'red') ?? tileSet.tiles[1]
-                  )}
-                />
-                <Mahgen size={5} sequence="0z" />
-              </>
-            ) : tileSet.type === 'gakan' ? (
-              <>
-                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles[1])} />
-                <Stack direction="column">
-                  <Mahgen size={5} sequence={'_' + convertTileToCode(tileSet.tiles[3])} />
-                  <Mahgen size={5} sequence={'_' + convertTileToCode(tileSet.tiles[0])} />
-                </Stack>
-                <Mahgen size={5} sequence={convertTileToCode(tileSet.tiles[2])} />
-              </>
-            ) : tileSet.type === 'pon' ? (
-              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2]].map((tile, index) => (
-                <Mahgen
-                  key={tile.type + tile.value + index}
-                  size={5}
-                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
-                />
-              ))
-            ) : tileSet.type === 'daiminkan' ? (
-              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2], tileSet.tiles[3]].map((tile, index) => (
-                <Mahgen
-                  key={tile.type + tile.value + index}
-                  size={5}
-                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
-                />
-              ))
-            ) : tileSet.type === 'chi' ? (
-              [tileSet.tiles[1], tileSet.tiles[0], tileSet.tiles[2]].map((tile, index) => (
-                <Mahgen
-                  key={tile.type + tile.value + index}
-                  size={5}
-                  sequence={(index === 1 ? '_' : '') + convertTileToCode(tile)}
-                />
-              ))
-            ) : (
-              tileSet.tiles.map((tile, index) => (
-                <Mahgen key={tile.type + tile.value + index} size={5} sequence={convertTileToCode(tile)} />
-              ))
-            )}
-          </Stack>
+          <TileSet
+            tileSet={tileSet}
+            size={5}
+            key={index + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
+          />
         ))}
       </Stack>
     </>

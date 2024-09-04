@@ -1,19 +1,23 @@
 import { FC } from 'react'
 import { Button, Paper, Stack, Typography } from '@mui/material'
-import type { Room } from '../../../../server/src/types/game'
 import Mahgen from './Mahgen'
 import { compareTile, convertTileToCode } from '../../utils/tile'
 import { trpc } from '../../utils/trpc'
+import type { PlayerType, Room } from '../../../../server/src/types/game'
+import TileSet from './TileSet'
 
 interface ScoreboardProps {
   data: Room
+  me: PlayerType
 }
 
-const Scoreboard: FC<ScoreboardProps> = ({ data }) => {
+const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
   const { mutate: confirm } = trpc.game.confirmScoreboard.useMutation()
 
   if (!data.state.scoreboard) return null
+
   const scoreboard = data.state.scoreboard
+  const meConfirmed = me === 'host' ? scoreboard.hostConfirmed : scoreboard.guestConfirmed
 
   if (scoreboard.type === 'ryuukyoku') {
     return (
@@ -33,8 +37,8 @@ const Scoreboard: FC<ScoreboardProps> = ({ data }) => {
             <li key={player}>{player} - 텐파이</li>
           ))}
         </ul>
-        <Button variant="contained" color="primary" onClick={() => confirm()}>
-          확인
+        <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+          {meConfirmed ? '대기 중...' : '확인'}
         </Button>
       </Paper>
     )
@@ -55,37 +59,42 @@ const Scoreboard: FC<ScoreboardProps> = ({ data }) => {
         {data[scoreboard.winner]} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <Stack direction="row" gap="1vmin">
-        <Stack direction="row" gap={0}>
-          {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-            <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
-          ))}
-        </Stack>
-        <Stack direction="row" gap={0}>
-          {scoreboard.hand.called
-            .flatMap((set) => [...set.tiles].sort(compareTile))
-            .map((tile) => (
-              <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
-            ))}
-        </Stack>
-        {scoreboard.hand.tsumo && <Mahgen size={3} sequence={convertTileToCode(scoreboard.hand.tsumo)} />}
-      </Stack>
-
-      <Stack direction="row" gap="1vmin">
+      <Stack direction="column" gap="2vmin">
         <Stack direction="row" gap="1vmin">
-          <Typography fontSize="3vmin">도라</Typography>
-          <Stack direction="row">
-            {scoreboard.doraTiles.map((tile) => (
+          <Stack direction="row" gap={0}>
+            {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
               <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
             ))}
           </Stack>
-        </Stack>
-        <Stack direction="row" gap="1vmin">
-          <Typography fontSize="3vmin">뒷도라</Typography>
-          <Stack direction="row">
-            {scoreboard.uraDoraTiles.map((tile) => (
-              <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+          <Stack direction="row" gap={0}>
+            {scoreboard.hand.called.map((tileSet) => (
+              <TileSet
+                key={tileSet.type + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
+                tileSet={tileSet}
+                size={3}
+                rotate={false}
+              />
             ))}
+          </Stack>
+          {scoreboard.hand.tsumo && <Mahgen size={3} sequence={convertTileToCode(scoreboard.hand.tsumo)} />}
+        </Stack>
+
+        <Stack direction="row" gap="1vmin">
+          <Stack direction="row" gap="1vmin">
+            <Typography fontSize="3vmin">도라</Typography>
+            <Stack direction="row">
+              {scoreboard.doraTiles.map((tile) => (
+                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+              ))}
+            </Stack>
+          </Stack>
+          <Stack direction="row" gap="1vmin">
+            <Typography fontSize="3vmin">뒷도라</Typography>
+            <Stack direction="row">
+              {scoreboard.uraDoraTiles.map((tile) => (
+                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+              ))}
+            </Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -100,16 +109,19 @@ const Scoreboard: FC<ScoreboardProps> = ({ data }) => {
         ))}
       </ul>
 
-      <Typography fontSize="5vmin">
-        {scoreboard.yakuman > 0
-          ? scoreboard.yakuman === 1
-            ? '역만'
-            : `${scoreboard.yakuman}배역만`
-          : `${scoreboard.han}판`}
-      </Typography>
+      <Stack direction="row" gap="2vmin">
+        <Typography fontSize="5vmin">
+          {scoreboard.yakuman > 0
+            ? scoreboard.yakuman === 1
+              ? '역만'
+              : `${scoreboard.yakuman}배역만`
+            : `${scoreboard.han}판`}
+        </Typography>
+        <Typography fontSize="5vmin">{scoreboard.score}점</Typography>
+      </Stack>
 
-      <Button variant="contained" color="primary" onClick={() => confirm()}>
-        확인
+      <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+        {meConfirmed ? '대기 중...' : '확인'}
       </Button>
     </Paper>
   )

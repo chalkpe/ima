@@ -6,6 +6,7 @@ import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from './game'
 import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from './tile'
 
 import type { Decision, GameState, PlayerType } from '../types/game'
+import { calculateFuriten } from './tenpai'
 
 export const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
@@ -17,6 +18,8 @@ export const calculateChiDecisions = (state: GameState, me: PlayerType): Decisio
   const furoTile = riverEnd.tile
 
   const closedHand = state[me].hand.closed
+  if (closedHand.length <= 2) return []
+
   return getAllSyuntsu(furoTile)
     .map((mentsu) => mentsu.filter((tile) => !isEqualTile(tile, furoTile)))
     .map((tatsu) =>
@@ -39,8 +42,10 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
   if (!riverEnd) return []
   const furoTile = riverEnd.tile
 
-  const [_, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 3)
-  if (removed.length === 3)
+  const [remain, removed] = removeTileFromHand(state[me].hand.closed, furoTile, 3)
+
+  // daiminkan or pon
+  if (remain.length > 0 && removed.length === 3)
     return [
       { type: 'daiminkan', tile: furoTile, otherTiles: removed },
       ...combination(removed)
@@ -51,7 +56,8 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
         .map((tiles) => ({ type: 'pon', tile: furoTile, otherTiles: tiles } satisfies Decision)),
     ]
 
-  if (removed.length === 2) return [{ type: 'pon', tile: furoTile, otherTiles: removed }]
+  // pon
+  if (remain.length > 0 && removed.length === 2) return [{ type: 'pon', tile: furoTile, otherTiles: removed }]
 
   return []
 }
@@ -75,10 +81,25 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
   const closedHand = getClosedHand(state[me].hand)
   const tileCounts = countTiles(closedHand)
 
-  return Object.entries(tileCounts)
+  const kantsu = Object.entries(tileCounts)
     .filter(([_, count]) => count === 4)
     .map(([code, _]) => closedHand.filter((tile) => tileToCode(tile) === code))
-    .map(([tile, ...otherTiles]) => ({ type: 'ankan', tile, otherTiles }))
+
+  if (state[me].riichi) {
+    return kantsu
+      .filter((tsu) => tsu.some((tile) => tile.index === state[me].hand.tsumo?.index))
+      .filter((tsu) => {
+        const current = calculateAgari(state[me].hand.closed)
+        const future = calculateAgari(closedHand.filter((tile) => !isEqualTile(tile, tsu[0])))
+        return [...current.tenpai.keys()].sort().join(',') === [...future.tenpai.keys()].sort().join(',')
+      })
+      .map((tiles) => {
+        const [tile, otherTiles] = partition(tiles, (t) => t.index === state[me].hand.tsumo?.index)
+        return { type: 'ankan', tile: tile[0], otherTiles }
+      })
+  }
+
+  return kantsu.map(([tile, ...otherTiles]) => ({ type: 'ankan', tile, otherTiles }))
 }
 
 export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -114,10 +135,11 @@ export const calculateRonDecisions = (state: GameState, me: PlayerType): Decisio
 
   if (!riverEnd) return []
   const ronTile = riverEnd.tile
-  const hand = [...state[me].hand.closed, ronTile]
 
-  const result = calculateAgari(hand)
-  return result.status === 'agari' &&
+  const result = calculateAgari(state[me].hand.closed)
+  return result.status === 'tenpai' &&
+    [...result.tenpai.keys()].includes(tileToCode(ronTile)) &&
+    [...result.tenpai.values()].every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
     calculateYaku(state, me, state[me].hand, 'ron', ronTile).some((yaku) => !yaku.isExtra)
     ? [{ type: 'ron', tile: ronTile }]
     : []

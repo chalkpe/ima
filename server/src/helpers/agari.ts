@@ -102,6 +102,8 @@ export const calculateAgari = (
 
         if (toitsuState.length === 1) {
           const c = toitsuState[0].tiles[0]
+          if (isEqualTile(a, c)) return { ...result, status: 'noten' }
+
           return {
             ...result,
             status: 'tenpai',
@@ -142,18 +144,20 @@ export const calculateAgari = (
         if (checked.has(tileToCode(tile))) continue
         checked.add(tileToCode(tile))
 
-        const [rest, removed] = removeTileFromHand(hand, tile, 3)
-        if (removed.length === 3) {
-          const r = calculateAgari(rest, {
+        const [restK, koutsu] = removeTileFromHand(hand, tile, 3)
+        if (koutsu.length === 3) {
+          const r = calculateAgari(restK, {
             ...result,
-            state: [...result.state, { type: 'koutsu', tiles: [removed[0], removed[1], removed[2]] }],
+            state: [...result.state, { type: 'koutsu', tiles: [koutsu[0], koutsu[1], koutsu[2]] }],
           })
           if (isAgariResultValid(r)) mergeAgariResults(result, r)
         }
-        if (removed.length === 2) {
-          const r = calculateAgari(rest, {
+
+        const [restT, toitsu] = removeTileFromHand(hand, tile, 2)
+        if (toitsu.length === 2) {
+          const r = calculateAgari(restT, {
             ...result,
-            state: [...result.state, { type: 'toitsu', tiles: [removed[0], removed[1]] }],
+            state: [...result.state, { type: 'toitsu', tiles: [toitsu[0], toitsu[1]] }],
           })
           if (isAgariResultValid(r)) mergeAgariResults(result, r)
         }

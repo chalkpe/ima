@@ -49,31 +49,33 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         position="absolute"
         {...(me ? { bottom: '2vmin', left: '8vmin' } : { top: '2vmin', right: '8vmin' })}
       >
-        <Stack direction="row" gap={0}>
+        <Stack direction="row" gap={0} alignItems="end">
           {closed.map((tile) => (
             <Mahgen
               key={tile.index}
               size={5}
               sequence={convertTileToCode(tile)}
-              onMouseEnter={() => setHoveredIndex(tile.index)}
+              onMouseEnter={() => me && setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onClick={() => giri({ index: tile.index })}
-              style={{ transform: hoveredIndex === tile.index ? 'translateY(-1vmin)' : undefined }}
+              style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : undefined }}
             />
           ))}
         </Stack>
-        {hand.tsumo ? (
-          <Mahgen
-            size={5}
-            sequence={convertTileToCode(hand.tsumo)}
-            onMouseEnter={() => setHoveredIndex(hand.tsumo!.index)}
-            onMouseLeave={() => setHoveredIndex(undefined)}
-            onClick={() => giri({ index: hand.tsumo!.index })}
-            style={{ transform: hoveredIndex === hand.tsumo!.index ? 'translateY(-1vmin)' : undefined }}
-          />
-        ) : (
-          <Box width="5vmin" />
-        )}
+        <Stack direction="row" gap={0} alignItems="end">
+          {hand.tsumo ? (
+            <Mahgen
+              size={5}
+              sequence={convertTileToCode(hand.tsumo)}
+              onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
+              onMouseLeave={() => setHoveredIndex(undefined)}
+              onClick={() => giri({ index: hand.tsumo!.index })}
+              style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : undefined }}
+            />
+          ) : (
+            <Box width="5vmin" />
+          )}
+        </Stack>
       </Stack>
 
       <Stack

@@ -24,6 +24,7 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         bottom: current ? '10vmin' : '28vmin',
         left: '8vmin',
         padding: '1vmin',
+        opacity: 0.5,
       }}
     >
       <Typography fontSize="2.5vmin" align="center">
@@ -34,7 +35,7 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
           .sort((a, b) => compareSimpleTile(a.agariTile, b.agariTile))
           .map((tenpai) => (
             <Stack direction="column" gap="1vmin" key={tenpai.agariTile.type + tenpai.agariTile.value}>
-              <TileWithCount tile={tenpai.agariTile} size={5} />
+              <TileWithCount tile={tenpai.agariTile} size={3} />
               <Typography fontSize="2vmin" align="left">
                 {statusText[tenpai.status]}
               </Typography>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import { trpc } from '../utils/trpc'
 import { useNavigate } from 'react-router-dom'
@@ -9,17 +9,30 @@ import Center from '../components/game/Center'
 import Wall from '../components/game/Wall'
 import Decisions from '../components/game/Decisions'
 import Scoreboard from '../components/game/Scoreboard'
+import type { StateChangeType } from '../../../server/src/types/game'
+import StateChange from '../components/game/StateChange'
 
 const Game = () => {
   const navigate = useNavigate()
   const { username, skip } = useAuth()
 
+  const [type, setType] = useState<StateChangeType>()
+
   const utils = trpc.useUtils()
   const { data, error } = trpc.game.state.useQuery(skip)
   trpc.game.onStateChange.useSubscription(skip, {
-    onData: () => {
-      utils.game.state.invalidate()
-      utils.game.getRemainingTileCount.invalidate()
+    onData: (type) => {
+      if (type === 'update') {
+        utils.game.state.invalidate()
+        utils.game.getRemainingTileCount.invalidate()
+      } else {
+        setType(type)
+        setTimeout(() => {
+          setType(undefined)
+          utils.game.state.invalidate()
+          utils.game.getRemainingTileCount.invalidate()
+        }, 750)
+      }
     },
   })
 
@@ -47,6 +60,8 @@ const Game = () => {
 
       <Decisions decisions={data.state[me].decisions} />
       <Scoreboard data={data} me={me} />
+
+      {type && <StateChange type={type} />}
     </>
   )
 }

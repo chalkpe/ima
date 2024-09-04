@@ -85,7 +85,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   )
 
   return (
-    <Stack direction="row" gap="2vmin" justifyContent="center" position="absolute" bottom="12vmin" right="20vmin">
+    <Stack direction="row" gap="1.5vmin" justifyContent="center" position="absolute" bottom="12vmin" right="20vmin">
       {[...decisions].sort(compareDecisions).map((decision) => (
         <Button
           key={
@@ -95,10 +95,22 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
             decision.otherTiles?.map((t) => t.type + t.value + t.attribute + t.background).join('')
           }
           variant="contained"
-          color={decision.type === 'tsumo' || decision.type === 'ron' ? 'error' : 'primary'}
+          color={
+            decision.type === 'riichi'
+              ? 'warning'
+              : decision.type === 'tsumo' || decision.type === 'ron'
+              ? 'error'
+              : 'primary'
+          }
           size="large"
           onClick={() => onClick(decision)}
-          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '2vmin' }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            fontSize: '2vmin',
+            padding: '1vmin',
+          }}
         >
           {typeText[decision.type]}
           <span>

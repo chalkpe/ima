@@ -94,76 +94,77 @@ export const getRemainingTileCount = (state: GameState, me: PlayerType, tile: Si
   return fullTiles.length - visibleTiles.length
 }
 
-export const confirmScoreboard = (room: Room, me: PlayerType) => {
+export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
   const state = room.state
   const scoreboard = state.scoreboard
 
   if (!scoreboard) throw new Error('Scoreboard is not ready')
+
   me === 'host' ? (scoreboard.hostConfirmed = true) : (scoreboard.guestConfirmed = true)
+  if (!scoreboard.hostConfirmed || !scoreboard.guestConfirmed) return false
 
-  if (scoreboard.hostConfirmed && scoreboard.guestConfirmed) {
-    if (scoreboard.type === 'agari') {
-      if (state.round.wind === state[scoreboard.winner].wind) {
-        state.round.honba += 1
-      } else {
-        state.round.honba = 0
-        state.round.kyoku += 1
-        if (state.round.kyoku > 2) {
-          state.round.honba = 0
-          state.round.kyoku = 1
-          const nextWind =
-            state.round.wind === 'east'
-              ? 'south'
-              : state.round.wind === 'south'
-              ? 'west'
-              : state.round.wind === 'west'
-              ? 'north'
-              : undefined
-          if (!nextWind) {
-            room.ended = true
-            return
-          }
-        }
-      }
-
-      state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000
-      state.round.riichiSticks = 0
-    } else {
+  if (scoreboard.type === 'agari') {
+    if (state.round.wind === state[scoreboard.winner].wind) {
       state.round.honba += 1
-      if (!scoreboard.tenpai.includes(me)) {
-        state.round.kyoku += 1
-        if (state.round.kyoku > 2) {
-          state.round.kyoku = 1
-          const nextWind =
-            state.round.wind === 'east'
-              ? 'south'
-              : state.round.wind === 'south'
-              ? 'west'
-              : state.round.wind === 'west'
-              ? 'north'
-              : undefined
-          if (!nextWind) {
-            room.ended = true
-            return
-          }
+    } else {
+      state.round.honba = 0
+      state.round.kyoku += 1
+      if (state.round.kyoku > 2) {
+        state.round.honba = 0
+        state.round.kyoku = 1
+        const nextWind =
+          state.round.wind === 'east'
+            ? 'south'
+            : state.round.wind === 'south'
+            ? 'west'
+            : state.round.wind === 'west'
+            ? 'north'
+            : undefined
+        if (!nextWind) {
+          room.ended = true
+          return true
         }
-      }
-
-      if (scoreboard.tenpai.length === 1) {
-        const winner = scoreboard.tenpai[0]
-        state[winner].score += 1000
-        state[getOpponent(winner)].score -= 1000
       }
     }
 
-    state.scoreboard = undefined
-    const next = state[me].wind === 'east' ? getOpponent(me) : me
-    state[me].wind = next === me ? 'east' : 'west'
-    state[getOpponent(me)].wind = next === me ? 'west' : 'east'
-    
-    initState(state)
-    state.turn = next
-    tsumo(state, next, 'haiyama')
+    state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000
+    state.round.riichiSticks = 0
+  } else {
+    state.round.honba += 1
+    if (!scoreboard.tenpai.includes(me)) {
+      state.round.kyoku += 1
+      if (state.round.kyoku > 2) {
+        state.round.kyoku = 1
+        const nextWind =
+          state.round.wind === 'east'
+            ? 'south'
+            : state.round.wind === 'south'
+            ? 'west'
+            : state.round.wind === 'west'
+            ? 'north'
+            : undefined
+        if (!nextWind) {
+          room.ended = true
+          return true
+        }
+      }
+    }
 
+    if (scoreboard.tenpai.length === 1) {
+      const winner = scoreboard.tenpai[0]
+      state[winner].score += 1000
+      state[getOpponent(winner)].score -= 1000
+    }
   }
+
+  state.scoreboard = undefined
+  const next = state[me].wind === 'east' ? getOpponent(me) : me
+  state[me].wind = next === me ? 'east' : 'west'
+  state[getOpponent(me)].wind = next === me ? 'west' : 'east'
+
+  initState(state)
+  state.turn = next
+  tsumo(state, next, 'haiyama')
+
+  return true
 }

@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events'
-import type { Room } from './types/game'
+import { EventEmitter } from 'tseep'
+import type { Room, StateChangeType } from './types/game'
 
 interface Database {
   rooms: Room[]
@@ -11,4 +11,6 @@ export const database: Database = {
   lastPing: new Map(),
 }
 
-export const ee = new EventEmitter()
+export const ee = new EventEmitter<{
+  update: (host: string, type: StateChangeType) => void
+}>()

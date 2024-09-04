@@ -37,7 +37,17 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
   return (
     <>
       {currentTenpai && (
-        <Paper sx={{ position: 'absolute', bottom: '28vmin', left: '8vmin', padding: '1vmin' }}>Tenpai</Paper>
+        <Paper
+          sx={{
+            opacity: 0.5,
+            position: 'absolute',
+            bottom: '28vmin',
+            left: '8vmin',
+            padding: '1vmin',
+          }}
+        >
+          Tenpai
+        </Paper>
       )}
 
       {tedashiTenpai.length > 0 && <Tenpai tenpaiList={tedashiTenpai} />}

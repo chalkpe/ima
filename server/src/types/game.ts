@@ -40,6 +40,17 @@ export interface Decision {
   otherTiles?: Tile[]
 }
 
+export type StateChangeType =
+  | 'update'
+  | 'start'
+  | 'tsumo'
+  | 'ron'
+  | 'riichi'
+  | 'nuki'
+  | 'kan'
+  | 'pon'
+  | 'chi'
+
 export type RiichiState = number | null
 
 export interface Player {

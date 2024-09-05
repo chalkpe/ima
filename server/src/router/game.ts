@@ -65,7 +65,8 @@ export const gameRouter = router({
     room.started = true
 
     initState(room.state)
-    tsumo(room.state, 'host', 'haiyama')
+    room.state.turn = Math.round(Math.random()) ? 'host' : 'guest'
+    tsumo(room.state, room.state.turn, 'haiyama')
 
     ee.emit('update', room.host, 'start')
   }),
@@ -201,8 +202,8 @@ export const gameRouter = router({
     const { username } = opts.ctx
 
     const room = getRoom(username, true)
-    const result = confirmScoreboard(room, room.host === username ? 'host' : 'guest')
+    const result = confirmScoreboard(room.state, room.host === username ? 'host' : 'guest')
 
-    ee.emit('update', room.host, result ? 'start' : 'update')
+    ee.emit('update', room.host, result)
   }),
 })

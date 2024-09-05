@@ -1,8 +1,15 @@
 import { hideTile } from '@ima/server/helpers/tile'
 import { calculateTenpai } from '@ima/server/helpers/tenpai'
-import { getDoraTiles, getOpponent, getUraDoraTiles } from '@ima/server/helpers/game'
+import { getDoraTiles, getNextWind, getOpponent, getUraDoraTiles } from '@ima/server/helpers/game'
 import type { AgariType, Yaku } from '@ima/server/types/yaku'
-import type { GameState, Hand, PlayerType, Scoreboard } from '@ima/server/types/game'
+import type {
+  AgariScoreboard,
+  GameState,
+  Hand,
+  PlayerType,
+  RyuukyokuScoreboard,
+  Scoreboard,
+} from '@ima/server/types/game'
 
 const eastScoreTable = [0, 1500, 2900, 5800, 11600, 12000, 18000, 18000, 24000, 24000, 24000, 36000, 36000, 48000]
 const westScoreTable = [0, 1000, 2000, 3900, 7700, 8000, 12000, 12000, 16000, 16000, 16000, 24000, 24000, 32000]
@@ -53,5 +60,60 @@ export const createRyukyokuScoreboard = (state: GameState, me: PlayerType): Scor
     hostConfirmed: false,
     guestConfirmed: false,
     tenpai: [me, getOpponent(me)].filter((p) => calculateTenpai(state, p, state[p].hand, null) !== undefined),
+  }
+}
+
+export const createFinalScoreboard = (state: GameState): Scoreboard => {
+  return {
+    type: 'final',
+    hostConfirmed: false,
+    guestConfirmed: false,
+    hostScore: state.host.score,
+    guestScore: state.guest.score,
+  }
+}
+
+export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboard): Scoreboard | PlayerType => {
+  state[scoreboard.winner].score += scoreboard.score
+
+  if (state[scoreboard.winner].wind === 'east') {
+    state.round.honba += 1
+  } else {
+    state.round.honba = 0
+    state.round.kyoku += 1
+
+    if (state.round.kyoku > 2) {
+      const nextWind = getNextWind(state.round.wind)
+      if (!nextWind) return createFinalScoreboard(state)
+
+      state.round.wind = nextWind
+      state.round.kyoku = 1
+    }
+  }
+  return scoreboard.winner
+}
+
+export const applyRyukyokuScoreboard = (state: GameState, scoreboard: RyuukyokuScoreboard): Scoreboard | PlayerType => {
+  if (scoreboard.tenpai.length === 1) {
+    const winner = scoreboard.tenpai[0]
+    state[winner].score += 1000
+    state[getOpponent(winner)].score -= 1000
+  }
+
+  const oya = state.host.wind === 'east' ? 'host' : 'guest'
+  if (scoreboard.tenpai.includes(oya)) {
+    state.round.honba += 1
+    return oya
+  } else {
+    state.round.kyoku += 1
+
+    if (state.round.kyoku > 2) {
+      const nextWind = getNextWind(state.round.wind)
+      if (!nextWind) return createFinalScoreboard(state)
+
+      state.round.wind = nextWind
+      state.round.kyoku = 1
+    }
+    return getOpponent(oya)
   }
 }

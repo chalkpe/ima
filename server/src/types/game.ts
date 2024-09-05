@@ -40,7 +40,7 @@ export interface Decision {
   otherTiles?: Tile[]
 }
 
-export type StateChangeType = 'update' | 'start' | 'tsumo' | 'ron' | 'riichi' | 'nuki' | 'kan' | 'pon' | 'chi'
+export type StateChangeType = 'update' | 'start' | 'end' | 'tsumo' | 'ron' | 'riichi' | 'nuki' | 'kan' | 'pon' | 'chi'
 
 export type RiichiState = number | null
 
@@ -76,7 +76,12 @@ export interface Round {
   riichiSticks: number
 }
 
-export interface AgariScoreboard {
+interface BaseScoreboard {
+  hostConfirmed: boolean
+  guestConfirmed: boolean
+}
+
+export interface AgariScoreboard extends BaseScoreboard {
   type: 'agari'
   winner: PlayerType
   hand: Hand
@@ -87,18 +92,20 @@ export interface AgariScoreboard {
   yaku: Yaku[]
   doraTiles: Tile[]
   uraDoraTiles: Tile[]
-  hostConfirmed: boolean
-  guestConfirmed: boolean
 }
 
-export interface RyuukyokuScoreboard {
+export interface RyuukyokuScoreboard extends BaseScoreboard {
   type: 'ryuukyoku'
   tenpai: PlayerType[]
-  hostConfirmed: boolean
-  guestConfirmed: boolean
 }
 
-export type Scoreboard = AgariScoreboard | RyuukyokuScoreboard
+export interface FinalScoreboard extends BaseScoreboard {
+  type: 'final'
+  hostScore: number
+  guestScore: number
+}
+
+export type Scoreboard = AgariScoreboard | RyuukyokuScoreboard | FinalScoreboard
 
 export interface GameState {
   host: Player
@@ -115,6 +122,5 @@ export interface Room {
   guest: string
   guestReady: boolean
   started: boolean
-  ended: boolean
   state: GameState
 }

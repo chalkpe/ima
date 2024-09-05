@@ -1,8 +1,9 @@
 import { tsumo } from '@ima/server/controllers/game/action'
 import { hideTile, isEqualTile } from '@ima/server/helpers/tile'
+import { applyAgariScoreboard, applyRyukyokuScoreboard } from '@ima/server/helpers/scoreboard'
 import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
 import type { SimpleTile } from '@ima/server/types/tile'
-import type { GameState, PlayerType, Room } from '@ima/server/types/game'
+import type { GameState, PlayerType } from '@ima/server/types/game'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
@@ -92,73 +93,23 @@ export const getRemainingTileCount = (state: GameState, me: PlayerType, tile: Si
   return fullTiles.length - visibleTiles.length
 }
 
-export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
-  const state = room.state
+export const confirmScoreboard = (state: GameState, me: PlayerType): 'update' | 'start' | 'end' => {
   const scoreboard = state.scoreboard
-
   if (!scoreboard) throw new Error('Scoreboard is not ready')
 
-  if (me === 'host') scoreboard.hostConfirmed = true
-  else scoreboard.guestConfirmed = true
+  scoreboard[me === 'host' ? 'hostConfirmed' : 'guestConfirmed'] = true
+  if (!scoreboard.hostConfirmed || !scoreboard.guestConfirmed) return 'update'
 
-  if (!scoreboard.hostConfirmed || !scoreboard.guestConfirmed) return false
+  if (scoreboard.type === 'final') return 'end'
+  const next =
+    scoreboard.type === 'agari' ? applyAgariScoreboard(state, scoreboard) : applyRyukyokuScoreboard(state, scoreboard)
 
-  if (scoreboard.type === 'agari') {
-    if (state.round.wind === state[scoreboard.winner].wind) {
-      state.round.honba += 1
-    } else {
-      state.round.honba = 0
-      state.round.kyoku += 1
-      if (state.round.kyoku > 2) {
-        state.round.honba = 0
-        state.round.kyoku = 1
-        const nextWind =
-          state.round.wind === 'east'
-            ? 'south'
-            : state.round.wind === 'south'
-              ? 'west'
-              : state.round.wind === 'west'
-                ? 'north'
-                : undefined
-        if (!nextWind) {
-          room.ended = true
-          return true
-        }
-      }
-    }
-
-    state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000
-    state.round.riichiSticks = 0
-  } else {
-    state.round.honba += 1
-    if (!scoreboard.tenpai.includes(me)) {
-      state.round.kyoku += 1
-      if (state.round.kyoku > 2) {
-        state.round.kyoku = 1
-        const nextWind =
-          state.round.wind === 'east'
-            ? 'south'
-            : state.round.wind === 'south'
-              ? 'west'
-              : state.round.wind === 'west'
-                ? 'north'
-                : undefined
-        if (!nextWind) {
-          room.ended = true
-          return true
-        }
-      }
-    }
-
-    if (scoreboard.tenpai.length === 1) {
-      const winner = scoreboard.tenpai[0]
-      state[winner].score += 1000
-      state[getOpponent(winner)].score -= 1000
-    }
+  if (typeof next !== 'string') {
+    state.scoreboard = next
+    return 'update'
   }
 
   state.scoreboard = undefined
-  const next = state[me].wind === 'east' ? getOpponent(me) : me
   state[me].wind = next === me ? 'east' : 'west'
   state[getOpponent(me)].wind = next === me ? 'west' : 'east'
 
@@ -166,5 +117,5 @@ export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
   state.turn = next
   tsumo(state, next, 'haiyama')
 
-  return true
+  return 'start'
 }

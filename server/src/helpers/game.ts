@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import type { Tile, Tsu } from '@ima/server/types/tile'
-import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall } from '@ima/server/types/game'
+import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall, Wind } from '@ima/server/types/game'
 
 export const createInitialState = (): GameState => ({
   host: {
@@ -114,5 +114,18 @@ export const tileSetToTsu = (s: TileSet): Tsu => {
       return { type: 'shuntsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
     case 'pon':
       return { type: 'koutsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
+  }
+}
+
+export const getNextWind = (wind: Wind): Wind | undefined => {
+  switch (wind) {
+    case 'east':
+      return 'south'
+    case 'south':
+      return 'west'
+    case 'west':
+      return 'north'
+    case 'north':
+      return undefined
   }
 }

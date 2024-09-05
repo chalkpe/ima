@@ -23,8 +23,8 @@ export default tseslint.config(
         {
           rootDir: '..',
           aliases: [
-            { alias: '@ima/client', matcher: '^client/src' },
-            { alias: '@ima/server', matcher: '^server/src' },
+            { alias: '@ima/client', matcher: '^client[\\\\/]src' },
+            { alias: '@ima/server', matcher: '^server[\\\\/]src' },
           ],
         },
       ],

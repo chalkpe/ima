@@ -6,7 +6,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@ima/client/*": ["../client/src/*"],
-      "@ima/server/*": ["../server/src/*"]
+      "@ima/server/*": ["./src/*"]
     }
   }
 }

@@ -1,13 +1,11 @@
-import { isEqualTile, simpleTileToTile } from '@ima/server/helpers/tile'
-import { backTile as simpleBackTile } from '@ima/server/helpers/code'
-import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
-import type { SimpleTile, Tile } from '@ima/server/types/tile'
-import type { GameState, PlayerType, Room } from '@ima/server/types/game'
 import { tsumo } from '@ima/server/controllers/game/action'
+import { hideTile, isEqualTile } from '@ima/server/helpers/tile'
+import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
+import type { SimpleTile } from '@ima/server/types/tile'
+import type { GameState, PlayerType, Room } from '@ima/server/types/game'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
-  const hideTile = (tile: Tile) => ({ ...simpleTileToTile(simpleBackTile), index: tile.index })
 
   return {
     ...state,

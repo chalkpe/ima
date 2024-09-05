@@ -135,6 +135,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
             fontSize: '3vmin',
             fontWeight: 'bold',
             padding: '1vmin 2vmin',
+            minWidth: '12vmin',
             opacity: 0.7,
             ':hover': { opacity: 1 },
           }}

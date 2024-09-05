@@ -1,4 +1,4 @@
-import { codeSyntaxToHand, tileToCode } from '@ima/server/helpers/code'
+import { backTile, codeSyntaxToHand, tileToCode } from '@ima/server/helpers/code'
 import type { Code } from '@ima/server/types/code'
 import type { RiverTile, Wind } from '@ima/server/types/game'
 import type {
@@ -59,6 +59,8 @@ export const simpleTileToRiverTile = (tile: SimpleTile): RiverTile => ({
 })
 
 export const kokushiTiles = codeSyntaxToHand('19m19p19s1234567z')
+
+export const hideTile = (tile: Tile) => ({ ...simpleTileToTile(backTile), index: tile.index })
 
 export const syuupaiTypes: SimpleTile['type'][] = ['man', 'pin', 'sou'] satisfies SyuupaiType[]
 export const syuupaiValues: SimpleTile['value'][] = [1, 2, 3, 4, 5, 6, 7, 8, 9] satisfies SyuupaiValue[]

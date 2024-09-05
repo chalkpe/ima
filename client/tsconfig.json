@@ -2,7 +2,7 @@
   "extends": "@tsconfig/vite-react/tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@ima/client/*": ["../client/src/*"],
+      "@ima/client/*": ["./src/*"],
       "@ima/server/*": ["../server/src/*"]
     }
   }

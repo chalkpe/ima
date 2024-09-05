@@ -20,8 +20,9 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, rotate, stack, dim, style,
   const memory = useAtomValue(tileImageAtom)
 
   useEffect(() => {
-    if (memory.has(tile)) setSrc(memory.get(tile) ?? '')
-    else Mahgen.render(convertTileToCode(tile)).then((src: string) => [setSrc(src), memory.set(tile, src)])
+    const code = convertTileToCode(tile)
+    if (memory.has(code)) setSrc(memory.get(code) ?? '')
+    else Mahgen.render(code).then((src: string) => [setSrc(src), memory.set(code, src)])
   }, [memory, tile])
 
   const commonStyle: CSSProperties = {

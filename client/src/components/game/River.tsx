@@ -1,9 +1,9 @@
 import { FC } from 'react'
-import Mahgen from '../tile/Mahgen'
+import Mahgen from '@ima/client/components/tile/Mahgen'
 import { Box } from '@mui/material'
-import { chunk, convertRiverTileToCode } from '../../utils/tile'
+import { chunk } from '@ima/client/utils/tile'
 
-import type { RiverTile } from '../../../../server/src/types/game'
+import type { RiverTile } from '@ima/server/types/game'
 
 interface RiverProps {
   river: RiverTile[]
@@ -27,7 +27,13 @@ const River: FC<RiverProps> = ({ river, me }) => {
       {chunk(river, 6).map((line, index) => (
         <Box key={index} sx={{ display: 'flex', flexFlow: 'row' }}>
           {line.map((riverTile) => (
-            <Mahgen key={riverTile.tile.index} size={5} riverMode sequence={convertRiverTileToCode(riverTile)} />
+            <Mahgen
+              key={riverTile.tile.index}
+              size={5}
+              rotate={riverTile.isRiichi}
+              dim={riverTile.isTsumogiri}
+              tile={riverTile.tile}
+            />
           ))}
         </Box>
       ))}

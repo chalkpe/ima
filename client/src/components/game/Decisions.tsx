@@ -1,9 +1,11 @@
-import { FC, useCallback } from 'react'
+import { ComponentProps, FC, useCallback } from 'react'
 import { Button, Stack } from '@mui/material'
-import Mahgen from '../tile/Mahgen'
-import { compareDecisions, convertTileToCode } from '../../utils/tile'
-import { trpc } from '../../utils/trpc'
-import type { Decision } from '../../../../server/src/types/game'
+import Mahgen from '@ima/client/components/tile/Mahgen'
+import { trpc } from '@ima/client/utils/trpc'
+import { compareDecisions } from '@ima/client/utils/tile'
+import { useSetAtom } from 'jotai'
+import { hoveredAtom } from '@ima/client/store/hovered'
+import type { Decision } from '@ima/server/types/game'
 
 const typeText: Record<Decision['type'], string> = {
   ankan: '안깡',
@@ -19,11 +21,27 @@ const typeText: Record<Decision['type'], string> = {
   skip_and_tsumo: '스킵',
 }
 
+const typeColor: Record<Decision['type'], ComponentProps<typeof Button>['color']> = {
+  ankan: 'success',
+  gakan: 'success',
+  daiminkan: 'success',
+  pon: 'primary',
+  chi: 'info',
+  nuki: 'info',
+  riichi: 'warning',
+  tsumo: 'error',
+  ron: 'error',
+  skip_chankan: 'secondary',
+  skip_and_tsumo: 'secondary',
+}
+
 interface DecisionsProps {
   decisions: Decision[]
 }
 
 const Decisions: FC<DecisionsProps> = ({ decisions }) => {
+  const setHovered = useSetAtom(hoveredAtom)
+
   const { mutate: pon } = trpc.game.pon.useMutation()
   const { mutate: chi } = trpc.game.chi.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
@@ -85,7 +103,18 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   )
 
   return (
-    <Stack direction="row" gap="1.5vmin" justifyContent="center" position="absolute" bottom="12vmin" right="20vmin">
+    <Stack
+      direction="row"
+      flexWrap="wrap"
+      gap="1.5vmin"
+      position="absolute"
+      top="0vmin"
+      bottom="12vmin"
+      left="8vmin"
+      right="20vmin"
+      alignContent="flex-end"
+      justifyContent="flex-end"
+    >
       {[...decisions].sort(compareDecisions).map((decision) => (
         <Button
           key={
@@ -95,30 +124,25 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
             decision.otherTiles?.map((t) => t.type + t.value + t.attribute + t.background).join('')
           }
           variant="contained"
-          color={
-            decision.type === 'riichi'
-              ? 'warning'
-              : decision.type === 'tsumo' || decision.type === 'ron'
-              ? 'error'
-              : 'primary'
-          }
+          color={typeColor[decision.type]}
           size="large"
           onClick={() => onClick(decision)}
+          onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            fontSize: '2vmin',
-            padding: '1vmin',
+            fontSize: '3vmin',
+            fontWeight: 'bold',
+            padding: '1vmin 2vmin',
+            opacity: 0.7,
+            ':hover': { opacity: 1 },
           }}
         >
           {typeText[decision.type]}
           <span>
-            {decision.tile && <Mahgen size={3} sequence={convertTileToCode(decision.tile)} />}
-            {decision.otherTiles &&
-              decision.otherTiles.map((tile) => (
-                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
-              ))}
+            {decision.tile && <Mahgen size={3} tile={decision.tile} />}
+            {decision.otherTiles && decision.otherTiles.map((tile) => <Mahgen key={tile.index} size={3} tile={tile} />)}
           </span>
         </Button>
       ))}

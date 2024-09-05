@@ -1,12 +1,12 @@
-import { codeToTile } from './code'
-import { calculateAgari } from './agari'
-import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from './tile'
-import type { GameState, Hand, PlayerType } from '../types/game'
-import type { TenpaiState } from '../types/agari'
-import type { Tile } from '../types/tile'
-import type { Tenpai } from '../types/tenpai'
-import { calculateYaku } from './yaku'
-import { getClosedHand } from './game'
+import { codeToTile } from '@ima/server/helpers/code'
+import { calculateAgari } from '@ima/server/helpers/agari'
+import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from '@ima/server/helpers/tile'
+import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
+import type { TenpaiState } from '@ima/server/types/agari'
+import type { Tile } from '@ima/server/types/tile'
+import type { Tenpai } from '@ima/server/types/tenpai'
+import { calculateYaku } from '@ima/server/helpers/yaku'
+import { getClosedHand } from '@ima/server/helpers/game'
 
 export const calculateFuriten = (
   state: GameState,
@@ -40,8 +40,8 @@ export const calculateTenpai = (
     status: calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code))).every((yaku) => yaku.isExtra)
       ? 'muyaku'
       : states.every((s) => calculateFuriten(state, me, s, giriTile))
-      ? 'tenpai'
-      : 'furiten',
+        ? 'tenpai'
+        : 'furiten',
   }))
 
   return tenpai.some((t) => t.status === 'furiten')

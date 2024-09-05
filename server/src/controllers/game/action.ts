@@ -7,16 +7,16 @@ import {
   onBeforeGiri,
   onBeforeTsumo,
   onHandChange,
-} from './event'
+} from '@ima/server/controllers/game/event'
 
-import { partition } from '../../helpers/common'
-import { getClosedHand, getDoraTiles, getOpponent, getRiverEnd, getUraDoraTiles } from '../../helpers/game'
-import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '../../helpers/tile'
+import { partition } from '@ima/server/helpers/common'
+import { getClosedHand, getDoraTiles, getOpponent, getRiverEnd, getUraDoraTiles } from '@ima/server/helpers/game'
+import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '@ima/server/helpers/tile'
 
-import type { Tile, TileType } from '../../types/tile'
-import type { GameState, PlayerType, WallType } from '../../types/game'
-import { calculateYaku } from '../../helpers/yaku'
-import { calculateTenpai } from '../../helpers/tenpai'
+import type { Tile, TileType } from '@ima/server/types/tile'
+import type { GameState, PlayerType, WallType } from '@ima/server/types/game'
+import { calculateYaku } from '@ima/server/helpers/yaku'
+import { calculateTenpai } from '@ima/server/helpers/tenpai'
 
 export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   if (state[me].hand.tsumo) {
@@ -202,8 +202,8 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
     yakuman > 0
       ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
       : oya
-      ? eastScoreTable[Math.min(13, han)]
-      : westScoreTable[Math.min(13, han)]
+        ? eastScoreTable[Math.min(13, han)]
+        : westScoreTable[Math.min(13, han)]
 
   state[me].decisions = []
   state.scoreboard = {
@@ -247,8 +247,8 @@ export const callRon = (state: GameState, me: PlayerType) => {
     yakuman > 0
       ? yakuman * (oya ? eastScoreTable[13] : westScoreTable[13])
       : oya
-      ? eastScoreTable[Math.min(13, han)]
-      : westScoreTable[Math.min(13, han)]
+        ? eastScoreTable[Math.min(13, han)]
+        : westScoreTable[Math.min(13, han)]
 
   state[me].decisions = []
   state.scoreboard = {

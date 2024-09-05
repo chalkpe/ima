@@ -1,5 +1,5 @@
-
-body, #root {
+body,
+#root {
   overflow: hidden;
   display: flex;
   place-content: center;

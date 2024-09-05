@@ -1,4 +1,4 @@
-import { backTile, backTileCode, codeSyntaxToHand, codeToTile, tileToCode } from '../code'
+import { backTile, backTileCode, codeSyntaxToHand, codeToTile, tileToCode } from '@ima/server/helpers/code'
 
 describe('code', () => {
   describe('tileToCode', () => {

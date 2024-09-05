@@ -1,10 +1,9 @@
 import { FC } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from '../tile/Mahgen'
-import { convertTileToCode } from '../../utils/tile'
+import Mahgen from '@ima/client/components/tile/Mahgen'
 
-import type { Wall } from '../../../../server/src/types/game'
-import type { Tile } from '../../../../server/src/types/tile'
+import type { Wall } from '@ima/server/types/game'
+import type { Tile } from '@ima/server/types/tile'
 
 interface KingTilesProps {
   wall: Wall
@@ -31,7 +30,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {lowerTiles.map((tile) => (
-          <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
+          <Mahgen key={tile.index} size={3.5} tile={tile} />
         ))}
       </Stack>
       <Stack
@@ -42,7 +41,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {upperTiles.map((tile) => (
-          <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
+          <Mahgen key={tile.index} size={3.5} tile={tile} />
         ))}
       </Stack>
       <Stack
@@ -53,11 +52,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {upperSupplementTiles.map((tile, index) =>
-          tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
-          ) : (
-            <Box key={index} width="3.5vmin" />
-          )
+          tile !== null ? <Mahgen key={tile.index} size={3.5} tile={tile} /> : <Box key={index} width="3.5vmin" />
         )}
       </Stack>
       <Stack
@@ -68,11 +63,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
         sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
       >
         {lowerSupplementTiles.map((tile, index) =>
-          tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
-          ) : (
-            <Box key={index} width="3.5vmin" />
-          )
+          tile !== null ? <Mahgen key={tile.index} size={3.5} tile={tile} /> : <Box key={index} width="3.5vmin" />
         )}
       </Stack>
     </>

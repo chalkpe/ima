@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { skipToken } from '@tanstack/react-query'
 import { useAtomValue } from 'jotai'
-import { usernameAtom } from '../store/username'
+import { usernameAtom } from '@ima/client/store/username'
 
 const useAuth = () => {
   const navigate = useNavigate()

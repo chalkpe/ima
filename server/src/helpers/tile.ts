@@ -1,6 +1,6 @@
-import { codeSyntaxToHand, tileToCode } from './code'
-import type { Code } from '../types/code'
-import type { RiverTile, Wind } from '../types/game'
+import { codeSyntaxToHand, tileToCode } from '@ima/server/helpers/code'
+import type { Code } from '@ima/server/types/code'
+import type { RiverTile, Wind } from '@ima/server/types/game'
 import type {
   Koutsu,
   Machi,
@@ -16,7 +16,7 @@ import type {
   TileType,
   Tsu,
   ZihaiType,
-} from '../types/tile'
+} from '@ima/server/types/tile'
 
 export const tileTypes = ['man', 'pin', 'sou', 'wind', 'dragon'] as const satisfies TileType[]
 
@@ -225,7 +225,11 @@ export const isZihai = (tile: SimpleTile) => isWindHai(tile) || isDragonHai(tile
 
 export const isYaochuuhai = (tile: SimpleTile) => isZihai(tile) || tile.value === 1 || tile.value === 9
 
-export const getTilesValueString = (tiles: SimpleTile[]) => tiles.sort(compareTile).map((tile) => tile.value).join('')
+export const getTilesValueString = (tiles: SimpleTile[]) =>
+  tiles
+    .sort(compareTile)
+    .map((tile) => tile.value)
+    .join('')
 
 export const tileNames: Record<Code, string> = {
   '1m': '1만',

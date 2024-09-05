@@ -1,6 +1,6 @@
-import type { Tenpai } from './tenpai'
-import type { Tile } from './tile'
-import type { AgariType, Yaku } from './yaku'
+import type { Tenpai } from '@ima/server/types/tenpai'
+import type { Tile } from '@ima/server/types/tile'
+import type { AgariType, Yaku } from '@ima/server/types/yaku'
 
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
@@ -40,16 +40,7 @@ export interface Decision {
   otherTiles?: Tile[]
 }
 
-export type StateChangeType =
-  | 'update'
-  | 'start'
-  | 'tsumo'
-  | 'ron'
-  | 'riichi'
-  | 'nuki'
-  | 'kan'
-  | 'pon'
-  | 'chi'
+export type StateChangeType = 'update' | 'start' | 'tsumo' | 'ron' | 'riichi' | 'nuki' | 'kan' | 'pon' | 'chi'
 
 export type RiichiState = number | null
 

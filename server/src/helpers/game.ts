@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
-import type { Tile } from '../types/tile'
-import type { GameState, Hand, Player, PlayerType, RiverTile, Room, Wall } from '../types/game'
+import type { Tile, Tsu } from '@ima/server/types/tile'
+import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall } from '@ima/server/types/game'
 
 export const createInitialState = (): GameState => ({
   host: {
@@ -102,3 +102,17 @@ export const getDoraTiles = (wall: Wall): Tile[] =>
 
 export const getUraDoraTiles = (wall: Wall): Tile[] =>
   wall.kingTiles.filter((_, index) => uraDoraIndices.slice(0, wall.doraCount).includes(index))
+
+export const tileSetToTsu = (s: TileSet): Tsu => {
+  switch (s.type) {
+    case 'ankan':
+      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: false }
+    case 'gakan':
+    case 'daiminkan':
+      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: true }
+    case 'chi':
+      return { type: 'shuntsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
+    case 'pon':
+      return { type: 'koutsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
+  }
+}

@@ -1,15 +1,15 @@
-import { createInitialState } from '../game'
-import type { GameState } from '../../types/game'
-import { codeSyntaxToHand } from '../code'
-import { simpleTileToRiverTile, simpleTileToTile } from '../tile'
+import { createInitialState } from '@ima/server/helpers/game'
+import type { GameState } from '@ima/server/types/game'
+import { codeSyntaxToHand } from '@ima/server/helpers/code'
+import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
 import {
   calculateAnkanDecisions,
   calculateChiDecisions,
   calculateGakanDecisions,
   calculatePonDaiminkanDecisions,
   calculateRonDecisions,
-} from '../decision'
-import { combinations } from '../common'
+} from '@ima/server/helpers/decision'
+import { combinations } from '@ima/server/helpers/common'
 
 describe('decision', () => {
   const i = createInitialState()
@@ -156,7 +156,6 @@ describe('decision', () => {
   })
 
   describe('calculateRonDecisions', () => {
-
     const ss = (hand: string, opponentRiver: string, meRiver?: string): GameState => {
       const state = s(hand, opponentRiver, false)
       if (meRiver) state.host.river = r(meRiver)

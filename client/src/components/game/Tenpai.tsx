@@ -1,9 +1,9 @@
 import { FC } from 'react'
 import { Paper, Stack, Typography } from '@mui/material'
-import TileWithCount from '../tile/TileWithCount'
-import { compareSimpleTile } from '../../utils/tile'
+import TileWithCount from '@ima/client/components/tile/TileWithCount'
+import { compareSimpleTile } from '@ima/client/utils/tile'
 
-import type { Tenpai } from '../../../../server/src/types/tenpai'
+import type { Tenpai } from '@ima/server/types/tenpai'
 
 const statusText: Record<Tenpai['status'], string> = {
   tenpai: '텐파이',

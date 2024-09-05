@@ -1,4 +1,4 @@
-import type { Wind } from '../../../server/src/types/game'
+import type { Wind } from '@ima/server/types/game'
 
 export const getWindName = (wind: Wind) => {
   switch (wind) {

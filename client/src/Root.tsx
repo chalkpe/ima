@@ -1,17 +1,17 @@
-import './root.css'
+import '@ima/client/root.css'
 
-import background from './assets/background.png'
+import background from '@ima/client/assets/background.png'
 
 import { useMemo, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { Box, CssBaseline, ThemeProvider } from '@mui/material'
 import { createWSClient, wsLink } from '@trpc/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { trpc } from './utils/trpc.ts'
+import { trpc } from '@ima/client/utils/trpc.ts'
 import { useAtomValue } from 'jotai'
-import { usernameAtom } from './store/username.ts'
-import theme from './theme.ts'
-import router from './router.tsx'
+import { usernameAtom } from '@ima/client/store/username.ts'
+import theme from '@ima/client/theme.ts'
+import router from '@ima/client/router.tsx'
 
 const Root = () => {
   const username = useAtomValue(usernameAtom)

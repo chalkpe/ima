@@ -1,10 +1,9 @@
 import { FC } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from '../tile/Mahgen'
-import { convertTileToCode } from '../../utils/tile'
+import Mahgen from '@ima/client/components/tile/Mahgen'
 
-import type { Tile } from '../../../../server/src/types/tile'
-import type { Wall } from '../../../../server/src/types/game'
+import type { Tile } from '@ima/server/types/tile'
+import type { Wall } from '@ima/server/types/game'
 
 interface WallProps {
   wall: Wall
@@ -41,7 +40,7 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} tile={tile} />
           ) : (
             <Box key={'lower' + index} width="3.5vmin" />
           )
@@ -56,7 +55,7 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} sequence={convertTileToCode(tile)} />
+            <Mahgen key={tile.index} size={3.5} tile={tile} />
           ) : (
             <Box key={'upper' + index} width="3.5vmin" />
           )

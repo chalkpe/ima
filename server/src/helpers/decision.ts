@@ -1,12 +1,12 @@
-import { tileToCode } from './code'
-import { calculateYaku } from './yaku'
-import { calculateAgari } from './agari'
-import { combination, combinations, partition } from './common'
-import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from './game'
-import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from './tile'
+import { tileToCode } from '@ima/server/helpers/code'
+import { calculateYaku } from '@ima/server/helpers/yaku'
+import { calculateAgari } from '@ima/server/helpers/agari'
+import { calculateFuriten } from '@ima/server/helpers/tenpai'
+import { combination, combinations, partition } from '@ima/server/helpers/common'
+import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from '@ima/server/helpers/game'
+import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from '@ima/server/helpers/tile'
 
-import type { Decision, GameState, PlayerType } from '../types/game'
-import { calculateFuriten } from './tenpai'
+import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
 export const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
@@ -53,7 +53,7 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
           (tiles, index, array) =>
             array.findIndex((t) => isStrictEqualTile(t[0], tiles[0]) && isStrictEqualTile(t[1], tiles[1])) === index
         )
-        .map((tiles) => ({ type: 'pon', tile: furoTile, otherTiles: tiles } satisfies Decision)),
+        .map((tiles) => ({ type: 'pon', tile: furoTile, otherTiles: tiles }) satisfies Decision),
     ]
 
   // pon

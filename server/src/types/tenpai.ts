@@ -1,4 +1,4 @@
-import type { SimpleTile, Tile } from './tile'
+import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
 export type TenpaiStatus = 'tenpai' | 'furiten' | 'muyaku'
 

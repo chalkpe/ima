@@ -1,9 +1,9 @@
-import { isEqualTile, simpleTileToTile } from '../../helpers/tile'
-import { backTile as simpleBackTile } from '../../helpers/code'
-import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '../../helpers/game'
-import type { SimpleTile, Tile } from '../../types/tile'
-import type { GameState, PlayerType, Room } from '../../types/game'
-import { tsumo } from './action'
+import { isEqualTile, simpleTileToTile } from '@ima/server/helpers/tile'
+import { backTile as simpleBackTile } from '@ima/server/helpers/code'
+import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
+import type { SimpleTile, Tile } from '@ima/server/types/tile'
+import type { GameState, PlayerType, Room } from '@ima/server/types/game'
+import { tsumo } from '@ima/server/controllers/game/action'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
@@ -100,7 +100,9 @@ export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
 
   if (!scoreboard) throw new Error('Scoreboard is not ready')
 
-  me === 'host' ? (scoreboard.hostConfirmed = true) : (scoreboard.guestConfirmed = true)
+  if (me === 'host') scoreboard.hostConfirmed = true
+  else scoreboard.guestConfirmed = true
+
   if (!scoreboard.hostConfirmed || !scoreboard.guestConfirmed) return false
 
   if (scoreboard.type === 'agari') {
@@ -116,10 +118,10 @@ export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
           state.round.wind === 'east'
             ? 'south'
             : state.round.wind === 'south'
-            ? 'west'
-            : state.round.wind === 'west'
-            ? 'north'
-            : undefined
+              ? 'west'
+              : state.round.wind === 'west'
+                ? 'north'
+                : undefined
         if (!nextWind) {
           room.ended = true
           return true
@@ -139,10 +141,10 @@ export const confirmScoreboard = (room: Room, me: PlayerType): boolean => {
           state.round.wind === 'east'
             ? 'south'
             : state.round.wind === 'south'
-            ? 'west'
-            : state.round.wind === 'west'
-            ? 'north'
-            : undefined
+              ? 'west'
+              : state.round.wind === 'west'
+                ? 'north'
+                : undefined
         if (!nextWind) {
           room.ended = true
           return true

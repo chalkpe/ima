@@ -1,5 +1,5 @@
-import type { Code } from "./code"
-import type { Machi, Tsu } from './tile'
+import type { Code } from '@ima/server/types/code'
+import type { Machi, Tsu } from '@ima/server/types/tile'
 
 export type AgariState = Tsu[]
 export type TenpaiState = (Tsu | Machi)[]

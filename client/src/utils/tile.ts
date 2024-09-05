@@ -1,5 +1,5 @@
-import type { Decision, RiverTile } from '../../../server/src/types/game'
-import type { SimpleTile, Tile } from '../../../server/src/types/tile'
+import type { Decision, RiverTile } from '@ima/server/types/game'
+import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
 const attributeOrder: Tile['attribute'][] = ['normal', 'red']
@@ -11,6 +11,8 @@ export const compareTile = (a: Tile, b: Tile) =>
   compareSimpleTile(a, b) || attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
 
 export const sortTiles = (tiles: Tile[]) => tiles.map((tile, order) => ({ ...tile, order })).sort(compareTile)
+
+export const backTile: Tile = { type: 'back', value: 0, attribute: 'normal', background: 'white', index: -1 }
 
 export const convertTileToCode = (tile: Tile | SimpleTile) => {
   switch (tile.type) {
@@ -28,15 +30,6 @@ export const convertTileToCode = (tile: Tile | SimpleTile) => {
     default:
       return '0z'
   }
-}
-
-export const convertRiverTileToCode = (river: RiverTile) => {
-  const code = convertTileToCode(river.tile)
-
-  if (river.isTsumogiri && river.isRiichi) return `v${code}`
-  if (river.isTsumogiri) return `^${code}`
-  if (river.isRiichi) return `_${code}`
-  return code
 }
 
 export const chunk = (river: RiverTile[], size: number) => {

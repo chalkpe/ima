@@ -1,7 +1,7 @@
 import ws from 'ws'
 import { applyWSSHandler } from '@trpc/server/adapters/ws'
-import { appRouter } from './router'
-import { createContext } from './context'
+import { appRouter } from '@ima/server/router'
+import { createContext } from '@ima/server/context'
 
 const wss = new ws.Server({ port: 3000 })
 

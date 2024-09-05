@@ -1,7 +1,7 @@
-import { codeSyntaxToHand } from '../code'
-import { simpleTileToRiverTile, simpleTileToTile } from '../tile'
-import { getActiveMe, getClosedHand, getOpponent, getRiverEnd } from '../game'
-import type { Hand, Player, Room } from '../../types/game'
+import { codeSyntaxToHand } from '@ima/server/helpers/code'
+import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
+import { getActiveMe, getClosedHand, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
+import type { Hand, Player, Room } from '@ima/server/types/game'
 
 describe('game', () => {
   describe('getOpponent', () => {

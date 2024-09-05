@@ -1,10 +1,10 @@
-import { calculateAgari } from '../agari'
-import { getDoraTiles, getUraDoraTiles } from '../game'
-import yakuPredicates from './predicate'
-import type { AgariState } from '../../types/agari'
-import type { Tile, Tsu } from '../../types/tile'
-import type { GameState, Hand, PlayerType, TileSet } from '../../types/game'
-import type { AgariType, Yaku, YakuPredicateParams } from '../../types/yaku'
+import { calculateAgari } from '@ima/server/helpers/agari'
+import { getDoraTiles, getUraDoraTiles, tileSetToTsu } from '@ima/server/helpers/game'
+import yakuValidators from '@ima/server/helpers/yaku/validator'
+import type { AgariState } from '@ima/server/types/agari'
+import type { Tile } from '@ima/server/types/tile'
+import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
+import type { AgariType, Yaku, YakuPredicateParams } from '@ima/server/types/yaku'
 
 const calculateYakuOfAgari = (
   state: GameState,
@@ -36,27 +36,21 @@ const calculateYakuOfAgari = (
     uraDoraTiles: getUraDoraTiles(state.wall),
   }
 
-  const result = yakuPredicates
-    .map((predicate) => predicate(params))
-    .filter((res): res is Yaku | Yaku[] => res !== false)
-    .flatMap((res) => (Array.isArray(res) ? res : [res]))
+  const result: Yaku[] = []
+  let validators = [...yakuValidators]
+
+  while (validators.length > 0) {
+    const yaku = validators.splice(0, 1)[0].predicate(params)
+    if (!yaku) continue
+
+    const r = Array.isArray(yaku) ? yaku : [yaku]
+    result.push(...r)
+
+    if (r.some((y) => y.isYakuman)) validators = validators.filter((v) => v.level === 'yakuman')
+  }
 
   if (!result.some((yaku) => yaku.isYakuman)) return result
   return result.filter((yaku) => yaku.isYakuman)
-}
-
-export const tileSetToTsu = (s: TileSet): Tsu => {
-  switch (s.type) {
-    case 'ankan':
-      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: false }
-    case 'gakan':
-    case 'daiminkan':
-      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: true }
-    case 'chi':
-      return { type: 'shuntsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
-    case 'pon':
-      return { type: 'koutsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
-  }
 }
 
 export const calculateYaku = (

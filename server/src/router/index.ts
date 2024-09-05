@@ -1,7 +1,7 @@
-import { database } from '../db'
-import { publicProcedure, router } from '../trpc'
-import { gameRouter } from './game'
-import { lobbyRouter } from './lobby'
+import { database } from '@ima/server/db'
+import { publicProcedure, router } from '@ima/server/trpc'
+import { gameRouter } from '@ima/server/router/game'
+import { lobbyRouter } from '@ima/server/router/lobby'
 
 // setInterval(() => {
 //   database.rooms = database.rooms.filter((room) => {

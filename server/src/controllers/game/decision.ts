@@ -7,9 +7,9 @@ import {
   calculateRiichiDecisions,
   calculateRonDecisions,
   calculateTsumoDecisions,
-} from '../../helpers/decision'
+} from '@ima/server/helpers/decision'
 
-import type { Decision, GameState, PlayerType } from '../../types/game'
+import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
 export const calculateBeforeTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {
   const decisions = [

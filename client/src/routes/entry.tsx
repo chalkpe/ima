@@ -2,7 +2,7 @@ import { FC, useCallback, useState } from 'react'
 import { Avatar, Box, Button, TextField, Typography } from '@mui/material'
 import { LockOutlined } from '@mui/icons-material'
 import { useSetAtom } from 'jotai'
-import { usernameAtom } from '../store/username'
+import { usernameAtom } from '@ima/client/store/username'
 import { useNavigate } from 'react-router-dom'
 
 const Entry: FC = () => {

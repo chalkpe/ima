@@ -1,10 +1,9 @@
 import { FC } from 'react'
-import type { SimpleTile } from '../../../../server/src/types/tile'
-import { trpc } from '../../utils/trpc'
+import { trpc } from '@ima/client/utils/trpc'
 import { skipToken } from '@tanstack/react-query'
 import { Stack, Typography } from '@mui/material'
-import Mahgen from './Mahgen'
-import { convertTileToCode } from '../../utils/tile'
+import Mahgen from '@ima/client/components/tile/Mahgen'
+import type { SimpleTile } from '@ima/server/types/tile'
 
 interface TileWithCountProps {
   tile: SimpleTile
@@ -17,7 +16,7 @@ const TileWithCount: FC<TileWithCountProps> = ({ tile, size }) => {
 
   return (
     <Stack direction="row">
-      <Mahgen size={size} sequence={convertTileToCode(tile)} />
+      <Mahgen size={size} tile={tile} />
       <Typography variant="h6" align="center">
         &nbsp;x{data}
       </Typography>

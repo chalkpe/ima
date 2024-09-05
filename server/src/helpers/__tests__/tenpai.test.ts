@@ -1,16 +1,24 @@
-import { codeSyntaxToHand } from '../code'
-import { simpleTileToRiverTile, simpleTileToTile } from '../tile'
-import { calculateFuriten, calculateTenpai } from '../tenpai'
-import type { TenpaiState } from '../../types/agari'
-import type { Koritsu, Syuntsu, Tatsu } from '../../types/tile'
-import { createInitialState } from '../game'
+import { codeSyntaxToHand } from '@ima/server/helpers/code'
+import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
+import { calculateFuriten, calculateTenpai } from '@ima/server/helpers/tenpai'
+import type { TenpaiState } from '@ima/server/types/agari'
+import type { Koritsu, Syuntsu, Tatsu } from '@ima/server/types/tile'
+import { createInitialState } from '@ima/server/helpers/game'
+import { TileSet } from 'src/types/game'
 
 describe('tenpai', () => {
-  const initialState = createInitialState()
+  const i = createInitialState()
   const c = (tiles: string) => codeSyntaxToHand(tiles)
   const t = (tiles: string) => codeSyntaxToHand(tiles).map(simpleTileToTile)
-  const h = (tiles: string) => ({ ...initialState.host.hand, closed: codeSyntaxToHand(tiles).map(simpleTileToTile) })
-  const s = (river: string) => ({ ...initialState, host: { ...initialState.host, river: codeSyntaxToHand(river).map(simpleTileToRiverTile) }})
+  const h = (tiles: string, called: TileSet[] = []) => ({
+    ...i.host.hand,
+    closed: codeSyntaxToHand(tiles).map(simpleTileToTile),
+    called,
+  })
+  const s = (river: string) => ({
+    ...i,
+    host: { ...i.host, river: codeSyntaxToHand(river).map(simpleTileToRiverTile) },
+  })
 
   describe('calculateFuriten', () => {
     test('returns false if machi is not found', () => {
@@ -53,6 +61,11 @@ describe('tenpai', () => {
         { agariTile: c('1p')[0], giriTile: null, status: 'furiten' },
         { agariTile: c('4p')[0], giriTile: null, status: 'furiten' },
       ])
+    })
+    test('returns result if tenpai but muyaku', () => {
+      expect(
+        calculateTenpai(s('1s'), 'host', h('234m123555p5z', [{ type: 'pon', tiles: t('444z'), jun: 1 }]), null)
+      ).toMatchObject([{ agariTile: c('5z')[0], giriTile: null, status: 'muyaku' }])
     })
     test('returns result if tenpai but furiten (shabo)', () => {
       expect(calculateTenpai(s('6z'), 'host', h('678s5566z'), null)).toMatchObject([

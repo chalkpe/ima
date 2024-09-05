@@ -1,9 +1,9 @@
 import z from 'zod'
-import { publicProcedure, router } from '../trpc'
-import { database } from '../db'
+import { publicProcedure, router } from '@ima/server/trpc'
+import { database } from '@ima/server/db'
 import { TRPCError } from '@trpc/server'
-import { createInitialState } from '../helpers/game'
-import type { Room } from '../types/game'
+import { createInitialState } from '@ima/server/helpers/game'
+import type { Room } from '@ima/server/types/game'
 
 export const lobbyRouter = router({
   list: publicProcedure.query(() =>
@@ -22,6 +22,7 @@ export const lobbyRouter = router({
       guest: '',
       guestReady: false,
       started: false,
+      ended: false,
       state: createInitialState(),
     }
 

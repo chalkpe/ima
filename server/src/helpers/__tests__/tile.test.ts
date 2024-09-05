@@ -1,6 +1,6 @@
-import { Koritsu, Koutsu, Tatsu } from '../../types/tile'
-import { codeSyntaxToHand as c } from '../code'
-import { availableTiles } from '../game'
+import { Koritsu, Koutsu, Tatsu } from '@ima/server/types/tile'
+import { codeSyntaxToHand as c } from '@ima/server/helpers/code'
+import { availableTiles } from '@ima/server/helpers/game'
 import {
   countTiles,
   getAllSyuntsu,
@@ -8,6 +8,7 @@ import {
   getLowerTile,
   getMachiTiles,
   getTatsuMachi,
+  getTileWind,
   getUpperTile,
   isEqualTile,
   isKoutsu,
@@ -18,7 +19,7 @@ import {
   simpleTileToTile,
   syuupaiTypes,
   zihaiTypes,
-} from '../tile'
+} from '@ima/server/helpers/tile'
 
 describe('tile', () => {
   describe('countTiles', () => {
@@ -187,6 +188,21 @@ describe('tile', () => {
 
     test.each(zihaiTypes)('should return undefined if the tile is not syuupai (%s)', (type) => {
       expect(getUpperTile({ type, value: 2 })).toBeUndefined()
+    })
+  })
+
+  describe('getDoraTile', () => {
+    test('should return the dora tile', () => {
+      expect(getDoraTile(c('1m')[0], availableTiles)).toEqual(c('9m')[0])
+      expect(getDoraTile(c('9m')[0], availableTiles)).toEqual(c('1m')[0])
+      expect(getDoraTile(c('1p')[0], availableTiles)).toEqual(c('9p')[0])
+      expect(getDoraTile(c('9p')[0], availableTiles)).toEqual(c('1p')[0])
+      expect(getDoraTile(c('1s')[0], availableTiles)).toEqual(c('2s')[0])
+      expect(getDoraTile(c('9s')[0], availableTiles)).toEqual(c('1s')[0])
+      expect(getDoraTile(c('1z')[0], availableTiles)).toEqual(c('2z')[0])
+      expect(getDoraTile(c('4z')[0], availableTiles)).toEqual(c('1z')[0])
+      expect(getDoraTile(c('5z')[0], availableTiles)).toEqual(c('6z')[0])
+      expect(getDoraTile(c('7z')[0], availableTiles)).toEqual(c('5z')[0])
     })
   })
 
@@ -433,18 +449,18 @@ describe('tile', () => {
     })
   })
 
-  describe('getDoraTile', () => {
-    test('should return the dora tile', () => {
-      expect(getDoraTile(c('1m')[0], availableTiles)).toEqual(c('9m')[0])
-      expect(getDoraTile(c('9m')[0], availableTiles)).toEqual(c('1m')[0])
-      expect(getDoraTile(c('1p')[0], availableTiles)).toEqual(c('9p')[0])
-      expect(getDoraTile(c('9p')[0], availableTiles)).toEqual(c('1p')[0])
-      expect(getDoraTile(c('1s')[0], availableTiles)).toEqual(c('2s')[0])
-      expect(getDoraTile(c('9s')[0], availableTiles)).toEqual(c('1s')[0])
-      expect(getDoraTile(c('1z')[0], availableTiles)).toEqual(c('2z')[0])
-      expect(getDoraTile(c('4z')[0], availableTiles)).toEqual(c('1z')[0])
-      expect(getDoraTile(c('5z')[0], availableTiles)).toEqual(c('6z')[0])
-      expect(getDoraTile(c('7z')[0], availableTiles)).toEqual(c('5z')[0])
+  describe('getTileWind', () => {
+    test('should return the wind of the tile', () => {
+      expect(getTileWind({ type: 'wind', value: 1 })).toEqual('east')
+      expect(getTileWind({ type: 'wind', value: 2 })).toEqual('south')
+      expect(getTileWind({ type: 'wind', value: 3 })).toEqual('west')
+      expect(getTileWind({ type: 'wind', value: 4 })).toEqual('north')
+    })
+    test('should return undefined if the tile is not wind', () => {
+      expect(getTileWind({ type: 'man', value: 1 })).toBeUndefined()
+      expect(getTileWind({ type: 'pin', value: 1 })).toBeUndefined()
+      expect(getTileWind({ type: 'sou', value: 1 })).toBeUndefined()
+      expect(getTileWind({ type: 'dragon', value: 1 })).toBeUndefined()
     })
   })
 })

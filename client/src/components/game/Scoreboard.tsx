@@ -1,10 +1,10 @@
 import { FC } from 'react'
 import { Button, Paper, Stack, Typography } from '@mui/material'
-import Mahgen from '../tile/Mahgen'
-import { compareTile, convertTileToCode } from '../../utils/tile'
-import { trpc } from '../../utils/trpc'
-import type { PlayerType, Room } from '../../../../server/src/types/game'
-import TileSet from '../tile/TileSet'
+import Mahgen from '@ima/client/components/tile/Mahgen'
+import { compareTile, convertTileToCode } from '@ima/client/utils/tile'
+import { trpc } from '@ima/client/utils/trpc'
+import type { PlayerType, Room } from '@ima/server/types/game'
+import TileSet from '@ima/client/components/tile/TileSet'
 
 interface ScoreboardProps {
   data: Room
@@ -63,7 +63,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap={0}>
             {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-              <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+              <Mahgen key={tile.index} size={3} tile={tile} />
             ))}
           </Stack>
           <Stack direction="row" gap="0.5vmin">
@@ -73,10 +73,11 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
                 tileSet={tileSet}
                 size={3}
                 rotate={false}
+                stack={false}
               />
             ))}
           </Stack>
-          {scoreboard.hand.tsumo && <Mahgen size={3} sequence={convertTileToCode(scoreboard.hand.tsumo)} />}
+          {scoreboard.hand.tsumo && <Mahgen size={3} tile={scoreboard.hand.tsumo} />}
         </Stack>
 
         <Stack direction="row" gap="1vmin">
@@ -84,7 +85,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             <Typography fontSize="3vmin">도라</Typography>
             <Stack direction="row">
               {scoreboard.doraTiles.map((tile) => (
-                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+                <Mahgen key={tile.index} size={3} tile={tile} />
               ))}
             </Stack>
           </Stack>
@@ -92,7 +93,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             <Typography fontSize="3vmin">뒷도라</Typography>
             <Stack direction="row">
               {scoreboard.uraDoraTiles.map((tile) => (
-                <Mahgen key={tile.index} size={3} sequence={convertTileToCode(tile)} />
+                <Mahgen key={tile.index} size={3} tile={tile} />
               ))}
             </Stack>
           </Stack>

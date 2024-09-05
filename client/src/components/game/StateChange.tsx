@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { Backdrop, Dialog, Typography } from '@mui/material'
-import type { StateChangeType } from '../../../../server/src/types/game'
-
+import type { StateChangeType } from '@ima/server/types/game'
 
 const typeText: Record<StateChangeType, string> = {
   kan: '깡',
@@ -26,6 +25,7 @@ const StateChange: FC<StateChangeProps> = ({ type }) => {
       open={true}
       slots={{ backdrop: Backdrop }}
       slotProps={{ backdrop: { sx: { backgroundColor: 'transparent' } } }}
+      PaperProps={{ sx: { padding: '2vmin' } }}
     >
       <Typography fontSize="10vmin">{typeText[type]}</Typography>
     </Dialog>

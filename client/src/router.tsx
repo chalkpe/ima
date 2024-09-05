@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
-import Entry from './routes/entry'
-import Lobby from './routes/lobby'
-import Room from './routes/room'
-import Game from './routes/game'
+import Entry from '@ima/client/routes/entry'
+import Lobby from '@ima/client/routes/lobby'
+import Room from '@ima/client/routes/room'
+import Game from '@ima/client/routes/game'
 
 const router = createBrowserRouter([
   { path: '/game', element: <Game /> },

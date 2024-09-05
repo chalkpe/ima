@@ -1,12 +1,14 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo } from 'react'
 import { Box, Paper, Stack } from '@mui/material'
-import Mahgen from '../tile/Mahgen'
-import Tenpai from './Tenpai'
-import { trpc } from '../../utils/trpc'
-import { convertTileToCode, sortTiles } from '../../utils/tile'
+import Mahgen from '@ima/client/components/tile/Mahgen'
+import Tenpai from '@ima/client/components/game/Tenpai'
+import { trpc } from '@ima/client/utils/trpc'
+import { convertTileToCode, sortTiles } from '@ima/client/utils/tile'
 
-import type { Hand } from '../../../../server/src/types/game'
-import TileSet from '../tile/TileSet'
+import type { Hand } from '@ima/server/types/game'
+import TileSet from '@ima/client/components/tile/TileSet'
+import { useAtom } from 'jotai'
+import { hoveredAtom } from '@ima/client/store/hovered'
 
 interface HandProps {
   hand: Hand
@@ -14,9 +16,8 @@ interface HandProps {
 }
 
 const Hand: FC<HandProps> = ({ hand, me }) => {
+  const [hoveredIndex, setHoveredIndex] = useAtom(hoveredAtom)
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
-
-  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined)
 
   const currentTenpai = useMemo(() => hand.tenpai.find((tenpai) => tenpai.giriTile === null), [hand.tenpai])
   const tedashiTenpai = useMemo(
@@ -29,10 +30,6 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
   )
 
   const { mutate: giri } = trpc.game.giri.useMutation()
-
-  useEffect(() => {
-    setHoveredIndex(undefined)
-  }, [hand.tsumo])
 
   return (
     <>
@@ -64,7 +61,8 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
             <Mahgen
               key={tile.index}
               size={5}
-              sequence={convertTileToCode(tile)}
+              tile={tile}
+              onClick={() => me && setHoveredIndex(tile.index)}
               onMouseEnter={() => me && setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
@@ -76,7 +74,8 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
           {hand.tsumo ? (
             <Mahgen
               size={5}
-              sequence={convertTileToCode(hand.tsumo)}
+              tile={hand.tsumo}
+              onClick={() => me && setHoveredIndex(hand.tsumo!.index)}
               onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === hand.tsumo!.index && giri({ index: hand.tsumo!.index })}

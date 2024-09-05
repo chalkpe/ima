@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import { Box, Button, CircularProgress, IconButton, List, ListItem } from '@mui/material'
 import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import { trpc } from '../utils/trpc'
-import useAuth from '../hooks/useAuth'
+import { trpc } from '@ima/client/utils/trpc'
+import useAuth from '@ima/client/hooks/useAuth'
 
 const Lobby = () => {
   const navigate = useNavigate()

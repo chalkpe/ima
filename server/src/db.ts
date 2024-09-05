@@ -1,5 +1,5 @@
 import { EventEmitter } from 'tseep'
-import type { Room, StateChangeType } from './types/game'
+import type { Room, StateChangeType } from '@ima/server/types/game'
 
 interface Database {
   rooms: Room[]

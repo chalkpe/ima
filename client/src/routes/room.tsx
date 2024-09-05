@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { trpc } from '../utils/trpc'
+import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
-import useAuth from '../hooks/useAuth'
+import useAuth from '@ima/client/hooks/useAuth'
 import { CheckOutlined } from '@mui/icons-material'
 import { Button, Checkbox, CircularProgress, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material'
 

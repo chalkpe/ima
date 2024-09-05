@@ -1,13 +1,13 @@
-import { tsumo } from './action'
+import { tsumo } from '@ima/server/controllers/game/action'
 import {
   calculateAfterOpponentKanDecisions,
   calculateAfterTsumoDecisions,
   calculateBeforeTsumoDecisions,
-} from './decision'
-import { getClosedHand, getOpponent } from '../../helpers/game'
-import { calculateTenpai } from '../../helpers/tenpai'
+} from '@ima/server/controllers/game/decision'
+import { getClosedHand, getOpponent } from '@ima/server/helpers/game'
+import { calculateTenpai } from '@ima/server/helpers/tenpai'
 
-import type { GameState, PlayerType } from '../../types/game'
+import type { GameState, PlayerType } from '@ima/server/types/game'
 
 export const onHandChange = (state: GameState, me: PlayerType) => {
   const isRiichi = state[me].riichi

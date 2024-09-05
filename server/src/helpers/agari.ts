@@ -1,4 +1,4 @@
-import { compareCode, tileToCode } from './code'
+import { compareCode, tileToCode } from '@ima/server/helpers/code'
 import {
   compareTiles,
   getAllSyuntsu,
@@ -9,11 +9,11 @@ import {
   removeTileFromHand,
   removeTilesFromHand,
   simpleTileToTile,
-} from './tile'
+} from '@ima/server/helpers/tile'
 
-import type { Machi, MachiType, SimpleTile, Tile, Tsu } from '../types/tile'
-import type { Code } from '../types/code'
-import type { AgariResult, AgariState, TenpaiState } from '../types/agari'
+import type { Machi, Tile, Tsu } from '@ima/server/types/tile'
+import type { Code } from '@ima/server/types/code'
+import type { AgariResult, AgariState, TenpaiState } from '@ima/server/types/agari'
 
 export const tileSetToCode = (tileSet: Tsu | Machi): string => {
   return `<${tileSet.type}>` + tileSet.tiles.map(tileToCode).join('')
@@ -84,7 +84,9 @@ export const calculateAgari = (
     }
     case 1: {
       const [a] = hand
-      if (result.state.some((tsu) => (tsu.type === 'koutsu' || tsu.type === 'toitsu') && isEqualTile(tsu.tiles[0], a))) {
+      if (
+        result.state.some((tsu) => (tsu.type === 'koutsu' || tsu.type === 'toitsu') && isEqualTile(tsu.tiles[0], a))
+      ) {
         return { ...result, status: 'noten' }
       }
       return {
@@ -198,8 +200,8 @@ export const calculateAgari = (
       if (zeroKsTiles.length === 0 && oneKsTiles.length === 12 && twoKsTiles.length === 1) {
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] } satisfies Tsu)),
-          ...twoKsTiles.map(([_, [a, b]]) => ({ type: 'toitsu', tiles: [a, b] } satisfies Tsu)),
+          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] }) satisfies Tsu),
+          ...twoKsTiles.map(([_, [a, b]]) => ({ type: 'toitsu', tiles: [a, b] }) satisfies Tsu),
         ]
 
         return {
@@ -213,8 +215,8 @@ export const calculateAgari = (
       if (zeroKsTiles.length === 1 && oneKsTiles.length === 11 && twoKsTiles.length === 1) {
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] } satisfies Tsu)),
-          ...twoKsTiles.map(([_, [a, b]]) => ({ type: 'toitsu', tiles: [a, b] } satisfies Tsu)),
+          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] }) satisfies Tsu),
+          ...twoKsTiles.map(([_, [a, b]]) => ({ type: 'toitsu', tiles: [a, b] }) satisfies Tsu),
         ]
         const last = zeroKsTiles[0][0]
         return {
@@ -228,7 +230,7 @@ export const calculateAgari = (
       if (zeroKsTiles.length === 0 && oneKsTiles.length === 13 && twoKsTiles.length === 0) {
         const state = [
           ...result.state,
-          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] } satisfies Tsu)),
+          ...oneKsTiles.map(([_, [a]]) => ({ type: 'kokushi', tiles: [a] }) satisfies Tsu),
         ]
         return {
           ...result,

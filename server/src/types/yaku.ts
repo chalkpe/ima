@@ -1,6 +1,6 @@
-import type { AgariState } from './agari'
-import type { RiichiState, Wind } from './game'
-import type { Tile, Tsu } from './tile'
+import type { AgariState } from '@ima/server/types/agari'
+import type { RiichiState, Wind } from '@ima/server/types/game'
+import type { Tile, Tsu } from '@ima/server/types/tile'
 
 export interface Yaku {
   name: string
@@ -25,4 +25,9 @@ export interface YakuPredicateParams {
   uraDoraTiles: Tile[]
 }
 
-export type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false
+type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false
+
+export type YakuValidator = {
+  level: 'extra' | 'normal' | 'yakuman'
+  predicate: YakuPredicate
+}

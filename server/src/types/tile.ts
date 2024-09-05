@@ -39,6 +39,6 @@ export type Mentsu = Syuntsu | Koutsu | Kantsu
 type MentsuType = 'shuntsu' | 'koutsu' | 'kantsu'
 
 export type Tsu =
-  | { type: KoritsuType; tiles: Koritsu, open?: boolean }
-  | { type: TatsuType; tiles: Tatsu, open?: boolean }
-  | { type: MentsuType; tiles: Mentsu, open?: boolean }
+  | { type: KoritsuType; tiles: Koritsu; open?: boolean }
+  | { type: TatsuType; tiles: Tatsu; open?: boolean }
+  | { type: MentsuType; tiles: Mentsu; open?: boolean }

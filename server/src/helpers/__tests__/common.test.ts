@@ -1,4 +1,4 @@
-import { combination, combinations, partition } from '../common'
+import { combination, combinations, partition } from '@ima/server/helpers/common'
 
 describe('common', () => {
   describe('partition', () => {

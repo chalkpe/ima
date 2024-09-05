@@ -1,6 +1,6 @@
-import { agariResultToString, calculateAgari } from '../agari'
-import { codeSyntaxToHand } from '../code'
-import { simpleTileToTile } from '../tile'
+import { agariResultToString, calculateAgari } from '@ima/server/helpers/agari'
+import { codeSyntaxToHand } from '@ima/server/helpers/code'
+import { simpleTileToTile } from '@ima/server/helpers/tile'
 
 describe('agari', () => {
   describe('calculateAgari', () => {

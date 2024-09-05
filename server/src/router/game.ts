@@ -27,7 +27,7 @@ import {
 } from '@ima/server/controllers/game/action'
 
 import { tileTypes } from '@ima/server/helpers/tile'
-import { getActiveMe } from '@ima/server/helpers/game'
+import { getActiveMe, getOpponent } from '@ima/server/helpers/game'
 import { StateChangeType } from '@ima/server/types/game'
 
 const getRoom = (username: string, started?: boolean) => {
@@ -66,6 +66,8 @@ export const gameRouter = router({
 
     initState(room.state)
     room.state.turn = Math.round(Math.random()) ? 'host' : 'guest'
+    room.state[room.state.turn].wind = 'east'
+    room.state[getOpponent(room.state.turn)].wind = 'west'
     tsumo(room.state, room.state.turn, 'haiyama')
 
     ee.emit('update', room.host, 'start')

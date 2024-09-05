@@ -110,12 +110,12 @@ export const confirmScoreboard = (state: GameState, me: PlayerType): 'update' | 
   }
 
   state.scoreboard = undefined
-  state[me].wind = next === me ? 'east' : 'west'
-  state[getOpponent(me)].wind = next === me ? 'west' : 'east'
 
   initState(state)
   state.turn = next
-  tsumo(state, next, 'haiyama')
+  state[state.turn].wind = 'east'
+  state[getOpponent(state.turn)].wind = 'west'
+  tsumo(state, state.turn, 'haiyama')
 
   return 'start'
 }

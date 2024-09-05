@@ -62,7 +62,35 @@ describe('yaku', () => {
 
     test.concurrent('riichi', () => {
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 2 } })
+        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 2, jun: 5 } })
+      ).toMatchObject([{ name: '리치', han: 1 }])
+    })
+
+    test.concurrent('ippatsu', () => {
+      expect(
+        calc('234m345p23344s11z5s', [], 'ron', {
+          ...initialState,
+          host: { ...initialState.host, riichi: 2, jun: 3 },
+        })
+      ).toMatchObject([
+        { name: '리치', han: 1 },
+        { name: '일발', han: 1 },
+      ])
+      expect(
+        calc('234m345p23344s11z5s', [], 'ron', {
+          ...initialState,
+          host: { ...initialState.host, riichi: 2, jun: 3 },
+          guest: {
+            ...initialState.guest,
+            hand: { ...initialState.guest.hand, called: [{ type: 'pon', tiles: c('111p'), jun: 2 }] },
+          },
+        })
+      ).toMatchObject([{ name: '리치', han: 1 }])
+      expect(
+        calc('234m345p23344s11z5s', [], 'ron', {
+          ...initialState,
+          host: { ...initialState.host, riichi: 2, jun: 4 },
+        })
       ).toMatchObject([{ name: '리치', han: 1 }])
     })
 

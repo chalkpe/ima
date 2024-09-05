@@ -52,6 +52,14 @@ const isRiichi: YakuValidator = {
     menzen && riichi !== null && (riichi === 1 ? { name: '더블리치', han: 2 } : { name: '리치', han: 1 }),
 }
 
+const isIppatsu: YakuValidator = {
+  level: 'normal',
+  predicate: ({ riichi, jun, called }) =>
+    riichi !== null &&
+    (!called.opponent || called.opponent.jun < riichi) &&
+    jun - riichi <= 1 && { name: '일발', han: 1 },
+}
+
 const isChiitoitsu: YakuValidator = {
   level: 'normal',
   predicate: ({ agariState, menzen }) =>
@@ -344,8 +352,9 @@ const isUraDora: YakuValidator = {
 const yakuValidators: YakuValidator[] = [
   isTenhouOrChiihou,
   isKokushimusou,
-  isMenzenTsumo,
   isRiichi,
+  isIppatsu,
+  isMenzenTsumo,
   isChiitoitsu,
   isPinfu,
   isYakuhaiKoutsu,

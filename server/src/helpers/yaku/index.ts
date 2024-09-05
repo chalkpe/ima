@@ -1,5 +1,5 @@
 import { calculateAgari } from '@ima/server/helpers/agari'
-import { getDoraTiles, getUraDoraTiles, tileSetToTsu } from '@ima/server/helpers/game'
+import { getDoraTiles, getOpponent, getUraDoraTiles, tileSetToTsu } from '@ima/server/helpers/game'
 import yakuValidators from '@ima/server/helpers/yaku/validator'
 import type { AgariState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
@@ -22,6 +22,7 @@ const calculateYakuOfAgari = (
     agariTsu.open = true
   }
 
+  const opponent = getOpponent(me)
   const params: YakuPredicateParams = {
     agariType,
     agariTile,
@@ -34,6 +35,13 @@ const calculateYakuOfAgari = (
     riichi: state[me].riichi,
     doraTiles: getDoraTiles(state.wall),
     uraDoraTiles: getUraDoraTiles(state.wall),
+    called: {
+      me: state[me].hand.called.length > 0 ? state[me].hand.called[state[me].hand.called.length - 1] : undefined,
+      opponent:
+        state[opponent].hand.called.length > 0
+          ? state[opponent].hand.called[state[opponent].hand.called.length - 1]
+          : undefined,
+    },
   }
 
   const result: Yaku[] = []

@@ -1,5 +1,5 @@
 import type { AgariState } from '@ima/server/types/agari'
-import type { RiichiState, Wind } from '@ima/server/types/game'
+import type { RiichiState, TileSet, Wind } from '@ima/server/types/game'
 import type { Tile, Tsu } from '@ima/server/types/tile'
 
 export interface Yaku {
@@ -23,6 +23,7 @@ export interface YakuPredicateParams {
   riichi: RiichiState
   doraTiles: Tile[]
   uraDoraTiles: Tile[]
+  called: { me?: TileSet; opponent?: TileSet }
 }
 
 type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false

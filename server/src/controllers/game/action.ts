@@ -76,6 +76,7 @@ export const gakan = (state: GameState, me: PlayerType, type: TileType, value: n
   minkou.type = 'gakan'
   minkou.tiles.push(gakanTile)
   minkou.calledTile = gakanTile
+  minkou.jun = state[me].jun
 
   onAfterGakan(state, me)
 }
@@ -98,7 +99,7 @@ export const daiminkan = (state: GameState, me: PlayerType) => {
     type: 'daiminkan',
     tiles: [furoTile, ...removed],
     calledTile: furoTile,
-    jun: state[me].jun,
+    jun: state[opponent].jun,
   })
 
   tsumo(state, me, 'lingshang')
@@ -124,7 +125,7 @@ export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].decisions = []
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'pon', tiles, calledTile, jun: state[me].jun })
+  state[me].hand.called.push({ type: 'pon', tiles, calledTile, jun: state[opponent].jun })
 
   onHandChange(state, me)
 }
@@ -149,7 +150,7 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].decisions = []
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
-  state[me].hand.called.push({ type: 'chi', tiles, calledTile, jun: state[me].jun })
+  state[me].hand.called.push({ type: 'chi', tiles, calledTile, jun: state[opponent].jun })
 
   onHandChange(state, me)
 }

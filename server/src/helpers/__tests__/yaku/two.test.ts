@@ -36,7 +36,7 @@ describe('yaku', () => {
 
     test.concurrent('double riichi', () => {
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 1 } })
+        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 1, jun: 3 } })
       ).toMatchObject([{ name: '더블리치', han: 2 }])
     })
 

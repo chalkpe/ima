@@ -61,7 +61,7 @@ describe('yaku', () => {
       expect(
         calc('123m234555p11s444z', [], 'ron', {
           ...initialState,
-          host: { ...initialState.host, riichi: 2 },
+          host: { ...initialState.host, riichi: 2, jun: 4 },
           wall: { ...initialState.wall, kingTiles: c('1234567899s'), doraCount: 1 },
         })
       ).toMatchObject([

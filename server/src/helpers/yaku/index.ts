@@ -94,3 +94,6 @@ export const calculateYaku = (
 
   return agariList[0]
 }
+
+export const isYakuOverShibari = (yaku: Yaku[]): boolean =>
+  yaku.filter((yaku) => !yaku.isExtra).reduce((han, yaku) => han + yaku.han, 0) >= 4

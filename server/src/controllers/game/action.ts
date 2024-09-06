@@ -10,7 +10,7 @@ import {
 } from '@ima/server/controllers/game/event'
 
 import { partition } from '@ima/server/helpers/common'
-import { calculateYaku } from '@ima/server/helpers/yaku'
+import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
 import { getClosedHand, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
 import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '@ima/server/helpers/tile'
 import { createAgariScoreboard, createRyukyokuScoreboard } from '@ima/server/helpers/scoreboard'
@@ -178,7 +178,7 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
   if (!tsumo || !tsumo.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
 
   const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', tsumo.tile)
-  if (!yaku.length || yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku' })
+  if (!isYakuOverShibari(yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, state[me].hand, 'tsumo', yaku)
@@ -192,7 +192,7 @@ export const callRon = (state: GameState, me: PlayerType) => {
   if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
   const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
-  if (!yaku.length || yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku' })
+  if (!isYakuOverShibari(yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, { ...state[me].hand, tsumo: calledTile }, 'ron', yaku)

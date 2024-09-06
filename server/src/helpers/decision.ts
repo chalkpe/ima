@@ -1,5 +1,5 @@
 import { tileToCode } from '@ima/server/helpers/code'
-import { calculateYaku } from '@ima/server/helpers/yaku'
+import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
 import { calculateAgari } from '@ima/server/helpers/agari'
 import { calculateFuriten } from '@ima/server/helpers/tenpai'
 import { combination, combinations, partition } from '@ima/server/helpers/common'
@@ -126,7 +126,7 @@ export const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decis
 
   const result = calculateAgari(hand)
   return result.status === 'agari' &&
-    calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo).some((yaku) => !yaku.isExtra)
+    isYakuOverShibari(calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo))
     ? [{ type: 'tsumo', tile: state[me].hand.tsumo }]
     : []
 }
@@ -142,7 +142,7 @@ export const calculateRonDecisions = (state: GameState, me: PlayerType): Decisio
   return result.status === 'tenpai' &&
     [...result.tenpai.keys()].includes(tileToCode(ronTile)) &&
     [...result.tenpai.values()].every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
-    calculateYaku(state, me, state[me].hand, 'ron', ronTile).some((yaku) => !yaku.isExtra)
+    isYakuOverShibari(calculateYaku(state, me, state[me].hand, 'ron', ronTile))
     ? [{ type: 'ron', tile: ronTile }]
     : []
 }

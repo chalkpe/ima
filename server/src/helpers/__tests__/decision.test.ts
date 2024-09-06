@@ -259,8 +259,12 @@ describe('decision', () => {
       ).toEqual([])
     })
 
+    test('returns empty array if under shibari', () => {
+      expect(calculateTsumoDecisions(ss('111m234p345s1444z', '1z'), 'host')).toEqual([])
+    })
+
     test('returns decisions', () => {
-      const state = ss('111m234p345s1444z', '1z')
+      const state = ss('111m111p111s1444z', '1z')
       expect(calculateTsumoDecisions(state, 'host')).toEqual([{ type: 'tsumo', tile: state.host.hand.tsumo }])
     })
   })
@@ -285,6 +289,10 @@ describe('decision', () => {
     })
 
     test('returns empty array if no yaku', () => {
+      expect(calculateRonDecisions(ss('111m234p345s1444z', '1z'), 'host')).toEqual([])
+    })
+
+    test('returns empty array if under shibari', () => {
       expect(calculateRonDecisions(ss('111m234p345s1444z', '1z'), 'host')).toEqual([])
     })
 

@@ -157,14 +157,14 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
 
 export const skipAndTsumo = (state: GameState, me: PlayerType) => {
   if (!state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo'))
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions cannot be skipped' })
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No decisions' })
 
   tsumo(state, me, 'haiyama')
 }
 
 export const skipChankan = (state: GameState, me: PlayerType) => {
   if (!state[me].decisions.some((dec) => dec.type === 'skip_chankan'))
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions cannot be skipped' })
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No decisions' })
 
   state[me].decisions = []
 
@@ -174,31 +174,25 @@ export const skipChankan = (state: GameState, me: PlayerType) => {
 }
 
 export const callTsumo = (state: GameState, me: PlayerType) => {
-  if (!state[me].decisions.some((dec) => dec.type === 'tsumo'))
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
+  const tsumo = state[me].decisions.find((dec) => dec.type === 'tsumo')
+  if (!tsumo || !tsumo.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
 
-  if (!state[me].hand.tsumo) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo tile' })
-
-  const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo)
-  if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
+  const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', tsumo.tile)
+  if (!yaku.length || yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, state[me].hand, 'tsumo', yaku)
 }
 
 export const callRon = (state: GameState, me: PlayerType) => {
-  if (!state[me].decisions.some((dec) => dec.type === 'ron'))
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ron decision' })
+  const ron = state[me].decisions.find((dec) => dec.type === 'ron')
+  if (!ron || !ron.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ron decision' })
 
-  const opponent = getOpponent(me)
-  const riverEnd = getRiverEnd(state[opponent])
-  if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
-
-  const calledTile = riverEnd.tile
+  const calledTile = ron.tile
   if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
   const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
-  if (yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No valid yaku' })
+  if (!yaku.length || yaku.every((y) => y.isExtra)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, { ...state[me].hand, tsumo: calledTile }, 'ron', yaku)

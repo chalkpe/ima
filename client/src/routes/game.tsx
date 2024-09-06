@@ -51,7 +51,7 @@ const Game = () => {
       data &&
       data.state.turn === me &&
       data.state[me].hand.tsumo &&
-      data.state[me].riichi !== undefined &&
+      data.state[me].riichi !== null &&
       data.state[me].decisions.length === 0
     ) {
       giri({ index: data.state[me].hand.tsumo.index })

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useAuth from '@ima/client/hooks/useAuth'
 import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
@@ -15,11 +15,12 @@ import StateChange from '@ima/client/components/game/StateChange'
 const Game = () => {
   const navigate = useNavigate()
   const { username, skip } = useAuth()
-
   const [type, setType] = useState<StateChangeType>()
 
-  const utils = trpc.useUtils()
   const { data, error } = trpc.game.state.useQuery(skip)
+  const { mutate: giri } = trpc.game.giri.useMutation()
+
+  const utils = trpc.useUtils()
   trpc.game.onStateChange.useSubscription(skip, {
     onData: (type) => {
       if (type === 'update') {
@@ -36,16 +37,29 @@ const Game = () => {
     },
   })
 
+  const me = useMemo(() => (data?.host === username ? 'host' : 'guest'), [data?.host, username])
+  const opponent = useMemo(() => (data?.host === username ? 'guest' : 'host'), [data?.host, username])
+
   useEffect(() => {
     if (!data || error) {
       navigate('/lobby')
     }
   }, [data, error, navigate])
 
+  useEffect(() => {
+    if (
+      data &&
+      data.state.turn === me &&
+      data.state[me].hand.tsumo &&
+      data.state[me].riichi !== undefined &&
+      data.state[me].decisions.length === 0
+    ) {
+      giri({ index: data.state[me].hand.tsumo.index })
+    }
+  }, [data, giri, me])
+
   if (!data) return null
 
-  const me = data.host === username ? 'host' : 'guest'
-  const opponent = data.host === username ? 'guest' : 'host'
   return (
     <>
       <Center state={data.state} me={me} />

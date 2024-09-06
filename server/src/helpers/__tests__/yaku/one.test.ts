@@ -1,38 +1,50 @@
-import { codeSyntaxToHand } from '@ima/server/helpers/code'
-import { createInitialState } from '@ima/server/helpers/game'
-import { isSyuntsu, simpleTileToTile } from '@ima/server/helpers/tile'
-import { calculateYaku } from '@ima/server/helpers/yaku'
+import { c } from '@ima/server/helpers/__utils__/tile'
+import { calc } from '@ima/server/helpers/__utils__/yaku'
 import type { GameState } from '@ima/server/types/game'
-import type { Syuntsu } from '@ima/server/types/tile'
-import type { AgariType } from '@ima/server/types/yaku'
 
 describe('yaku', () => {
   describe('calculateYaku (value: 1)', () => {
-    let index = 0
-    const initialState = createInitialState()
+    test.concurrent('chankan', () => {
+      const updater = (called: string) => (state: GameState) => {
+        const gakan = c(called.repeat(4))
+        state.host.hand.tsumo = gakan[3]
 
-    const c = (code: string) =>
-      codeSyntaxToHand(code)
-        .map(simpleTileToTile)
-        .map((tile) => ({ ...tile, index: index++ }))
+        state.host.hand.closed = c('234m345p23344s11z')
+        state.guest.jun = 5
+        state.guest.hand.called = [{ type: 'gakan', jun: 5, tiles: gakan, calledTile: gakan[3] }]
+      }
 
-    const calc = (closedhand: string, calledHands: string[], type: AgariType, state: GameState = initialState) => {
-      const agari = c(closedhand)
+      expect(calc('', [], 'ron', updater('5s'))).toMatchObject([{ name: '창깡', han: 1 }])
+      expect(calc('', [], 'ron', updater('1s'))).toMatchObject([])
+    })
 
-      const s = { ...state }
-      s.host.hand.closed = agari.slice(0, -1)
-      s.host.hand.called = calledHands.map(c).map((hand) => {
-        if (hand.length === 5) return { type: 'ankan', tiles: [hand[0], hand[1], hand[2], hand[3]], jun: 0 }
-        if (hand.length === 4) return { type: 'gakan', tiles: [hand[0], hand[1], hand[2], hand[3]], jun: 0 }
-        if (hand.length === 3) {
-          const tsu = [hand[0], hand[1], hand[2]] as Syuntsu
-          return isSyuntsu(tsu) ? { type: 'chi', tiles: tsu, jun: 0 } : { type: 'pon', tiles: tsu, jun: 0 }
-        }
-        throw new Error('invalid hand')
-      })
+    test.concurrent('rinshan', () => {
+      const kingTiles = c('12345s')
+      const updater = (state: GameState) => {
+        state.wall.kingTiles = kingTiles
+        state.wall.firstKingTileIndex = kingTiles[0].index
+        state.wall.lastKingTileIndex = kingTiles[kingTiles.length - 1].index
 
-      return calculateYaku(state, 'host', state.host.hand, type, agari.slice(-1)[0])
-    }
+        state.host.hand.closed = c('23344s11z')
+        state.host.hand.tsumo = kingTiles[4]
+        state.host.hand.called = [
+          { type: 'ankan', jun: 2, tiles: c('1111m') },
+          { type: 'chi', jun: 3, tiles: c('345m') },
+        ]
+      }
+
+      expect(calc('', [], 'ron', updater)).toMatchObject([])
+      expect(calc('', [], 'tsumo', updater)).toMatchObject([{ name: '영상개화', han: 1 }])
+    })
+
+    test.concurrent('haitei or houtei', () => {
+      const updater = (state: GameState) => {
+        state.wall.tiles = []
+      }
+
+      expect(calc('345p23344s11z5s', ['111m'], 'ron', updater)).toMatchObject([{ name: '하저로어', han: 1 }])
+      expect(calc('345p23344s11z5s', ['111m'], 'tsumo', updater)).toMatchObject([{ name: '해저로월', han: 1 }])
+    })
 
     test.concurrent('menzen tsumo', () => {
       expect(calc('234m345p23344s55z5s', [], 'tsumo')).toMatchObject([{ name: '멘젠쯔모', han: 1 }])
@@ -62,34 +74,40 @@ describe('yaku', () => {
 
     test.concurrent('riichi', () => {
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', { ...initialState, host: { ...initialState.host, riichi: 2, jun: 5 } })
+        calc('234m345p23344s11z5s', [], 'ron', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 5
+        })
       ).toMatchObject([{ name: '리치', han: 1 }])
     })
 
     test.concurrent('ippatsu', () => {
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', {
-          ...initialState,
-          host: { ...initialState.host, riichi: 2, jun: 3 },
+        calc('234m345p23344s11z5s', [], 'ron', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 3
         })
       ).toMatchObject([
         { name: '리치', han: 1 },
         { name: '일발', han: 1 },
       ])
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', {
-          ...initialState,
-          host: { ...initialState.host, riichi: 2, jun: 3 },
-          guest: {
-            ...initialState.guest,
-            hand: { ...initialState.guest.hand, called: [{ type: 'pon', tiles: c('111p'), jun: 2 }] },
-          },
+        calc('234m345p23344s11z5s', [], 'ron', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 3
+          state.guest.hand.called = [{ type: 'pon', tiles: c('111p'), jun: 2 }]
         })
       ).toMatchObject([{ name: '리치', han: 1 }])
       expect(
-        calc('234m345p23344s11z5s', [], 'ron', {
-          ...initialState,
-          host: { ...initialState.host, riichi: 2, jun: 4 },
+        calc('234m345p23344s11z5s', [], 'ron', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 4
+        })
+      ).toMatchObject([{ name: '리치', han: 1 }])
+      expect(
+        calc('345p23344s11z5s', ['11111m'], 'ron', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 3
         })
       ).toMatchObject([{ name: '리치', han: 1 }])
     })
@@ -110,17 +128,15 @@ describe('yaku', () => {
         { name: '자풍: 동', han: 1 },
       ])
       expect(
-        calc('123m234555p33s111z', [], 'ron', {
-          ...initialState,
-          round: { ...initialState.round, wind: 'east' },
-          host: { ...initialState.host, wind: 'west' },
+        calc('123m234555p33s111z', [], 'ron', (state) => {
+          state.round.wind = 'east'
+          state.host.wind = 'west'
         })
       ).toMatchObject([{ name: '장풍: 동', han: 1 }])
       expect(
-        calc('123m234555p33s333z', [], 'ron', {
-          ...initialState,
-          round: { ...initialState.round, wind: 'east' },
-          host: { ...initialState.host, wind: 'west' },
+        calc('123m234555p33s333z', [], 'ron', (state) => {
+          state.round.wind = 'east'
+          state.host.wind = 'west'
         })
       ).toMatchObject([{ name: '자풍: 서', han: 1 }])
     })

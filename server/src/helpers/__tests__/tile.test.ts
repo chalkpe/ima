@@ -1,4 +1,3 @@
-import { Koritsu, Koutsu, Tatsu } from '@ima/server/types/tile'
 import { codeSyntaxToHand as c } from '@ima/server/helpers/code'
 import { availableTiles } from '@ima/server/helpers/game'
 import {
@@ -10,6 +9,7 @@ import {
   getTatsuMachi,
   getTileWind,
   getUpperTile,
+  hideTile,
   isEqualTile,
   isKoutsu,
   isStrictEqualTile,
@@ -20,6 +20,7 @@ import {
   syuupaiTypes,
   zihaiTypes,
 } from '@ima/server/helpers/tile'
+import type { Koritsu, Koutsu, Tatsu } from '@ima/server/types/tile'
 
 describe('tile', () => {
   describe('countTiles', () => {
@@ -152,6 +153,26 @@ describe('tile', () => {
       const [remain, removed] = removeTilesFromHand(hand, targets)
       expect(remain).toEqual(c('11123456789999m'))
       expect(removed).toEqual([[], []])
+    })
+  })
+
+  describe('hideTile', () => {
+    test('should return the hidden tile', () => {
+      expect(
+        hideTile({
+          type: 'pin',
+          value: 5,
+          attribute: 'red',
+          background: 'transparent',
+          index: 1234,
+        })
+      ).toEqual({
+        type: 'back',
+        value: 0,
+        attribute: 'normal',
+        background: 'white',
+        index: 1234,
+      })
     })
   })
 

@@ -2,7 +2,6 @@ import z from 'zod'
 import { TRPCError } from '@trpc/server'
 import { observable } from '@trpc/server/observable'
 import { publicProcedure, router } from '@ima/server/trpc'
-
 import { database, ee } from '@ima/server/db'
 
 import {
@@ -25,10 +24,9 @@ import {
   skipChankan,
   tsumo,
 } from '@ima/server/controllers/game/action'
-
 import { tileTypes } from '@ima/server/helpers/tile'
 import { getActiveMe, getOpponent } from '@ima/server/helpers/game'
-import { StateChangeType } from '@ima/server/types/game'
+import type { StateChangeType } from '@ima/server/types/game'
 
 const getRoom = (username: string, started?: boolean) => {
   const room = database.rooms.find((room) => room.host === username || room.guest === username)

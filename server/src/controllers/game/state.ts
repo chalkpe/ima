@@ -42,8 +42,11 @@ export const initState = (state: GameState) => {
   tiles.forEach((tile, index) => (tile.index = index + now))
 
   state.wall.doraCount = 1
-  state.wall.kingTiles = tiles.splice(0, 14)
   state.wall.supplementTiles = []
+
+  state.wall.kingTiles = tiles.splice(0, 14)
+  state.wall.firstKingTileIndex = state.wall.kingTiles[0].index
+  state.wall.lastKingTileIndex = state.wall.kingTiles[state.wall.kingTiles.length - 1].index
 
   state.host.hand.closed = []
   state.host.hand.tsumo = undefined

@@ -99,7 +99,10 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
       })
   }
 
-  return kantsu.map(([tile, ...otherTiles]) => ({ type: 'ankan', tile, otherTiles }))
+  return kantsu.map((tiles) => {
+    const sorted = tiles.sort((a, b) => a.index - b.index)
+    return { type: 'ankan', tile: sorted[sorted.length - 1], otherTiles: sorted.slice(0, -1) }
+  })
 }
 
 export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -109,13 +112,12 @@ export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Deci
   if (!isMenzenHand(state[me].hand)) return []
 
   const hand = getClosedHand(state[me].hand)
-
   return hand
     .filter((tile, index) => hand.findIndex((t) => isStrictEqualTile(tile, t)) === index)
     .map((tile) => partition(hand, (t) => t.index === tile.index))
     .map(([removed, hand]) => [removed[0], calculateAgari(hand)] as const)
     .filter(([_, result]) => result.status === 'tenpai')
-    .map(([removed]) => ({ type: 'riichi', tile: removed }))
+    .map(([tile]) => ({ type: 'riichi', tile }))
 }
 
 export const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {

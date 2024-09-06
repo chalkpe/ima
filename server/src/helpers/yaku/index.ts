@@ -1,5 +1,5 @@
 import { calculateAgari } from '@ima/server/helpers/agari'
-import { getDoraTiles, getOpponent, getUraDoraTiles, tileSetToTsu } from '@ima/server/helpers/game'
+import { getDoraTiles, getOpponent, getUraDoraTiles, isRinshanTile, tileSetToTsu } from '@ima/server/helpers/game'
 import yakuValidators from '@ima/server/helpers/yaku/validator'
 import type { AgariState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
@@ -29,6 +29,7 @@ const calculateYakuOfAgari = (
     agariState,
     agariTsu,
     jun: state[me].jun,
+    opponentJun: state[opponent].jun,
     bakaze: state.round.wind,
     jikaze: state[me].wind,
     menzen,
@@ -42,6 +43,16 @@ const calculateYakuOfAgari = (
           ? state[opponent].hand.called[state[opponent].hand.called.length - 1]
           : undefined,
     },
+    agariTileType:
+      state.wall.tiles.length === 0
+        ? agariType === 'tsumo'
+          ? 'haitei'
+          : agariType === 'ron'
+            ? 'houtei'
+            : 'normal'
+        : agariType === 'tsumo' && isRinshanTile(state, agariTile)
+          ? 'rinshan'
+          : 'normal',
   }
 
   const result: Yaku[] = []

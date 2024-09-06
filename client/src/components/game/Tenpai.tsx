@@ -39,6 +39,9 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
               <Typography fontSize="2vmin" align="left">
                 {statusText[tenpai.status]}
               </Typography>
+              <Typography fontSize="2vmin" align="left">
+                {tenpai.status === 'tenpai' ? ` ${tenpai.han}판` : ''}
+              </Typography>
             </Stack>
           ))}
       </Stack>

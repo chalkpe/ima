@@ -60,6 +60,8 @@ export const simpleTileToRiverTile = (tile: SimpleTile): RiverTile => ({
 
 export const kokushiTiles = codeSyntaxToHand('19m19p19s1234567z')
 
+export const ryuuiisouTiles = codeSyntaxToHand('23468s6z')
+
 export const hideTile = (tile: Tile) => ({ ...simpleTileToTile(backTile), index: tile.index })
 
 export const syuupaiTypes: SimpleTile['type'][] = ['man', 'pin', 'sou'] satisfies SyuupaiType[]

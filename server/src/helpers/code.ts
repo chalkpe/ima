@@ -6,7 +6,7 @@ import {
   ZihaiCodeNumber,
   ZihaiCodeSuffix,
 } from '@ima/server/types/code'
-import { SimpleTile } from '@ima/server/types/tile'
+import type { SimpleTile } from '@ima/server/types/tile'
 
 export const backTile: SimpleTile = { type: 'back', value: 0 }
 export const backTileCode: Code = '0z'

@@ -236,6 +236,7 @@ export const riichi = (state: GameState, me: PlayerType, index: number) => {
 
   onBeforeGiri(state, me)
 
+  state[me].score -= 1000
   state[me].riichi = state[me].jun
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi: true })
 

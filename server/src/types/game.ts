@@ -14,7 +14,6 @@ export interface Hand {
   called: TileSet[]
   tsumo?: Tile
   tenpai: Tenpai[]
-  giriMap: boolean[]
 }
 
 export interface RiverTile {
@@ -61,6 +60,8 @@ export interface Wall {
   firstTileIndex: number
   lastTileIndex: number
   kingTiles: Tile[]
+  firstKingTileIndex: number
+  lastKingTileIndex: number
   supplementTiles: Tile[]
   doraCount: number
 }

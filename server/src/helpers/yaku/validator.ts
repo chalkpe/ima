@@ -1,5 +1,6 @@
 import { partition } from '@ima/server/helpers/common'
-import { codeToTile, tileToCode } from '@ima/server/helpers/code'
+import { tileToCode } from '@ima/server/helpers/code'
+import { availableTiles } from '@ima/server/helpers/game'
 import {
   compareTile,
   getDoraTile,
@@ -12,26 +13,27 @@ import {
   isYakuhai,
   isYaochuuhai,
   isZihai,
+  ryuuiisouTiles,
   syuupaiTypes,
   tileNames,
 } from '@ima/server/helpers/tile'
+import type { Tsu } from '@ima/server/types/tile'
 import type { Yaku, YakuValidator } from '@ima/server/types/yaku'
-import { availableTiles } from '@ima/server/helpers/game'
-import { Tsu } from '@ima/server/types/tile'
 
 const isTenhouOrChiihou: YakuValidator = {
   level: 'yakuman',
-  predicate: ({ jun, bakaze, jikaze, agariType }) => {
-    if (jun === 1 && agariType === 'tsumo')
-      return { name: bakaze === jikaze ? '천화' : '지화', han: 13, isYakuman: true }
-    return false
-  },
+  predicate: ({ jun, bakaze, jikaze, agariType, called }) =>
+    jun === 1 &&
+    agariType === 'tsumo' &&
+    called.me === undefined &&
+    called.opponent === undefined && { name: bakaze === jikaze ? '천화' : '지화', han: 13, isYakuman: true },
 }
 
 const isKokushimusou: YakuValidator = {
   level: 'yakuman',
   predicate: ({ menzen, agariState, agariTsu }) => {
     if (!menzen) return false
+    if (agariTsu.type !== 'toitsu' && agariTsu.type !== 'kokushi') return false
     const [kokushi, toitsu] = partition(agariState, (tsu) => tsu.type === 'kokushi')
 
     if (kokushi.length !== 12 || toitsu.length !== 1 || toitsu[0].type !== 'toitsu') return false
@@ -39,6 +41,16 @@ const isKokushimusou: YakuValidator = {
       ? { name: '국사무쌍', han: 13, isYakuman: true }
       : { name: '국사무쌍 13면 대기', han: 26, isYakuman: true }
   },
+}
+
+const isChankan: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariType, agariTile, opponentJun, called }) =>
+    agariType === 'ron' &&
+    called.opponent !== undefined &&
+    called.opponent.type === 'gakan' &&
+    called.opponent.calledTile?.index === agariTile.index &&
+    called.opponent.jun === opponentJun && { name: '창깡', han: 1 },
 }
 
 const isMenzenTsumo: YakuValidator = {
@@ -56,8 +68,24 @@ const isIppatsu: YakuValidator = {
   level: 'normal',
   predicate: ({ riichi, jun, called }) =>
     riichi !== null &&
-    (!called.opponent || called.opponent.jun < riichi) &&
-    jun - riichi <= 1 && { name: '일발', han: 1 },
+    jun - riichi <= 1 &&
+    (!called.me || called.me.jun < riichi) &&
+    (!called.opponent || called.opponent.jun < riichi) && { name: '일발', han: 1 },
+}
+
+const isHaitei: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariTileType }) => agariTileType === 'haitei' && { name: '해저로월', han: 1 },
+}
+
+const isHoutei: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariTileType }) => agariTileType === 'houtei' && { name: '하저로어', han: 1 },
+}
+
+const isRinshan: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariTileType }) => agariTileType === 'rinshan' && { name: '영상개화', han: 1 },
 }
 
 const isChiitoitsu: YakuValidator = {
@@ -99,12 +127,8 @@ const isYakuhaiKoutsu: YakuValidator = {
 
           if (tileType === 'dragon') return [{ name: `역패: ${tileName}`, han: 1 }]
           return [
-            ...(getTileWind(tsu.tiles[0]) === bakaze
-              ? [{ name: `장풍: ${tileNames[tileToCode(tsu.tiles[0])]}`, han: 1 }]
-              : []),
-            ...(getTileWind(tsu.tiles[0]) === jikaze
-              ? [{ name: `자풍: ${tileNames[tileToCode(tsu.tiles[0])]}`, han: 1 }]
-              : []),
+            ...(getTileWind(tsu.tiles[0]) === bakaze ? [{ name: `장풍: ${tileName}`, han: 1 }] : []),
+            ...(getTileWind(tsu.tiles[0]) === jikaze ? [{ name: `자풍: ${tileName}`, han: 1 }] : []),
           ].flat()
         })
       : false
@@ -141,16 +165,12 @@ const isItsu: YakuValidator = {
 
 const isRyuuiisou: YakuValidator = {
   level: 'yakuman',
-  predicate: ({ agariState }) => {
-    const allowed = (['2s', '3s', '4s', '6s', '8s', '6z'] as const).map(codeToTile)
-    return (
-      agariState.every((tsu) => tsu.tiles.every((tile) => allowed.some((t) => isEqualTile(t, tile)))) && {
-        name: '녹일색',
-        han: 13,
-        isYakuman: true,
-      }
-    )
-  },
+  predicate: ({ agariState }) =>
+    agariState.every((tsu) => tsu.tiles.every((tile) => ryuuiisouTiles.some((t) => isEqualTile(t, tile)))) && {
+      name: '녹일색',
+      han: 13,
+      isYakuman: true,
+    },
 }
 
 const isIipeikou: YakuValidator = {
@@ -309,12 +329,9 @@ const isChuuren: YakuValidator = {
 const isDora: YakuValidator = {
   level: 'extra',
   predicate: ({ agariState, doraTiles }) => {
+    const dora = doraTiles.map((dora) => getDoraTile(dora, availableTiles))
     const count = agariState
-      .map(
-        (tsu) =>
-          tsu.tiles.filter((tile) => doraTiles.some((dora) => isEqualTile(tile, getDoraTile(dora, availableTiles))))
-            .length
-      )
+      .map((tsu) => tsu.tiles.filter((tile) => dora.some((dora) => isEqualTile(tile, dora))).length)
       .reduce((a, b) => a + b)
 
     return count > 0 ? { name: '도라', han: count, isExtra: true } : false
@@ -337,23 +354,24 @@ const isUraDora: YakuValidator = {
   predicate: ({ riichi, agariState, uraDoraTiles }) => {
     if (riichi === null) return false
 
+    const uraDora = uraDoraTiles.map((dora) => getDoraTile(dora, availableTiles))
     const count = agariState
-      .map(
-        (tsu) =>
-          tsu.tiles.filter((tile) => uraDoraTiles.some((dora) => isEqualTile(tile, getDoraTile(dora, availableTiles))))
-            .length
-      )
+      .map((tsu) => tsu.tiles.filter((tile) => uraDora.some((dora) => isEqualTile(tile, dora))).length)
       .reduce((a, b) => a + b)
 
-    return count > 0 ? { name: '뒷도라', han: count, isExtra: true } : false
+    return count > 0 ? { name: '뒷도라', han: count, isExtra: true, isHidden: true } : false
   },
 }
 
 const yakuValidators: YakuValidator[] = [
   isTenhouOrChiihou,
   isKokushimusou,
+  isChankan,
+  isRinshan,
   isRiichi,
   isIppatsu,
+  isHaitei,
+  isHoutei,
   isMenzenTsumo,
   isChiitoitsu,
   isPinfu,

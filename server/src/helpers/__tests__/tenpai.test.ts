@@ -1,10 +1,10 @@
 import { codeSyntaxToHand } from '@ima/server/helpers/code'
-import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
+import { createInitialState } from '@ima/server/helpers/game'
 import { calculateFuriten, calculateTenpai } from '@ima/server/helpers/tenpai'
+import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
 import type { TenpaiState } from '@ima/server/types/agari'
 import type { Koritsu, Syuntsu, Tatsu } from '@ima/server/types/tile'
-import { createInitialState } from '@ima/server/helpers/game'
-import { TileSet } from 'src/types/game'
+import type { TileSet } from '@ima/server/types/game'
 
 describe('tenpai', () => {
   const i = createInitialState()

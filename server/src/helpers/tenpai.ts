@@ -34,15 +34,21 @@ export const calculateTenpai = (
   const result = calculateAgari(getClosedHand(hand))
   if (result.status !== 'tenpai') return
 
-  const tenpai: Tenpai[] = [...result.tenpai.entries()].map(([code, states]) => ({
-    giriTile,
-    agariTile: codeToTile(code),
-    status: calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code))).every((yaku) => yaku.isExtra)
-      ? 'muyaku'
-      : states.every((s) => calculateFuriten(state, me, s, giriTile))
-        ? 'tenpai'
-        : 'furiten',
-  }))
+  const tenpai: Tenpai[] = [...result.tenpai.entries()].map(([code, states]) => {
+    const yaku = calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code)))
+
+    return {
+      giriTile,
+      agariTile: codeToTile(code),
+      status:
+        !yaku.length || yaku.every((yaku) => yaku.isExtra)
+          ? 'muyaku'
+          : !states.every((s) => calculateFuriten(state, me, s, giriTile))
+            ? 'furiten'
+            : 'tenpai',
+      han: yaku.filter((yaku) => !yaku.isHidden).reduce((sum, yaku) => sum + yaku.han, 0),
+    }
+  })
 
   return tenpai.some((t) => t.status === 'furiten')
     ? tenpai.map((t) => ({ ...t, status: t.status === 'tenpai' ? 'furiten' : t.status }))

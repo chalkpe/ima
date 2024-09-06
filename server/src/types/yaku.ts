@@ -6,6 +6,7 @@ export interface Yaku {
   name: string
   han: number
   isExtra?: boolean
+  isHidden?: boolean
   isYakuman?: boolean
 }
 
@@ -17,6 +18,7 @@ export interface YakuPredicateParams {
   agariState: AgariState
   agariTsu: Tsu
   jun: number
+  opponentJun: number
   bakaze: Wind
   jikaze: Wind
   menzen: boolean
@@ -24,6 +26,7 @@ export interface YakuPredicateParams {
   doraTiles: Tile[]
   uraDoraTiles: Tile[]
   called: { me?: TileSet; opponent?: TileSet }
+  agariTileType: 'normal' | 'rinshan' | 'haitei' | 'houtei'
 }
 
 type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false

@@ -11,7 +11,6 @@ export const createInitialState = (): GameState => ({
       called: [],
       tsumo: undefined,
       tenpai: [],
-      giriMap: [],
     },
     decisions: [],
     jun: 0,
@@ -26,7 +25,6 @@ export const createInitialState = (): GameState => ({
       called: [],
       tsumo: undefined,
       tenpai: [],
-      giriMap: [],
     },
     decisions: [],
     jun: 0,
@@ -38,6 +36,8 @@ export const createInitialState = (): GameState => ({
     firstTileIndex: 0,
     lastTileIndex: 0,
     kingTiles: [],
+    firstKingTileIndex: 0,
+    lastKingTileIndex: 0,
     supplementTiles: [],
     doraCount: 1,
   },
@@ -129,3 +129,6 @@ export const getNextWind = (wind: Wind): Wind | undefined => {
       return undefined
   }
 }
+
+export const isRinshanTile = (state: GameState, tile: Tile) =>
+  tile.index >= state.wall.firstKingTileIndex && tile.index <= state.wall.lastKingTileIndex

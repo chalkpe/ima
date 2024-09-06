@@ -96,4 +96,4 @@ export const calculateYaku = (
 }
 
 export const isYakuOverShibari = (yaku: Yaku[]): boolean =>
-  yaku.filter((yaku) => !yaku.isExtra).reduce((han, yaku) => han + yaku.han, 0) >= 4
+  yaku.filter((yaku) => !yaku.isHidden).reduce((han, yaku) => han + yaku.han, 0) >= 4

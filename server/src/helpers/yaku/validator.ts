@@ -70,7 +70,7 @@ const isIppatsu: YakuValidator = {
     riichi !== null &&
     jun - riichi <= 1 &&
     (!called.me || called.me.jun < riichi) &&
-    (!called.opponent || called.opponent.jun < riichi) && { name: '일발', han: 1 },
+    (!called.opponent || called.opponent.jun < riichi) && { name: '일발', han: 1, isHidden: true },
 }
 
 const isHaitei: YakuValidator = {

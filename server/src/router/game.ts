@@ -25,7 +25,7 @@ import {
   tsumo,
 } from '@ima/server/controllers/game/action'
 import { tileTypes } from '@ima/server/helpers/tile'
-import { getActiveMe, getOpponent } from '@ima/server/helpers/game'
+import { createInitialState, getActiveMe, getOpponent } from '@ima/server/helpers/game'
 import type { StateChangeType } from '@ima/server/types/game'
 
 const getRoom = (username: string, started?: boolean) => {
@@ -203,6 +203,13 @@ export const gameRouter = router({
 
     const room = getRoom(username, true)
     const result = confirmScoreboard(room.state, room.host === username ? 'host' : 'guest')
+
+    if (result === 'end') {
+      room.started = false
+      room.hostReady = false
+      room.guestReady = false
+      room.state = createInitialState()
+    }
 
     ee.emit('update', room.host, result)
   }),

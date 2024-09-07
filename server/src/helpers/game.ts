@@ -3,6 +3,11 @@ import type { Tile, Tsu } from '@ima/server/types/tile'
 import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall, Wind } from '@ima/server/types/game'
 
 export const createInitialState = (): GameState => ({
+  rule: {
+    localYaku: false,
+    manganShibari: true,
+    length: 'east',
+  },
   host: {
     wind: 'east',
     river: [],
@@ -106,25 +111,25 @@ export const getUraDoraTiles = (wall: Wall): Tile[] =>
 export const tileSetToTsu = (s: TileSet): Tsu => {
   switch (s.type) {
     case 'ankan':
-      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: false }
+      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: false, furo: false }
     case 'gakan':
     case 'daiminkan':
-      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: true }
+      return { type: 'kantsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2], s.tiles[3]], open: true, furo: true }
     case 'chi':
-      return { type: 'shuntsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
+      return { type: 'shuntsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true, furo: true }
     case 'pon':
-      return { type: 'koutsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true }
+      return { type: 'koutsu', tiles: [s.tiles[0], s.tiles[1], s.tiles[2]], open: true, furo: true }
   }
 }
 
-export const getNextWind = (wind: Wind): Wind | undefined => {
+export const getNextWind = (state: GameState, wind: Wind): Wind | undefined => {
   switch (wind) {
     case 'east':
-      return 'south'
+      return state.rule.length === 'south' ? 'south' : undefined
     case 'south':
-      return 'west'
+      return undefined
     case 'west':
-      return 'north'
+      return undefined
     case 'north':
       return undefined
   }

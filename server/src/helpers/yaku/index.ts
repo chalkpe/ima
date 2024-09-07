@@ -13,14 +13,10 @@ const calculateYakuOfAgari = (
   agariTile: Tile,
   agariState: AgariState
 ): Yaku[] => {
-  const menzen = agariState.every((tsu) => !tsu.open)
-
   const agariTsu = agariState.find((tsu) => tsu.tiles.some((tile) => tile.index === agariTile.index))
   /* istanbul ignore next */ if (!agariTsu) return []
 
-  if (agariType === 'ron') {
-    agariTsu.open = true
-  }
+  if (agariType === 'ron') agariTsu.open = true
 
   const opponent = getOpponent(me)
   const params: YakuPredicateParams = {
@@ -32,7 +28,7 @@ const calculateYakuOfAgari = (
     opponentJun: state[opponent].jun,
     bakaze: state.round.wind,
     jikaze: state[me].wind,
-    menzen,
+    menzen: agariState.every((tsu) => !tsu.furo),
     riichi: state[me].riichi,
     doraTiles: getDoraTiles(state.wall),
     uraDoraTiles: getUraDoraTiles(state.wall),
@@ -56,7 +52,7 @@ const calculateYakuOfAgari = (
   }
 
   const result: Yaku[] = []
-  let validators = [...yakuValidators]
+  let validators = yakuValidators(state)
 
   while (validators.length > 0) {
     const yaku = validators.splice(0, 1)[0].predicate(params)
@@ -98,6 +94,6 @@ export const calculateYaku = (
   return agariList[0]
 }
 
-export const isYakuOverShibari = (yaku: Yaku[]): boolean =>
+export const isYakuOverShibari = (state: GameState, yaku: Yaku[]): boolean =>
   yaku.some((yaku) => !yaku.isExtra) &&
-  yaku.filter((yaku) => !yaku.isHidden).reduce((han, yaku) => han + yaku.han, 0) >= 4
+  yaku.filter((yaku) => !yaku.isHidden).reduce((han, yaku) => han + yaku.han, 0) >= (state.rule.manganShibari ? 4 : 1)

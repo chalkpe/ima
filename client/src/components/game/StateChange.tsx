@@ -12,6 +12,7 @@ const typeText: Record<StateChangeType, string> = {
   ron: '론',
   update: '',
   start: '시작',
+  end: '종료',
 }
 
 interface StateChangeProps {

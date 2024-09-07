@@ -108,7 +108,14 @@ export interface FinalScoreboard extends BaseScoreboard {
 
 export type Scoreboard = AgariScoreboard | RyuukyokuScoreboard | FinalScoreboard
 
+export interface Rule {
+  localYaku: boolean
+  manganShibari: boolean
+  length: 'east' | 'south'
+}
+
 export interface GameState {
+  rule: Rule
   host: Player
   guest: Player
   wall: Wall

@@ -1,6 +1,6 @@
 import { codeSyntaxToHand } from '@ima/server/helpers/code'
 import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
-import { getActiveMe, getClosedHand, getNextWind, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
+import { getActiveMe, getClosedHand, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
 import type { Hand, Player, Room } from '@ima/server/types/game'
 
 describe('game', () => {
@@ -55,15 +55,6 @@ describe('game', () => {
       expect(() =>
         getActiveMe({ host: 'a', guest: 'b', state: { turn: 'guest', scoreboard: {} } } as Room, 'b')
       ).toThrow()
-    })
-  })
-
-  describe('getNextWind', () => {
-    test('should work', () => {
-      expect(getNextWind('east')).toBe('south')
-      expect(getNextWind('south')).toBe('west')
-      expect(getNextWind('west')).toBe('north')
-      expect(getNextWind('north')).toBeUndefined()
     })
   })
 })

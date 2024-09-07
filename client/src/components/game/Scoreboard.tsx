@@ -19,6 +19,38 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
   const scoreboard = data.state.scoreboard
   const meConfirmed = me === 'host' ? scoreboard.hostConfirmed : scoreboard.guestConfirmed
 
+  if (scoreboard.type === 'final') {
+    return (
+      <Paper
+        sx={{
+          position: 'absolute',
+          left: '15vmin',
+          top: '15vmin',
+          right: '15vmin',
+          bottom: '15vmin',
+          padding: '5vmin',
+        }}
+      >
+        <Typography fontSize="5vmin">최종 점수</Typography>
+        <ul>
+          <li>
+            <Typography fontSize="3vmin">
+              {data.host} - {scoreboard.hostScore.toLocaleString()}점
+            </Typography>
+          </li>
+          <li>
+            <Typography fontSize="3vmin">
+              {data.guest} - {scoreboard.guestScore.toLocaleString()}점
+            </Typography>
+          </li>
+        </ul>
+        <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+          {meConfirmed ? '대기 중...' : '확인'}
+        </Button>
+      </Paper>
+    )
+  }
+
   if (scoreboard.type === 'ryuukyoku') {
     return (
       <Paper
@@ -31,10 +63,12 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
           padding: '5vmin',
         }}
       >
-        유국
+        <Typography fontSize="7vmin">유국</Typography>
         <ul>
           {scoreboard.tenpai.map((player) => (
-            <li key={player}>{player} - 텐파이</li>
+            <li key={player}>
+              <Typography fontSize="2vmin">{data[player]} - 텐파이</Typography>
+            </li>
           ))}
         </ul>
         <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>

@@ -178,7 +178,7 @@ export const callTsumo = (state: GameState, me: PlayerType) => {
   if (!tsumo || !tsumo.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
 
   const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', tsumo.tile)
-  if (!isYakuOverShibari(yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
+  if (!isYakuOverShibari(state, yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, state[me].hand, 'tsumo', yaku)
@@ -192,7 +192,7 @@ export const callRon = (state: GameState, me: PlayerType) => {
   if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
   const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
-  if (!isYakuOverShibari(yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
+  if (!isYakuOverShibari(state, yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, { ...state[me].hand, tsumo: calledTile }, 'ron', yaku)

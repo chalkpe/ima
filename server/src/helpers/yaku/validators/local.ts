@@ -60,8 +60,8 @@ const isShiiaruraotai: YakuValidator = {
   level: 'normal',
   predicate: ({ menzen, agariState, agariTsu }) =>
     !menzen &&
-    agariState.filter((tsu) => tsu.open).length === 4 &&
-    agariTsu.type === 'koutsu' && { name: '십이낙태', han: 1 },
+    agariState.filter((tsu) => tsu.furo).length === 4 &&
+    agariTsu.type === 'toitsu' && { name: '십이낙태', han: 1 },
 }
 
 const isDaisharin: YakuValidator = {

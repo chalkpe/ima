@@ -5,6 +5,12 @@ import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
 import type { Room } from '@ima/server/types/game'
 
+const getRoom = (username: string, onlyHost = false) => {
+  const room = database.rooms.find((room) => room.host === username || (!onlyHost && room.guest === username))
+  if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: 'Room not found' })
+  return room
+}
+
 export const lobbyRouter = router({
   list: publicProcedure.query(() =>
     database.rooms.map((room) => ({ host: room.host, guest: room.guest, started: room.started }))
@@ -62,18 +68,38 @@ export const lobbyRouter = router({
 
   room: publicProcedure.query((opts) => {
     const { username } = opts.ctx
-    const room = database.rooms.find((room) => room.host === username || room.guest === username)
-    if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
-
-    return room
+    return getRoom(username)
   }),
 
   ready: publicProcedure.input(z.object({ ready: z.boolean() })).mutation((opts) => {
     const { username } = opts.ctx
-    const room = database.rooms.find((room) => room.host === username || room.guest === username)
-    if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
+    const room = getRoom(username)
 
     if (room.host === username) room.hostReady = opts.input.ready
     else room.guestReady = opts.input.ready
+  }),
+
+  setLocalYaku: publicProcedure.input(z.object({ value: z.boolean() })).mutation((opts) => {
+    const { username } = opts.ctx
+    const { value } = opts.input
+
+    const room = getRoom(username, true)
+    room.state.rule.localYaku = value
+  }),
+
+  setManganShibari: publicProcedure.input(z.object({ value: z.boolean() })).mutation((opts) => {
+    const { username } = opts.ctx
+    const { value } = opts.input
+
+    const room = getRoom(username, true)
+    room.state.rule.manganShibari = value
+  }),
+
+  setLength: publicProcedure.input(z.object({ value: z.enum(['east', 'south']) })).mutation((opts) => {
+    const { username } = opts.ctx
+    const { value } = opts.input
+
+    const room = getRoom(username, true)
+    room.state.rule.length = value
   }),
 })

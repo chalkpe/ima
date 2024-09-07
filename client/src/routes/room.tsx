@@ -3,7 +3,17 @@ import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '@ima/client/hooks/useAuth'
 import { CheckOutlined } from '@mui/icons-material'
-import { Button, Checkbox, CircularProgress, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material'
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  FormGroup,
+  Radio,
+  RadioGroup,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 const Room = () => {
   const navigate = useNavigate()
@@ -14,6 +24,14 @@ const Room = () => {
   const { mutate: leave } = trpc.lobby.leave.useMutation({ onSuccess: () => utils.lobby.room.reset() })
   const { mutate: ready } = trpc.lobby.ready.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
   const { mutate: start } = trpc.game.start.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
+
+  const { mutate: setLocalYaku } = trpc.lobby.setLocalYaku.useMutation({
+    onSuccess: () => utils.lobby.room.invalidate(),
+  })
+  const { mutate: setManganShibari } = trpc.lobby.setManganShibari.useMutation({
+    onSuccess: () => utils.lobby.room.invalidate(),
+  })
+  const { mutate: setLength } = trpc.lobby.setLength.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
 
   useEffect(() => {
     if (!data || error) {
@@ -89,6 +107,34 @@ const Room = () => {
               }
               label="준비"
             />
+            <FormControlLabel
+              disabled={data.host !== username}
+              control={
+                <Checkbox
+                  checked={data.state.rule.localYaku}
+                  onChange={(e) => setLocalYaku({ value: e.target.checked })}
+                />
+              }
+              label="로컬 역"
+            />
+            <FormControlLabel
+              disabled={data.host !== username}
+              control={
+                <Checkbox
+                  checked={data.state.rule.manganShibari}
+                  onChange={(e) => setManganShibari({ value: e.target.checked })}
+                />
+              }
+              label="만관 판수묶음"
+            />
+            <RadioGroup
+              row
+              value={data.state.rule.length}
+              onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' })}
+            >
+              <FormControlLabel value="east" disabled={data.host !== username} control={<Radio />} label="동풍전" />
+              <FormControlLabel value="south" disabled={data.host !== username} control={<Radio />} label="반장전" />
+            </RadioGroup>
           </FormGroup>
         </Stack>
       ) : (

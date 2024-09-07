@@ -129,7 +129,10 @@ export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Deci
         [...result.tenpai.keys()]
           .map((code) => simpleTileToTile(codeToTile(code)))
           .some((tile) =>
-            isYakuOverShibari(calculateYaku(state, me, { ...state[me].hand, closed: hand, tsumo: tile }, 'tsumo', tile))
+            isYakuOverShibari(
+              state,
+              calculateYaku(state, me, { ...state[me].hand, closed: hand, tsumo: tile }, 'tsumo', tile)
+            )
           )
     )
     .map(([tile]) => ({ type: 'riichi', tile }))
@@ -141,7 +144,7 @@ export const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decis
 
   const result = calculateAgari(hand)
   return result.status === 'agari' &&
-    isYakuOverShibari(calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo))
+    isYakuOverShibari(state, calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo))
     ? [{ type: 'tsumo', tile: state[me].hand.tsumo }]
     : []
 }
@@ -157,7 +160,7 @@ export const calculateRonDecisions = (state: GameState, me: PlayerType): Decisio
   return result.status === 'tenpai' &&
     [...result.tenpai.keys()].includes(tileToCode(ronTile)) &&
     [...result.tenpai.values()].every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
-    isYakuOverShibari(calculateYaku(state, me, state[me].hand, 'ron', ronTile))
+    isYakuOverShibari(state, calculateYaku(state, me, state[me].hand, 'ron', ronTile))
     ? [{ type: 'ron', tile: ronTile }]
     : []
 }

@@ -1,7 +1,5 @@
 import '@ima/client/root.css'
 
-import background from '@ima/client/assets/background.png'
-
 import { useMemo, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { Box, CssBaseline, ThemeProvider } from '@mui/material'
@@ -19,7 +17,7 @@ const Root = () => {
   const trpcClient = useMemo(
     () =>
       trpc.createClient({
-        links: [wsLink({ client: createWSClient({ url: 'ws://localhost:3000/', connectionParams: { username } }) })],
+        links: [wsLink({ client: createWSClient({ url: '/server', connectionParams: { username } }) })],
       }),
     [username]
   )
@@ -37,7 +35,7 @@ const Root = () => {
               flexDirection: 'column',
               padding: '10vmin',
               backgroundSize: 'cover',
-              backgroundImage: `url(${background})`,
+              backgroundImage: `url(/background.png)`,
             }}
           >
             <CssBaseline />

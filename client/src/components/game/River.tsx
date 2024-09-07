@@ -30,6 +30,7 @@ const River: FC<RiverProps> = ({ river, me }) => {
             <Mahgen
               key={riverTile.tile.index}
               size={5}
+              natural
               rotate={riverTile.isRiichi}
               dim={riverTile.isTsumogiri}
               tile={riverTile.tile}

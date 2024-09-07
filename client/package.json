@@ -19,6 +19,7 @@
     "@trpc/react-query": "^11.0.0-rc.485",
     "@trpc/server": "^11.0.0-rc.485",
     "jotai": "^2.9.3",
+    "rand-seed": "^2.1.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1"

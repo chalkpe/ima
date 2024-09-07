@@ -1,9 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import { Mahgen } from 'mahgen'
-import { CSSProperties, FC, useEffect, useState } from 'react'
-import { useAtomValue } from 'jotai'
-import { tileImageAtom } from '@ima/client/store/tileImage'
+import { CSSProperties, FC } from 'react'
 import { convertTileToCode } from '@ima/client/utils/tile'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
@@ -16,15 +11,6 @@ interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HT
 }
 
 const MahgenElement: FC<MahgenProps> = ({ size, tile, rotate, stack, dim, style, ...rest }) => {
-  const [src, setSrc] = useState('')
-  const memory = useAtomValue(tileImageAtom)
-
-  useEffect(() => {
-    const code = convertTileToCode(tile)
-    if (memory.has(code)) setSrc(memory.get(code) ?? '')
-    else Mahgen.render(code).then((src: string) => [setSrc(src), memory.set(code, src)])
-  }, [memory, tile])
-
   const commonStyle: CSSProperties = {
     ...style,
     userSelect: 'none',
@@ -34,7 +20,7 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, rotate, stack, dim, style,
   return (
     <img
       {...rest}
-      src={src}
+      src={`./tiles/${convertTileToCode(tile)}.png`}
       style={
         rotate
           ? {

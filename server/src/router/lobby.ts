@@ -22,7 +22,6 @@ export const lobbyRouter = router({
       guest: '',
       guestReady: false,
       started: false,
-      ended: false,
       state: createInitialState(),
     }
 

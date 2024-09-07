@@ -15,6 +15,10 @@ export interface Tile {
 }
 
 export type SimpleTile = Pick<Tile, 'type' | 'value'>
+export type SimpleSyuupaiTile = Pick<Tile, 'value'> & { type: SyuupaiType }
+export type SimpleZihaiTile = Pick<Tile, 'value'> & { type: ZihaiType }
+export type SimpleWindHaiTile = Pick<Tile, 'value'> & { type: 'wind' }
+export type SimpleDragonHaiTile = Pick<Tile, 'value'> & { type: 'dragon' }
 
 export type SyuupaiValue = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 

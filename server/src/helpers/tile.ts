@@ -6,7 +6,11 @@ import type {
   Machi,
   MachiType,
   Mentsu,
+  SimpleDragonHaiTile,
+  SimpleSyuupaiTile,
   SimpleTile,
+  SimpleWindHaiTile,
+  SimpleZihaiTile,
   Syuntsu,
   SyuupaiType,
   SyuupaiValue,
@@ -213,21 +217,20 @@ export const getMachiTiles = (machi: Machi): SimpleTile[] => {
 
 const windMap: Record<number, Wind> = { 1: 'east', 2: 'south', 3: 'west', 4: 'north' }
 
-export const getTileWind = (tile: SimpleTile): Wind | undefined =>
-  tile.type === 'wind' ? windMap[tile.value] : undefined
+export const isSyuupai = (tile: SimpleTile): tile is SimpleSyuupaiTile => syuupaiTypes.includes(tile.type)
 
-export const isYakuhai = (tile: SimpleTile, bakaze: Wind, jikaze: Wind) =>
-  tile.type === 'dragon' || (tile.type === 'wind' && [bakaze, jikaze].includes(windMap[tile.value]))
+export const isWindHai = (tile: SimpleTile): tile is SimpleWindHaiTile => tile.type === 'wind'
 
-export const isSyuupai = (tile: SimpleTile) => syuupaiTypes.includes(tile.type)
+export const isDragonHai = (tile: SimpleTile): tile is SimpleDragonHaiTile => tile.type === 'dragon'
 
-export const isWindHai = (tile: SimpleTile) => tile.type === 'wind'
-
-export const isDragonHai = (tile: SimpleTile) => tile.type === 'dragon'
-
-export const isZihai = (tile: SimpleTile) => isWindHai(tile) || isDragonHai(tile)
+export const isZihai = (tile: SimpleTile): tile is SimpleZihaiTile => isWindHai(tile) || isDragonHai(tile)
 
 export const isYaochuuhai = (tile: SimpleTile) => isZihai(tile) || tile.value === 1 || tile.value === 9
+
+export const isYakuhai = (tile: SimpleTile, bakaze: Wind, jikaze: Wind) =>
+  isDragonHai(tile) || (isWindHai(tile) && [bakaze, jikaze].includes(windMap[tile.value]))
+
+export const getTileWind = (tile: SimpleTile): Wind | undefined => (isWindHai(tile) ? windMap[tile.value] : undefined)
 
 export const getTilesValueString = (tiles: SimpleTile[]) =>
   tiles
@@ -272,3 +275,5 @@ export const tileNames: Record<Code, string> = {
   '6z': '발',
   '7z': '중',
 }
+
+export const syuntsuNumbers = ['123', '234', '345', '456', '567', '678', '789'] as const

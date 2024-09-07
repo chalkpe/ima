@@ -19,6 +19,9 @@ export const calc = (
   state.wall.firstTileIndex = state.wall.tiles[0].index
   state.wall.lastTileIndex = state.wall.tiles[state.wall.tiles.length - 1].index
 
+  state.host.jun = 3
+  state.guest.jun = 3
+
   stateUpdater?.(state)
 
   state.host.hand.closed.push(...agari.slice(0, -1))

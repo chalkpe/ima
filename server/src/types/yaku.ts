@@ -8,6 +8,7 @@ export interface Yaku {
   isExtra?: boolean
   isHidden?: boolean
   isYakuman?: boolean
+  invalidates?: string[]
 }
 
 export type AgariType = 'tsumo' | 'ron' | 'test'

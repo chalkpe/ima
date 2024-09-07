@@ -1,6 +1,6 @@
 import { calculateAgari } from '@ima/server/helpers/agari'
 import { getDoraTiles, getOpponent, getUraDoraTiles, isRinshanTile, tileSetToTsu } from '@ima/server/helpers/game'
-import yakuValidators from '@ima/server/helpers/yaku/validator'
+import yakuValidators from '@ima/server/helpers/yaku/validators'
 import type { AgariState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
 import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
@@ -68,8 +68,11 @@ const calculateYakuOfAgari = (
     if (r.some((y) => y.isYakuman)) validators = validators.filter((v) => v.level === 'yakuman')
   }
 
-  if (!result.some((yaku) => yaku.isYakuman)) return result
-  return result.filter((yaku) => yaku.isYakuman)
+  const invalidated = result.flatMap((yaku) => yaku.invalidates || [])
+  const invalidator = (yaku: Yaku) => !invalidated.includes(yaku.name)
+
+  if (!result.some((yaku) => yaku.isYakuman)) return result.filter(invalidator)
+  return result.filter((yaku) => yaku.isYakuman).filter(invalidator)
 }
 
 export const calculateYaku = (
@@ -96,4 +99,5 @@ export const calculateYaku = (
 }
 
 export const isYakuOverShibari = (yaku: Yaku[]): boolean =>
+  yaku.some((yaku) => !yaku.isExtra) &&
   yaku.filter((yaku) => !yaku.isHidden).reduce((han, yaku) => han + yaku.han, 0) >= 4

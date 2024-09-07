@@ -1,10 +1,17 @@
-import { tileToCode } from '@ima/server/helpers/code'
+import { codeToTile, tileToCode } from '@ima/server/helpers/code'
 import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
 import { calculateAgari } from '@ima/server/helpers/agari'
 import { calculateFuriten } from '@ima/server/helpers/tenpai'
 import { combination, combinations, partition } from '@ima/server/helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from '@ima/server/helpers/game'
-import { countTiles, getAllSyuntsu, isEqualTile, isStrictEqualTile, removeTileFromHand } from '@ima/server/helpers/tile'
+import {
+  countTiles,
+  getAllSyuntsu,
+  isEqualTile,
+  isStrictEqualTile,
+  removeTileFromHand,
+  simpleTileToTile,
+} from '@ima/server/helpers/tile'
 
 import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
@@ -115,8 +122,16 @@ export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Deci
   return hand
     .filter((tile, index) => hand.findIndex((t) => isStrictEqualTile(tile, t)) === index)
     .map((tile) => partition(hand, (t) => t.index === tile.index))
-    .map(([removed, hand]) => [removed[0], calculateAgari(hand)] as const)
-    .filter(([_, result]) => result.status === 'tenpai')
+    .map(([removed, hand]) => [removed[0], hand, calculateAgari(hand)] as const)
+    .filter(
+      ([_, hand, result]) =>
+        result.status === 'tenpai' &&
+        [...result.tenpai.keys()]
+          .map((code) => simpleTileToTile(codeToTile(code)))
+          .some((tile) =>
+            isYakuOverShibari(calculateYaku(state, me, { ...state[me].hand, closed: hand, tsumo: tile }, 'tsumo', tile))
+          )
+    )
     .map(([tile]) => ({ type: 'riichi', tile }))
 }
 

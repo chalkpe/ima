@@ -66,7 +66,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               onMouseEnter={() => me && setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
-              style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : undefined }}
+              style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0' }}
             />
           ))}
         </Stack>
@@ -79,7 +79,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === hand.tsumo!.index && giri({ index: hand.tsumo!.index })}
-              style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : undefined }}
+              style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : '0' }}
             />
           ) : (
             <Box width="5vmin" />

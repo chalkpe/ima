@@ -8,6 +8,7 @@ import type {
   Hand,
   PlayerType,
   RyuukyokuScoreboard,
+  RyuukyokuType,
   Scoreboard,
 } from '@ima/server/types/game'
 
@@ -54,12 +55,16 @@ export const createAgariScoreboard = (
   }
 }
 
-export const createRyukyokuScoreboard = (state: GameState, me: PlayerType): Scoreboard => {
+export const createRyukyokuScoreboard = (state: GameState, me: PlayerType, type: RyuukyokuType): Scoreboard => {
   return {
     type: 'ryuukyoku',
     hostConfirmed: false,
     guestConfirmed: false,
-    tenpai: [me, getOpponent(me)].filter((p) => calculateTenpai(state, p, state[p].hand, null) !== undefined),
+    ryuukyokuType: type,
+    tenpai:
+      type !== 'ryuukyoku'
+        ? [me, getOpponent(me)]
+        : [me, getOpponent(me)].filter((p) => calculateTenpai(state, p, state[p].hand, null) !== undefined),
   }
 }
 
@@ -83,7 +88,7 @@ export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboa
     state.round.kyoku += 1
 
     if (state.round.kyoku > 2) {
-      const nextWind = getNextWind(state.round.wind)
+      const nextWind = getNextWind(state, state.round.wind)
       if (!nextWind) return createFinalScoreboard(state)
 
       state.round.wind = nextWind
@@ -108,7 +113,7 @@ export const applyRyukyokuScoreboard = (state: GameState, scoreboard: RyuukyokuS
     state.round.kyoku += 1
 
     if (state.round.kyoku > 2) {
-      const nextWind = getNextWind(state.round.wind)
+      const nextWind = getNextWind(state, state.round.wind)
       if (!nextWind) return createFinalScoreboard(state)
 
       state.round.wind = nextWind

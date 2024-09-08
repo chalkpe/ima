@@ -3,8 +3,13 @@ import { Button, Paper, Stack, Typography } from '@mui/material'
 import Mahgen from '@ima/client/components/tile/Mahgen'
 import { compareTile, convertTileToCode } from '@ima/client/utils/tile'
 import { trpc } from '@ima/client/utils/trpc'
-import type { PlayerType, Room } from '@ima/server/types/game'
+import type { PlayerType, Room, RyuukyokuType } from '@ima/server/types/game'
 import TileSet from '@ima/client/components/tile/TileSet'
+
+const ryuukyokuMap: Record<RyuukyokuType, string> = {
+  ryuukyoku: '황패유국',
+  suukaikan: '사깡유국',
+}
 
 interface ScoreboardProps {
   data: Room
@@ -63,7 +68,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
           padding: '5vmin',
         }}
       >
-        <Typography fontSize="7vmin">유국</Typography>
+        <Typography fontSize="7vmin">{ryuukyokuMap[scoreboard.ryuukyokuType]}</Typography>
         <ul>
           {scoreboard.tenpai.map((player) => (
             <li key={player}>

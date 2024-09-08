@@ -24,10 +24,12 @@ export const onHandChange = (state: GameState, me: PlayerType) => {
   })
 }
 
-export const onBeforeTsumo = (state: GameState, me: PlayerType) => {
+export const onBeforeTsumo = (state: GameState, me: PlayerType): 'update' | 'end' => {
   state[me].decisions = calculateBeforeTsumoDecisions(state, me)
   if (state[me].decisions.length === 0) {
-    tsumo(state, me, 'haiyama')
+    return tsumo(state, me, 'haiyama')
+  } else {
+    return 'update'
   }
 }
 

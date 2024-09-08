@@ -141,9 +141,9 @@ export const gameRouter = router({
 
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
-    skipAndTsumo(room.state, me)
+    const result = skipAndTsumo(room.state, me)
 
-    ee.emit('update', room.host, 'update')
+    ee.emit('update', room.host, result)
   }),
 
   skipChankan: publicProcedure.mutation((opts) => {
@@ -182,9 +182,9 @@ export const gameRouter = router({
 
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
-    giri(room.state, me, index)
+    const result = giri(room.state, me, index)
 
-    ee.emit('update', room.host, 'update')
+    ee.emit('update', room.host, result)
   }),
 
   riichi: publicProcedure.input(z.object({ index: z.number() })).mutation((opts) => {
@@ -193,9 +193,9 @@ export const gameRouter = router({
 
     const room = getRoom(username, true)
     const me = getActiveMe(room, username)
-    riichi(room.state, me, index)
+    const result = riichi(room.state, me, index)
 
-    ee.emit('update', room.host, 'riichi')
+    ee.emit('update', room.host, result)
   }),
 
   confirmScoreboard: publicProcedure.mutation((opts) => {

@@ -95,9 +95,12 @@ export interface AgariScoreboard extends BaseScoreboard {
   uraDoraTiles: Tile[]
 }
 
+export type RyuukyokuType = 'ryuukyoku' | 'suukaikan'
+
 export interface RyuukyokuScoreboard extends BaseScoreboard {
   type: 'ryuukyoku'
   tenpai: PlayerType[]
+  ryuukyokuType: RyuukyokuType
 }
 
 export interface FinalScoreboard extends BaseScoreboard {

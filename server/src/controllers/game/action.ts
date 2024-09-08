@@ -18,7 +18,14 @@ import { createAgariScoreboard, createRyukyokuScoreboard } from '@ima/server/hel
 import type { Tile, TileType } from '@ima/server/types/tile'
 import type { GameState, PlayerType, WallType } from '@ima/server/types/game'
 
-export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
+export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update' | 'end' => {
+  if (state.wall.doraCount === 5) {
+    if (![me, getOpponent(me)].some((p) => state[p].hand.called.filter((set) => set.tiles.length === 4).length === 4)) {
+      state.scoreboard = createRyukyokuScoreboard(state, me, 'suukaikan')
+      return 'end'
+    }
+  }
+
   if (state[me].hand.tsumo) {
     state[me].hand.closed.push(state[me].hand.tsumo)
     state[me].hand.tsumo = undefined
@@ -33,8 +40,8 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
     state.wall.supplementTiles.push(state.wall.tiles.splice(-1, 1)[0])
   } else {
     if (state.wall.tiles.length === 0) {
-      state.scoreboard = createRyukyokuScoreboard(state, me)
-      return
+      state.scoreboard = createRyukyokuScoreboard(state, me, 'ryuukyoku')
+      return 'end'
     }
 
     state[me].jun += 1
@@ -42,6 +49,7 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType) => {
   }
 
   onAfterTsumo(state, me)
+  return 'update'
 }
 
 export const ankan = (state: GameState, me: PlayerType, type: TileType, value: number) => {
@@ -155,11 +163,11 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   onHandChange(state, me)
 }
 
-export const skipAndTsumo = (state: GameState, me: PlayerType) => {
+export const skipAndTsumo = (state: GameState, me: PlayerType): 'update' | 'end' => {
   if (!state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'No decisions' })
 
-  tsumo(state, me, 'haiyama')
+  return tsumo(state, me, 'haiyama')
 }
 
 export const skipChankan = (state: GameState, me: PlayerType) => {
@@ -198,7 +206,7 @@ export const callRon = (state: GameState, me: PlayerType) => {
   state.scoreboard = createAgariScoreboard(state, me, { ...state[me].hand, tsumo: calledTile }, 'ron', yaku)
 }
 
-export const giri = (state: GameState, me: PlayerType, index: number) => {
+export const giri = (state: GameState, me: PlayerType, index: number): 'update' | 'end' => {
   if (state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo' || dec.type === 'skip_chankan'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions should be made' })
 
@@ -218,10 +226,10 @@ export const giri = (state: GameState, me: PlayerType, index: number) => {
   state[me].hand.tsumo = undefined
 
   onAfterGiri(state, me)
-  onBeforeTsumo(state, getOpponent(me))
+  return onBeforeTsumo(state, getOpponent(me))
 }
 
-export const riichi = (state: GameState, me: PlayerType, index: number) => {
+export const riichi = (state: GameState, me: PlayerType, index: number): 'riichi' | 'end' => {
   if (state[me].riichi) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Riichi already declared' })
 
   const closedHand = getClosedHand(state[me].hand)
@@ -238,5 +246,6 @@ export const riichi = (state: GameState, me: PlayerType, index: number) => {
   state[me].hand.tsumo = undefined
 
   onAfterGiri(state, me)
-  onBeforeTsumo(state, getOpponent(me))
+  const result = onBeforeTsumo(state, getOpponent(me))
+  return result === 'update' ? 'riichi' : 'end'
 }

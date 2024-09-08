@@ -15,13 +15,15 @@ export const sortTiles = (tiles: Tile[]) => tiles.map((tile, order) => ({ ...til
 export const backTile: Tile = { type: 'back', value: 0, attribute: 'normal', background: 'white', index: -1 }
 
 export const convertTileToCode = (tile: Tile | SimpleTile) => {
+  const suffix = 'attribute' in tile && tile.attribute === 'red' ? 'r' : ''
+
   switch (tile.type) {
     case 'man':
-      return 'attribute' in tile && tile.attribute === 'red' ? '0m' : `${tile.value}m`
+      return `${tile.value}m${suffix}`
     case 'pin':
-      return 'attribute' in tile && tile.attribute === 'red' ? '0p' : `${tile.value}p`
+      return `${tile.value}p${suffix}`
     case 'sou':
-      return 'attribute' in tile && tile.attribute === 'red' ? '0s' : `${tile.value}s`
+      return `${tile.value}s${suffix}`
     case 'wind':
       return `${tile.value}z`
     case 'dragon':

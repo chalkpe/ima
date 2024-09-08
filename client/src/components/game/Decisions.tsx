@@ -141,10 +141,10 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
           }}
         >
           {typeText[decision.type]}
-          <span>
+          <Stack direction="row">
             {decision.tile && <Mahgen size={3} tile={decision.tile} />}
             {decision.otherTiles && decision.otherTiles.map((tile) => <Mahgen key={tile.index} size={3} tile={tile} />)}
-          </span>
+          </Stack>
         </Button>
       ))}
     </Stack>

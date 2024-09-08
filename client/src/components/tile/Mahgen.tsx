@@ -20,32 +20,44 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natura
 
   const commonStyle: CSSProperties = {
     ...style,
+    display: 'flex',
     transform,
     userSelect: 'none',
     filter: dim ? 'brightness(0.5)' : '',
+    backgroundImage: `url(./back/${tile.type === 'back' ? 'blue' : 'foreground'}.png)`,
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat',
+  }
+
+  const commonImageStyle: CSSProperties = {
+    width: `${size}vmin`,
+    minHeight: `calc(${size}vmin * 10/7)`,
   }
 
   return (
-    <img
+    <div
       {...rest}
-      src={`./tiles/${convertTileToCode(tile)}.png`}
       style={
         rotate
           ? {
               ...commonStyle,
-              width: `${size}vmin`,
-              minHeight: `calc(${size}vmin * 10/7)`,
-              marginBottom: stack ? `calc(-${size}vmin * 6/7)` : '',
-              marginRight: stack ? '' : `calc(${size}vmin * 3/7)`,
+              paddingBottom: stack ? `calc(-${size}vmin * 6/7)` : '',
+              paddingRight: stack ? '' : `calc(${size}vmin * 3/7)`,
               transformOrigin: 'bottom left',
               transform:
-                commonStyle?.transform +
+                (commonStyle?.transform ?? '') +
                 ` translateY(-${size}vmin) rotate(90deg)` +
                 (stack ? ` translateX(calc(-${size}vmin * 3/7))` : ''),
             }
-          : { ...commonStyle, width: `${size}vmin`, minHeight: `calc(${size}vmin * 10/7)` }
+          : { ...commonStyle }
       }
-    />
+    >
+      {tile.type === 'back' ? (
+        <div style={commonImageStyle} />
+      ) : (
+        <img src={`./tiles/${convertTileToCode(tile)}.png`} style={commonImageStyle} />
+      )}
+    </div>
   )
 }
 

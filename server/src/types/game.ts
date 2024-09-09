@@ -14,6 +14,7 @@ export interface Hand {
   called: TileSet[]
   tsumo?: Tile
   tenpai: Tenpai[]
+  banned: number[]
 }
 
 export interface RiverTile {

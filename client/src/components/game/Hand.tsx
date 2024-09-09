@@ -67,6 +67,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
               style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0' }}
+              dim={hand.banned.includes(tile.index)}
             />
           ))}
         </Stack>

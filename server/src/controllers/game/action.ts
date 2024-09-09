@@ -142,6 +142,7 @@ export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
   state[me].hand.called.push({ type: 'pon', tiles, calledTile, jun: state[opponent].jun })
+  state[me].hand.banned = remain.filter((tile) => isKuikae(state, me, tile)).map((tile) => tile.index)
 
   onHandChange(state, me)
 }
@@ -167,6 +168,7 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[opponent].river.splice(-1, 1)
   state[me].hand.closed = remain
   state[me].hand.called.push({ type: 'chi', tiles, calledTile, jun: state[opponent].jun })
+  state[me].hand.banned = remain.filter((tile) => isKuikae(state, me, tile)).map((tile) => tile.index)
 
   onHandChange(state, me)
 }
@@ -233,6 +235,7 @@ export const giri = (state: GameState, me: PlayerType, index: number): 'update' 
 
   state[me].hand.closed = remain
   state[me].hand.tsumo = undefined
+  state[me].hand.banned = []
 
   onAfterGiri(state, me)
   return onBeforeTsumo(state, getOpponent(me))

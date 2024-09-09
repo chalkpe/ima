@@ -17,6 +17,7 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
         closed: state[opponent].hand.closed.map(hideTile),
         tsumo: state[opponent].hand.tsumo ? hideTile(state[opponent].hand.tsumo) : undefined,
         tenpai: [],
+        banned: [],
       },
       decisions: [],
     },

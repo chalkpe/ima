@@ -41,8 +41,8 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natura
         rotate
           ? {
               ...commonStyle,
-              paddingBottom: stack ? `calc(-${size}vmin * 6/7)` : '',
-              paddingRight: stack ? '' : `calc(${size}vmin * 3/7)`,
+              marginBottom: stack ? `calc(-${size}vmin * 6/7)` : '',
+              marginRight: stack ? '' : `calc(${size}vmin * 3/7)`,
               transformOrigin: 'bottom left',
               transform:
                 (commonStyle?.transform ?? '') +

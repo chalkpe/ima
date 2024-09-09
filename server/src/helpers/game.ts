@@ -142,7 +142,7 @@ export const isRinshanTile = (state: GameState, tile: Tile) =>
   tile.index >= state.wall.firstKingTileIndex && tile.index <= state.wall.lastKingTileIndex
 
 export const isKuikae = (state: GameState, me: PlayerType, tile: Tile) => {
-  const call = state[me].hand.called.find((call) => call.jun === state[me].jun)
+  const call = state[me].hand.called.find((call) => call.jun === state[getOpponent(me)].jun)
   if (!call) return false
 
   const { calledTile } = call

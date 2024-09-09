@@ -1,4 +1,4 @@
-import type { Decision, RiverTile } from '@ima/server/types/game'
+import type { Decision, RiverTile, TileSet } from '@ima/server/types/game'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
 const tileTypeOrder: Tile['type'][] = ['man', 'pin', 'sou', 'wind', 'dragon']
@@ -11,6 +11,14 @@ export const compareTile = (a: Tile, b: Tile) =>
   compareSimpleTile(a, b) || attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute)
 
 export const sortTiles = (tiles: Tile[]) => tiles.map((tile, order) => ({ ...tile, order })).sort(compareTile)
+
+export const reorderCalledTiles = (tileSet: TileSet) => {
+  const { tiles, calledTile } = tileSet
+  if (!calledTile) return tiles
+
+  const [otherTile, ...otherTiles] = tiles.filter((tile) => tile.index !== calledTile.index)
+  return [otherTile, calledTile, ...otherTiles]
+}
 
 export const backTile: Tile = { type: 'back', value: 0, attribute: 'normal', background: 'white', index: -1 }
 

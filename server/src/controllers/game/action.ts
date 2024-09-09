@@ -93,6 +93,7 @@ export const gakan = (state: GameState, me: PlayerType, type: TileType, value: n
   minkou.tiles.push(gakanTile)
   minkou.calledTile = gakanTile
   minkou.jun = state[me].jun
+  state[me].hand.called = [...state[me].hand.called.filter((set) => set !== minkou), minkou]
 
   onAfterGakan(state, me)
 }

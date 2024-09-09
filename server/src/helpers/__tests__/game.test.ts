@@ -1,7 +1,15 @@
 import { codeSyntaxToHand } from '@ima/server/helpers/code'
 import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/tile'
-import { getActiveMe, getClosedHand, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
+import {
+  createInitialState,
+  getActiveMe,
+  getClosedHand,
+  getOpponent,
+  getRiverEnd,
+  isKuikae,
+} from '@ima/server/helpers/game'
 import type { Hand, Player, Room } from '@ima/server/types/game'
+import { c } from '../__utils__/tile'
 
 describe('game', () => {
   describe('getOpponent', () => {
@@ -55,6 +63,54 @@ describe('game', () => {
       expect(() =>
         getActiveMe({ host: 'a', guest: 'b', state: { turn: 'guest', scoreboard: {} } } as Room, 'b')
       ).toThrow()
+    })
+  })
+
+  describe('isKuikae', () => {
+    test('should return false if no call', () => {
+      const i = createInitialState()
+      i.host.hand.closed = c('4456m')
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(false)
+    })
+
+    test('should return false if no current call', () => {
+      const i = createInitialState()
+      i.host.jun = 3
+      i.host.hand.closed = c('4m')
+
+      const tiles = c('456m')
+      i.host.hand.called = [{ type: 'chi', tiles, calledTile: tiles[0], jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(false)
+    })
+
+    test('should return true if discard same tile (chi)', () => {
+      const i = createInitialState()
+      i.host.jun = 1
+      i.host.hand.closed = c('4m')
+
+      const tiles = c('456m')
+      i.host.hand.called = [{ type: 'chi', tiles, calledTile: tiles[0], jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(true)
+    })
+
+    test('should return true if discard same tile (pon)', () => {
+      const i = createInitialState()
+      i.host.jun = 1
+      i.host.hand.closed = c('4m')
+
+      const tiles = c('444m')
+      i.host.hand.called = [{ type: 'pon', tiles, calledTile: tiles[0], jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(true)
+    })
+
+    test('should return true if discard suji tile', () => {
+      const i = createInitialState()
+      i.host.jun = 1
+      i.host.hand.closed = c('7m')
+
+      const tiles = c('456m')
+      i.host.hand.called = [{ type: 'chi', tiles, calledTile: tiles[0], jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(true)
     })
   })
 })

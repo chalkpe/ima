@@ -9,6 +9,7 @@ import {
   getAllSyuntsu,
   isEqualTile,
   isStrictEqualTile,
+  isSyuntsu,
   removeTileFromHand,
   simpleTileToTile,
 } from '@ima/server/helpers/tile'
@@ -17,6 +18,7 @@ import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
 export const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
+  if (state.wall.tiles.length === 0) return []
 
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
@@ -37,11 +39,22 @@ export const calculateChiDecisions = (state: GameState, me: PlayerType): Decisio
       )
     )
     .filter(([a, b]) => a.length > 0 && b.length > 0)
-    .flatMap((tatsu) => combinations(tatsu).map((tiles) => ({ type: 'chi', tile: furoTile, otherTiles: tiles })))
+    .flatMap((tatsu) =>
+      combinations(tatsu).map((tiles) => ({ type: 'chi', tile: furoTile, otherTiles: tiles }) as Decision)
+    )
+    .filter(
+      ({ otherTiles }) =>
+        otherTiles &&
+        otherTiles.length === 2 &&
+        closedHand
+          .filter((handTile) => !otherTiles.some((t) => t.index === handTile.index))
+          .some((handTile) => !isSyuntsu([handTile, otherTiles[0], otherTiles[1]]))
+    )
 }
 
 export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
+  if (state.wall.tiles.length === 0) return []
 
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
@@ -54,7 +67,9 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
   // daiminkan or pon
   if (remain.length > 0 && removed.length === 3)
     return [
-      { type: 'daiminkan', tile: furoTile, otherTiles: removed },
+      ...(state.wall.doraCount === 5
+        ? []
+        : [{ type: 'daiminkan', tile: furoTile, otherTiles: removed } satisfies Decision]),
       ...combination(removed)
         .filter(
           (tiles, index, array) =>
@@ -71,6 +86,7 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
 
 export const calculateGakanDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
+  if (state.wall.doraCount === 5) return []
 
   const hand = state[me].hand
   const closedHand = getClosedHand(hand)
@@ -85,6 +101,8 @@ export const calculateGakanDecisions = (state: GameState, me: PlayerType): Decis
 }
 
 export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state.wall.doraCount === 5) return []
+
   const closedHand = getClosedHand(state[me].hand)
   const tileCounts = countTiles(closedHand)
 
@@ -114,6 +132,7 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
 
 export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
+  if (state.wall.tiles.length < 2) return []
 
   if (state[me].hand.tsumo === undefined) return []
   if (!isMenzenHand(state[me].hand)) return []

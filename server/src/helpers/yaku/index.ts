@@ -1,3 +1,4 @@
+import { isYaochuuhai } from '@ima/server/helpers/tile'
 import { calculateAgari } from '@ima/server/helpers/agari'
 import { getDoraTiles, getOpponent, getUraDoraTiles, isRinshanTile, tileSetToTsu } from '@ima/server/helpers/game'
 import yakuValidators from '@ima/server/helpers/yaku/validators'
@@ -97,3 +98,7 @@ export const calculateYaku = (
 export const isYakuOverShibari = (state: GameState, yaku: Yaku[]): boolean =>
   yaku.some((yaku) => !yaku.isExtra) &&
   yaku.filter((yaku) => !yaku.isHidden).reduce((han, yaku) => han + yaku.han, 0) >= (state.rule.manganShibari ? 4 : 1)
+
+export const isNagashiMangan = (state: GameState, me: PlayerType): boolean =>
+  state[me].river.every((r) => isYaochuuhai(r.tile)) &&
+  state[getOpponent(me)].hand.called.filter((c) => c.type !== 'ankan').length === 0

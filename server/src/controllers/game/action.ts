@@ -10,8 +10,8 @@ import {
 } from '@ima/server/controllers/game/event'
 
 import { partition } from '@ima/server/helpers/common'
-import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
-import { getClosedHand, getOpponent, getRiverEnd } from '@ima/server/helpers/game'
+import { calculateYaku, isNagashiMangan, isYakuOverShibari } from '@ima/server/helpers/yaku'
+import { getClosedHand, getOpponent, getRiverEnd, isKuikae } from '@ima/server/helpers/game'
 import { isEqualTile, isKoutsu, isSyuntsu, removeTileFromHand } from '@ima/server/helpers/tile'
 import { createAgariScoreboard, createRyukyokuScoreboard } from '@ima/server/helpers/scoreboard'
 
@@ -32,7 +32,7 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update
   }
 
   if (from === 'lingshang') {
-    if (state.wall.doraCount === 4) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot tsumo now' })
+    if (state.wall.doraCount === 5) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot tsumo now' })
     state.wall.doraCount += 1
 
     state[me].jun += 1
@@ -40,7 +40,15 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update
     state.wall.supplementTiles.push(state.wall.tiles.splice(-1, 1)[0])
   } else {
     if (state.wall.tiles.length === 0) {
-      state.scoreboard = createRyukyokuScoreboard(state, me, 'ryuukyoku')
+      const nagashiMangan = [me, getOpponent(me)].filter((p) => isNagashiMangan(state, p))
+
+      if (nagashiMangan.length % 2 === 0) {
+        state.scoreboard = createRyukyokuScoreboard(state, me, 'ryuukyoku')
+      } else {
+        state.scoreboard = createAgariScoreboard(state, nagashiMangan[0], state[nagashiMangan[0]].hand, 'tsumo', [
+          { name: '유국만관', han: 5 },
+        ])
+      }
       return 'end'
     }
 
@@ -216,6 +224,7 @@ export const giri = (state: GameState, me: PlayerType, index: number): 'update' 
   const closedHand = getClosedHand(state[me].hand)
   const [tiles, remain] = partition(closedHand, (t) => t.index === index)
   if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
+  if (isKuikae(state, me, tiles[0])) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot kuikae' })
 
   onBeforeGiri(state, me)
 
@@ -238,6 +247,7 @@ export const riichi = (state: GameState, me: PlayerType, index: number): 'riichi
 
   onBeforeGiri(state, me)
 
+  state.round.riichiSticks += 1
   state[me].score -= 1000
   state[me].riichi = state[me].jun
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi: true })

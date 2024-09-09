@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server'
+import { isEqualTile, isSyuntsu } from '@ima/server/helpers/tile'
 import type { Tile, Tsu } from '@ima/server/types/tile'
 import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall, Wind } from '@ima/server/types/game'
 
@@ -137,3 +138,24 @@ export const getNextWind = (state: GameState, wind: Wind): Wind | undefined => {
 
 export const isRinshanTile = (state: GameState, tile: Tile) =>
   tile.index >= state.wall.firstKingTileIndex && tile.index <= state.wall.lastKingTileIndex
+
+export const isKuikae = (state: GameState, me: PlayerType, tile: Tile) => {
+  const call = state[me].hand.called.find((call) => call.jun === state[me].jun)
+  if (!call) return false
+
+  const { calledTile } = call
+  if (!calledTile) return false
+
+  switch (call.type) {
+    case 'pon': {
+      return isEqualTile(calledTile, tile)
+    }
+    case 'chi': {
+      if (isEqualTile(calledTile, tile)) return true
+      const tatsu = call.tiles.filter((t) => !isEqualTile(t, calledTile))
+      return tatsu.length === 2 && isSyuntsu([tatsu[0], tatsu[1], tile])
+    }
+    default:
+      return false
+  }
+}

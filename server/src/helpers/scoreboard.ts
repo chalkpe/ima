@@ -79,7 +79,8 @@ export const createFinalScoreboard = (state: GameState): Scoreboard => {
 }
 
 export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboard): Scoreboard | PlayerType => {
-  state[scoreboard.winner].score += scoreboard.score
+  state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000
+  state.round.riichiSticks = 0
 
   if (state[scoreboard.winner].wind === 'east') {
     state.round.honba += 1

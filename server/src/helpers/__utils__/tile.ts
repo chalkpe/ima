@@ -11,4 +11,4 @@ export const c = (code: string) =>
 export const r = (tiles: string) =>
   codeSyntaxToHand(tiles)
     .map(simpleTileToRiverTile)
-    .map((tile) => ({ ...tile, index: index++ }))
+    .map((river) => ({ ...river, tile: { ...river.tile, index: index++ } }))

@@ -34,6 +34,9 @@ describe('decision', () => {
     test('returns empty array if no tiles will left after call', () => {
       expect(calculateChiDecisions(s('12p', '3p'), 'host')).toEqual([])
     })
+    test('returns empty array if no tiles can be discarded after call', () => {
+      expect(calculateChiDecisions(s('4456p', '4p'), 'host')).toEqual([])
+    })
     test('returns chi decisions', () => {
       const state = s('1255p', '3p')
       expect(calculateChiDecisions(state, 'host')).toEqual([

@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Paper } from '@mui/material'
+import { Box, Paper, Typography } from '@mui/material'
 
 import type { GameState, PlayerType } from '@ima/server/types/game'
 import { getWindName } from '@ima/client/utils/game'
@@ -22,11 +22,44 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         backgroundColor: state.turn === me ? 'green' : 'gray',
       }}
     >
-      {getWindName(state.round.wind)}
-      {state.round.kyoku}국 {state.round.honba}본장 <br />
-      tiles left: {state.wall.tiles.length} <br />
-      op: {getWindName(state[op].wind)}, {state[op].score}점 <br />
-      me: {getWindName(state[me].wind)}, {state[me].score}점
+      <Box position="relative" width="100%" height="100%">
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+        >
+          <Typography fontSize="4vmin">
+            {getWindName(state.round.wind)}
+            {state.round.kyoku}국 {state.round.honba}본장: {state.wall.tiles.length}
+          </Typography>
+        </Box>
+
+        <Box
+          position="absolute"
+          top="0"
+          left="0"
+          right="0"
+          display="flex"
+          justifyContent="center"
+          sx={{ transform: 'rotate(180deg)' }}
+        >
+          <Typography fontSize="3vmin">
+            {getWindName(state[op].wind)}: {state[op].score}점
+          </Typography>
+        </Box>
+
+        <Box position="absolute" bottom="0" left="0" right="0" display="flex" justifyContent="center">
+          <Typography fontSize="3vmin">
+            {getWindName(state[me].wind)}: {state[me].score}점
+          </Typography>
+        </Box>
+      </Box>
     </Paper>
   )
 }

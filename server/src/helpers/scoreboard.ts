@@ -82,6 +82,14 @@ export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboa
   state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000 + state.round.honba * 100
   state.round.riichiSticks = 0
 
+  if (
+    state.round.kyoku === 2 &&
+    !getNextWind(state, state.round.wind) &&
+    state[scoreboard.winner].score > state[getOpponent(scoreboard.winner)].score
+  ) {
+    return createFinalScoreboard(state)
+  }
+
   if (state[scoreboard.winner].wind === 'east') {
     state.round.honba += 1
   } else {
@@ -104,6 +112,14 @@ export const applyRyukyokuScoreboard = (state: GameState, scoreboard: RyuukyokuS
     const winner = scoreboard.tenpai[0]
     state[winner].score += 1000
     state[getOpponent(winner)].score -= 1000
+
+    if (
+      state.round.kyoku === 2 &&
+      !getNextWind(state, state.round.wind) &&
+      state[winner].score > state[getOpponent(winner)].score
+    ) {
+      return createFinalScoreboard(state)
+    }
   }
 
   const oya = state.host.wind === 'east' ? 'host' : 'guest'

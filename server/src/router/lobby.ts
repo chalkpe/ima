@@ -95,7 +95,7 @@ export const lobbyRouter = router({
     room.state.rule.manganShibari = value
   }),
 
-  setLength: publicProcedure.input(z.object({ value: z.enum(['east', 'south']) })).mutation((opts) => {
+  setLength: publicProcedure.input(z.object({ value: z.enum(['east', 'south', 'north']) })).mutation((opts) => {
     const { username } = opts.ctx
     const { value } = opts.input
 

@@ -128,11 +128,11 @@ export const tileSetToTsu = (s: TileSet): Tsu => {
 export const getNextWind = (state: GameState, wind: Wind): Wind | undefined => {
   switch (wind) {
     case 'east':
-      return state.rule.length === 'south' ? 'south' : undefined
+      return state.rule.length !== 'east' ? 'south' : undefined
     case 'south':
-      return undefined
+      return state.rule.length !== 'south' ? 'west' : undefined
     case 'west':
-      return undefined
+      return 'north'
     case 'north':
       return undefined
   }

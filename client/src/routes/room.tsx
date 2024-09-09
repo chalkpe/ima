@@ -130,10 +130,11 @@ const Room = () => {
             <RadioGroup
               row
               value={data.state.rule.length}
-              onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' })}
+              onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' | 'north' })}
             >
               <FormControlLabel value="east" disabled={data.host !== username} control={<Radio />} label="동풍전" />
               <FormControlLabel value="south" disabled={data.host !== username} control={<Radio />} label="반장전" />
+              <FormControlLabel value="north" disabled={data.host !== username} control={<Radio />} label="일장전" />
             </RadioGroup>
           </FormGroup>
         </Stack>

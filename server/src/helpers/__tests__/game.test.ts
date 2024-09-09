@@ -75,7 +75,7 @@ describe('game', () => {
 
     test('should return false if no current call', () => {
       const i = createInitialState()
-      i.host.jun = 3
+      i.guest.jun = 3
       i.host.hand.closed = c('4m')
 
       const tiles = c('456m')
@@ -85,7 +85,7 @@ describe('game', () => {
 
     test('should return true if discard same tile (chi)', () => {
       const i = createInitialState()
-      i.host.jun = 1
+      i.guest.jun = 1
       i.host.hand.closed = c('4m')
 
       const tiles = c('456m')
@@ -95,7 +95,7 @@ describe('game', () => {
 
     test('should return true if discard same tile (pon)', () => {
       const i = createInitialState()
-      i.host.jun = 1
+      i.guest.jun = 1
       i.host.hand.closed = c('4m')
 
       const tiles = c('444m')
@@ -105,7 +105,7 @@ describe('game', () => {
 
     test('should return true if discard suji tile', () => {
       const i = createInitialState()
-      i.host.jun = 1
+      i.guest.jun = 1
       i.host.hand.closed = c('7m')
 
       const tiles = c('456m')

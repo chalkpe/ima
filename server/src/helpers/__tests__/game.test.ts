@@ -8,8 +8,8 @@ import {
   getRiverEnd,
   isKuikae,
 } from '@ima/server/helpers/game'
+import { c } from '@ima/server/helpers/__utils__/tile'
 import type { Hand, Player, Room } from '@ima/server/types/game'
-import { c } from '../__utils__/tile'
 
 describe('game', () => {
   describe('getOpponent', () => {

@@ -1,6 +1,5 @@
 import { partition } from '@ima/server/helpers/common'
 import { tileToCode } from '@ima/server/helpers/code'
-import { availableTiles } from '@ima/server/helpers/game'
 import {
   compareTile,
   getDoraTile,
@@ -328,7 +327,7 @@ const isChuuren: YakuValidator = {
 
 const isDora: YakuValidator = {
   level: 'extra',
-  predicate: ({ agariState, doraTiles }) => {
+  predicate: ({ agariState, doraTiles, availableTiles }) => {
     const dora = doraTiles.map((dora) => getDoraTile(dora, availableTiles))
     const count = agariState
       .map((tsu) => tsu.tiles.filter((tile) => dora.some((dora) => isEqualTile(tile, dora))).length)
@@ -351,7 +350,7 @@ const isAkaDora: YakuValidator = {
 
 const isUraDora: YakuValidator = {
   level: 'extra',
-  predicate: ({ riichi, agariState, uraDoraTiles }) => {
+  predicate: ({ riichi, agariState, uraDoraTiles, availableTiles }) => {
     if (riichi === null) return false
 
     const uraDora = uraDoraTiles.map((dora) => getDoraTile(dora, availableTiles))

@@ -42,6 +42,12 @@ export const convertTileToCode = (tile: Tile | SimpleTile) => {
   }
 }
 
+export const getBackground = (tile: Tile | SimpleTile) => {
+  if (tile.type === 'back') return 'yellow'
+  if ('background' in tile && tile.background === 'transparent') return 'transparent'
+  return 'foreground'
+}
+
 export const chunk = (river: RiverTile[], size: number) => {
   const result: RiverTile[][] = []
   for (let i = 0; i < river.length; i += size) {

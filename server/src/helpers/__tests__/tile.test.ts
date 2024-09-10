@@ -1,5 +1,5 @@
 import { codeSyntaxToHand as c } from '@ima/server/helpers/code'
-import { availableTiles } from '@ima/server/helpers/game'
+import { createInitialState, getAvailableTiles } from '@ima/server/helpers/game'
 import {
   countTiles,
   getAllSyuntsu,
@@ -214,6 +214,7 @@ describe('tile', () => {
 
   describe('getDoraTile', () => {
     test('should return the dora tile', () => {
+      const availableTiles = getAvailableTiles(createInitialState())
       expect(getDoraTile(c('1m')[0], availableTiles)).toEqual(c('9m')[0])
       expect(getDoraTile(c('9m')[0], availableTiles)).toEqual(c('1m')[0])
       expect(getDoraTile(c('1p')[0], availableTiles)).toEqual(c('9p')[0])

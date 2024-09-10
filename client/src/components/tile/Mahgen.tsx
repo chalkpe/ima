@@ -1,6 +1,6 @@
 import { CSSProperties, FC, useMemo } from 'react'
 import Rand from 'rand-seed'
-import { convertTileToCode } from '@ima/client/utils/tile'
+import { convertTileToCode, getBackground } from '@ima/client/utils/tile'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
 interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
@@ -24,7 +24,7 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natura
     transform,
     userSelect: 'none',
     filter: dim ? 'brightness(0.5)' : '',
-    backgroundImage: `url(./back/${tile.type === 'back' ? 'blue' : 'foreground'}.png)`,
+    backgroundImage: `url(./back/${getBackground(tile)}.png)`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
   }

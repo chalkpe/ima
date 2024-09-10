@@ -51,7 +51,7 @@ export const createAgariScoreboard = (
     hostConfirmed: false,
     guestConfirmed: false,
     doraTiles,
-    uraDoraTiles: state[me].riichi !== null ? uraDoraTiles : uraDoraTiles.map(hideTile),
+    uraDoraTiles: state[me].riichi !== null ? uraDoraTiles : uraDoraTiles.map((tile) => hideTile(tile)),
   }
 }
 

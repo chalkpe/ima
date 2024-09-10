@@ -56,7 +56,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         position="absolute"
         {...(me ? { bottom: '2vmin', left: '8vmin' } : { top: '2vmin', right: '8vmin' })}
       >
-        <Stack direction="row" gap={0} alignItems="end">
+        <Stack direction={me ? 'row' : 'row-reverse'} gap={0} alignItems="end">
           {closed.map((tile) => (
             <Mahgen
               key={tile.index}

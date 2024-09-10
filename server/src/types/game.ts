@@ -116,6 +116,7 @@ export interface Rule {
   localYaku: boolean
   manganShibari: boolean
   length: 'east' | 'south' | 'north'
+  transparentMode: boolean
 }
 
 export interface GameState {

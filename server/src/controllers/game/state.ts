@@ -1,7 +1,7 @@
 import { tsumo } from '@ima/server/controllers/game/action'
 import { hideTile, isEqualTile } from '@ima/server/helpers/tile'
 import { applyAgariScoreboard, applyRyukyokuScoreboard } from '@ima/server/helpers/scoreboard'
-import { availableTiles, doraIndices, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
+import { doraIndices, getAvailableTiles, getClosedHand, getOpponent, haipaiCounts } from '@ima/server/helpers/game'
 import type { SimpleTile } from '@ima/server/types/tile'
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
@@ -14,8 +14,8 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
       ...state[opponent],
       hand: {
         ...state[opponent].hand,
-        closed: state[opponent].hand.closed.map(hideTile),
-        tsumo: state[opponent].hand.tsumo ? hideTile(state[opponent].hand.tsumo) : undefined,
+        closed: state[opponent].hand.closed.map((tile) => hideTile(tile, true)),
+        tsumo: state[opponent].hand.tsumo ? hideTile(state[opponent].hand.tsumo, true) : undefined,
         tenpai: [],
         banned: [],
       },
@@ -23,17 +23,17 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
     },
     wall: {
       ...state.wall,
-      tiles: state.wall.tiles.map(hideTile),
+      tiles: state.wall.tiles.map((tile) => hideTile(tile)),
       kingTiles: state.wall.kingTiles.map((tile, index) =>
         doraIndices.slice(0, state.wall.doraCount).includes(index) ? tile : hideTile(tile)
       ),
-      supplementTiles: state.wall.supplementTiles.map(hideTile),
+      supplementTiles: state.wall.supplementTiles.map((tile) => hideTile(tile)),
     },
   }
 }
 
 export const initState = (state: GameState) => {
-  const tiles = availableTiles.map((tile) => ({ ...tile }))
+  const tiles = getAvailableTiles(state)
   for (let i = tiles.length - 1; i > 0; i--) {
     const rand = Math.floor(Math.random() * (i + 1))
     ;[tiles[i], tiles[rand]] = [tiles[rand], tiles[i]]
@@ -81,7 +81,7 @@ export const getRemainingTileCount = (state: GameState, me: PlayerType, tile: Si
   const opponent = getOpponent(me)
   const visibleState = getVisibleState(state, me)
 
-  const fullTiles = availableTiles.filter((t) => isEqualTile(t, tile))
+  const fullTiles = getAvailableTiles(state).filter((t) => isEqualTile(t, tile))
   const visibleTiles = [
     ...getClosedHand(visibleState[me].hand),
     ...getClosedHand(visibleState[opponent].hand),

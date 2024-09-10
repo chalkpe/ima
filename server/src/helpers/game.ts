@@ -8,6 +8,7 @@ export const createInitialState = (): GameState => ({
     localYaku: false,
     manganShibari: true,
     length: 'east',
+    transparentMode: false,
   },
   host: {
     wind: 'east',
@@ -78,27 +79,64 @@ export const getActiveMe = (room: Room, username: string) => {
 
 export const haipaiCounts = [4, 4, 4, 1] as const
 
-const getDefaultAttribute = (count: number, value: number) => (count === 1 && value === 5 ? 'red' : 'normal')
+const getTileAttribute = (count: number, value: number): Tile['attribute'] =>
+  count === 1 && value === 5 ? 'red' : 'normal'
 
-export const availableTiles: Tile[] = [1, 2, 3, 4].flatMap((count) =>
-  [
-    [1, 9].flatMap((value) => [
-      { type: 'man', value, attribute: getDefaultAttribute(count, value), background: 'white', index: -1 } as const,
-    ]),
-    [1, 9].flatMap((value) => [
-      { type: 'pin', value, attribute: getDefaultAttribute(count, value), background: 'white', index: -1 } as const,
-    ]),
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((value) => [
-      { type: 'sou', value, attribute: getDefaultAttribute(count, value), background: 'white', index: -1 } as const,
-    ]),
-    [1, 2, 3, 4].flatMap(
-      (value) => [{ type: 'wind', value, attribute: 'normal', background: 'white', index: -1 }] as const
-    ),
-    [1, 2, 3].flatMap(
-      (value) => [{ type: 'dragon', value, attribute: 'normal', background: 'white', index: -1 }] as const
-    ),
-  ].flat()
-)
+const getTileBackground = (state: GameState, count: number): Tile['background'] => {
+  if (!state.rule.transparentMode) return 'white'
+  return count === 1 ? 'white' : 'transparent'
+}
+
+export const getAvailableTiles = (state: GameState): Tile[] =>
+  [1, 2, 3, 4].flatMap((count) =>
+    [
+      [1, 9].flatMap((value) => [
+        {
+          type: 'man',
+          value,
+          attribute: getTileAttribute(count, value),
+          background: getTileBackground(state, count),
+          index: -1,
+        } as const,
+      ]),
+      [1, 9].flatMap((value) => [
+        {
+          type: 'pin',
+          value,
+          attribute: getTileAttribute(count, value),
+          background: getTileBackground(state, count),
+          index: -1,
+        } as const,
+      ]),
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((value) => [
+        {
+          type: 'sou',
+          value,
+          attribute: getTileAttribute(count, value),
+          background: getTileBackground(state, count),
+          index: -1,
+        } as const,
+      ]),
+      [1, 2, 3, 4].flatMap((value) => [
+        {
+          type: 'wind',
+          value,
+          attribute: 'normal',
+          background: getTileBackground(state, count),
+          index: -1,
+        } as const,
+      ]),
+      [1, 2, 3].flatMap((value) => [
+        {
+          type: 'dragon',
+          value,
+          attribute: 'normal',
+          background: getTileBackground(state, count),
+          index: -1,
+        } as const,
+      ]),
+    ].flat()
+  )
 
 export const isMenzenHand = (hand: Hand) => hand.called.filter((s) => s.type !== 'ankan').length === 0
 

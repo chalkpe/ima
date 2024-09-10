@@ -18,20 +18,19 @@ import {
 const Room = () => {
   const navigate = useNavigate()
   const { username, skip } = useAuth()
+  const { data, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
 
   const utils = trpc.useUtils()
-  const { data, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
-  const { mutate: leave } = trpc.lobby.leave.useMutation({ onSuccess: () => utils.lobby.room.reset() })
-  const { mutate: ready } = trpc.lobby.ready.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
-  const { mutate: start } = trpc.game.start.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
+  const reset = () => utils.lobby.room.reset()
+  const invalidate = () => utils.lobby.room.invalidate()
 
-  const { mutate: setLocalYaku } = trpc.lobby.setLocalYaku.useMutation({
-    onSuccess: () => utils.lobby.room.invalidate(),
-  })
-  const { mutate: setManganShibari } = trpc.lobby.setManganShibari.useMutation({
-    onSuccess: () => utils.lobby.room.invalidate(),
-  })
-  const { mutate: setLength } = trpc.lobby.setLength.useMutation({ onSuccess: () => utils.lobby.room.invalidate() })
+  const { mutate: leave } = trpc.lobby.leave.useMutation({ onSuccess: reset })
+  const { mutate: ready } = trpc.lobby.ready.useMutation({ onSuccess: invalidate })
+  const { mutate: start } = trpc.game.start.useMutation({ onSuccess: invalidate })
+  const { mutate: setLocalYaku } = trpc.lobby.setLocalYaku.useMutation({ onSuccess: invalidate })
+  const { mutate: setManganShibari } = trpc.lobby.setManganShibari.useMutation({ onSuccess: invalidate })
+  const { mutate: setLength } = trpc.lobby.setLength.useMutation({ onSuccess: invalidate })
+  const { mutate: setTransparentMode } = trpc.lobby.setTransparentMode.useMutation({ onSuccess: invalidate })
 
   useEffect(() => {
     if (!data || error) {
@@ -99,15 +98,25 @@ const Room = () => {
 
           <FormGroup>
             <FormControlLabel
+              label="준비"
               control={
                 <Checkbox
                   checked={data.host === username ? data.hostReady : data.guestReady}
                   onChange={(e) => ready({ ready: e.target.checked })}
                 />
               }
-              label="준비"
             />
+            <RadioGroup
+              row
+              value={data.state.rule.length}
+              onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' | 'north' })}
+            >
+              <FormControlLabel label="동풍전" value="east" disabled={data.host !== username} control={<Radio />} />
+              <FormControlLabel label="반장전" value="south" disabled={data.host !== username} control={<Radio />} />
+              <FormControlLabel label="일장전" value="north" disabled={data.host !== username} control={<Radio />} />
+            </RadioGroup>
             <FormControlLabel
+              label="로컬 역"
               disabled={data.host !== username}
               control={
                 <Checkbox
@@ -115,9 +124,9 @@ const Room = () => {
                   onChange={(e) => setLocalYaku({ value: e.target.checked })}
                 />
               }
-              label="로컬 역"
             />
             <FormControlLabel
+              label="만관 판수묶음"
               disabled={data.host !== username}
               control={
                 <Checkbox
@@ -125,17 +134,17 @@ const Room = () => {
                   onChange={(e) => setManganShibari({ value: e.target.checked })}
                 />
               }
-              label="만관 판수묶음"
             />
-            <RadioGroup
-              row
-              value={data.state.rule.length}
-              onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' | 'north' })}
-            >
-              <FormControlLabel value="east" disabled={data.host !== username} control={<Radio />} label="동풍전" />
-              <FormControlLabel value="south" disabled={data.host !== username} control={<Radio />} label="반장전" />
-              <FormControlLabel value="north" disabled={data.host !== username} control={<Radio />} label="일장전" />
-            </RadioGroup>
+            <FormControlLabel
+              label="투명패"
+              disabled={data.host !== username}
+              control={
+                <Checkbox
+                  checked={data.state.rule.transparentMode}
+                  onChange={(e) => setTransparentMode({ value: e.target.checked })}
+                />
+              }
+            />
           </FormGroup>
         </Stack>
       ) : (

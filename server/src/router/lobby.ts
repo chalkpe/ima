@@ -102,4 +102,12 @@ export const lobbyRouter = router({
     const room = getRoom(username, true)
     room.state.rule.length = value
   }),
+
+  setTransparentMode: publicProcedure.input(z.object({ value: z.boolean() })).mutation((opts) => {
+    const { username } = opts.ctx
+    const { value } = opts.input
+
+    const room = getRoom(username, true)
+    room.state.rule.transparentMode = value
+  }),
 })

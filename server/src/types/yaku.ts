@@ -28,6 +28,7 @@ export interface YakuPredicateParams {
   uraDoraTiles: Tile[]
   called: { me?: TileSet; opponent?: TileSet }
   agariTileType: 'normal' | 'rinshan' | 'haitei' | 'houtei'
+  availableTiles: Tile[]
 }
 
 type YakuPredicate = (params: YakuPredicateParams) => Yaku | Yaku[] | false

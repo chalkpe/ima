@@ -66,7 +66,8 @@ export const kokushiTiles = codeSyntaxToHand('19m19p19s1234567z')
 
 export const ryuuiisouTiles = codeSyntaxToHand('23468s6z')
 
-export const hideTile = (tile: Tile) => ({ ...simpleTileToTile(backTile), index: tile.index })
+export const hideTile = (tile: Tile, keepTransparent = false) =>
+  tile.background === 'transparent' && keepTransparent ? tile : { ...simpleTileToTile(backTile), index: tile.index }
 
 export const syuupaiTypes: SimpleTile['type'][] = ['man', 'pin', 'sou'] satisfies SyuupaiType[]
 export const syuupaiValues: SimpleTile['value'][] = [1, 2, 3, 4, 5, 6, 7, 8, 9] satisfies SyuupaiValue[]

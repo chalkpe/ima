@@ -117,12 +117,14 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
     >
       {[...decisions].sort(compareDecisions).map((decision) => (
         <Button
-          key={
-            decision.type +
-            decision.tile?.type +
-            decision.tile?.value +
-            decision.otherTiles?.map((t) => t.type + t.value + t.attribute + t.background).join('')
-          }
+          key={[
+            decision.type,
+            decision.tile?.type,
+            decision.tile?.value,
+            decision.tile?.attribute,
+            decision.tile?.background,
+            decision.otherTiles?.map((t) => t.type + t.value + t.attribute + t.background).join(''),
+          ].join('')}
           variant="contained"
           color={typeColor[decision.type]}
           size="large"

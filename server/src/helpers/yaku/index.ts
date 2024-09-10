@@ -1,6 +1,13 @@
 import { isYaochuuhai } from '@ima/server/helpers/tile'
 import { calculateAgari } from '@ima/server/helpers/agari'
-import { getDoraTiles, getOpponent, getUraDoraTiles, isRinshanTile, tileSetToTsu } from '@ima/server/helpers/game'
+import {
+  getAvailableTiles,
+  getDoraTiles,
+  getOpponent,
+  getUraDoraTiles,
+  isRinshanTile,
+  tileSetToTsu,
+} from '@ima/server/helpers/game'
 import yakuValidators from '@ima/server/helpers/yaku/validators'
 import type { AgariState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
@@ -50,6 +57,7 @@ const calculateYakuOfAgari = (
         : agariType === 'tsumo' && isRinshanTile(state, agariTile)
           ? 'rinshan'
           : 'normal',
+    availableTiles: getAvailableTiles(state),
   }
 
   const result: Yaku[] = []

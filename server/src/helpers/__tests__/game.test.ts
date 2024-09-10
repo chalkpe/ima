@@ -4,12 +4,13 @@ import {
   createInitialState,
   getActiveMe,
   getClosedHand,
+  getNextWind,
   getOpponent,
   getRiverEnd,
   isKuikae,
 } from '@ima/server/helpers/game'
 import { c } from '@ima/server/helpers/__utils__/tile'
-import type { Hand, Player, Room } from '@ima/server/types/game'
+import type { Hand, Player, Room, Rule } from '@ima/server/types/game'
 
 describe('game', () => {
   describe('getOpponent', () => {
@@ -66,6 +67,35 @@ describe('game', () => {
     })
   })
 
+  describe('getNextWind', () => {
+    const ss = (length: Rule['length']) => {
+      const state = createInitialState()
+      state.rule.length = length
+      return state
+    }
+
+    test('should return the next wind (east)', () => {
+      expect(getNextWind(ss('east'), 'east')).toBeUndefined()
+      expect(getNextWind(ss('south'), 'east')).toBe('south')
+      expect(getNextWind(ss('north'), 'east')).toBe('south')
+    })
+    test('should return the next wind (south)', () => {
+      expect(getNextWind(ss('east'), 'south')).toBeUndefined()
+      expect(getNextWind(ss('south'), 'south')).toBeUndefined()
+      expect(getNextWind(ss('north'), 'south')).toBe('west')
+    })
+    test('should return the next wind (west)', () => {
+      expect(getNextWind(ss('east'), 'west')).toBeUndefined()
+      expect(getNextWind(ss('south'), 'west')).toBeUndefined()
+      expect(getNextWind(ss('north'), 'west')).toBe('north')
+    })
+    test('should return the next wind (north)', () => {
+      expect(getNextWind(ss('east'), 'north')).toBeUndefined()
+      expect(getNextWind(ss('south'), 'north')).toBeUndefined()
+      expect(getNextWind(ss('north'), 'north')).toBeUndefined()
+    })
+  })
+
   describe('isKuikae', () => {
     test('should return false if no call', () => {
       const i = createInitialState()
@@ -80,6 +110,26 @@ describe('game', () => {
 
       const tiles = c('456m')
       i.host.hand.called = [{ type: 'chi', tiles, calledTile: tiles[0], jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(false)
+    })
+
+    test('should return false if call does not have calledTile', () => {
+      const i = createInitialState()
+      i.guest.jun = 1
+      i.host.hand.closed = c('4m')
+
+      const tiles = c('444m')
+      i.host.hand.called = [{ type: 'pon', tiles, jun: 1 }]
+      expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(false)
+    })
+
+    test('should return false if call is not pon chi', () => {
+      const i = createInitialState()
+      i.guest.jun = 1
+      i.host.hand.closed = c('4m')
+
+      const tiles = c('4444m')
+      i.host.hand.called = [{ type: 'gakan', tiles, calledTile: tiles[3], jun: 1 }]
       expect(isKuikae(i, 'host', i.host.hand.closed[0])).toBe(false)
     })
 

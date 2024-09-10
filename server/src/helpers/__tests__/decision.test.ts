@@ -28,6 +28,11 @@ describe('decision', () => {
     test('returns empty array if riichi', () => {
       expect(calculateChiDecisions(s('1255p', '3p', true), 'host')).toEqual([])
     })
+    test('returns empty array if no tiles in wall', () => {
+      const state = s('1255p', '3p')
+      state.wall.tiles = []
+      expect(calculateChiDecisions(state, 'host')).toEqual([])
+    })
     test('returns empty array if no tiles in opponent river', () => {
       expect(calculateChiDecisions(s('1255p', ''), 'host')).toEqual([])
     })
@@ -89,12 +94,28 @@ describe('decision', () => {
     test('returns empty array if riichi', () => {
       expect(calculatePonDaiminkanDecisions(s('1155p', '1p', true), 'host')).toEqual([])
     })
+    test('returns empty array if no tiles in wall', () => {
+      const state = s('1155p', '1p')
+      state.wall.tiles = []
+      expect(calculatePonDaiminkanDecisions(state, 'host')).toEqual([])
+    })
     test('returns empty array if no tiles in opponent river', () => {
       expect(calculatePonDaiminkanDecisions(s('1255p', ''), 'host')).toEqual([])
     })
     test('returns empty array if no tiles will left after call', () => {
       expect(calculatePonDaiminkanDecisions(s('11p', '1p'), 'host')).toEqual([])
       expect(calculatePonDaiminkanDecisions(s('111p', '1p'), 'host')).toEqual([])
+    })
+    test('returns only pon if dora count is 5', () => {
+      const state = s('1115p', '1p')
+      state.wall.doraCount = 5
+      expect(calculatePonDaiminkanDecisions(state, 'host')).toEqual([
+        {
+          type: 'pon',
+          tile: state.guest.river[0].tile,
+          otherTiles: [state.host.hand.closed[0], state.host.hand.closed[1]], // 11p
+        },
+      ])
     })
     test('returns pon and daiminkan decisions', () => {
       const state = s('1115p', '1p')
@@ -135,6 +156,12 @@ describe('decision', () => {
       expect(calculateGakanDecisions(ss('55p', '1p', '111p', true), 'host')).toEqual([])
     })
 
+    test('returns empty array if dora count is 5', () => {
+      const state = ss('55p', '1p', '111p')
+      state.wall.doraCount = 5
+      expect(calculateGakanDecisions(state, 'host')).toEqual([])
+    })
+
     test('returns empty array if no pon call', () => {
       expect(calculateGakanDecisions(ss('55p', '5p'), 'host')).toEqual([])
       expect(calculateGakanDecisions(ss('55p', '5p', '111p'), 'host')).toEqual([])
@@ -152,6 +179,12 @@ describe('decision', () => {
       state.host.hand.tsumo = c(tsumo)[0]
       return state
     }
+
+    test('returns empty array if dora count is 5', () => {
+      const state = ss('1112p', '1p')
+      state.wall.doraCount = 5
+      expect(calculateAnkanDecisions(state, 'host')).toEqual([])
+    })
 
     test('returns empty array if no kantsu', () => {
       expect(calculateAnkanDecisions(ss('1112p', '2p'), 'host')).toEqual([])
@@ -211,6 +244,12 @@ describe('decision', () => {
 
     test('returns empty array if riichi', () => {
       expect(calculateRiichiDecisions(s('1122p', '', true), 'host')).toEqual([])
+    })
+
+    test('returns empty array if no tiles will left after riichi', () => {
+      const state = ss('19m19p19s1234566z', '5m')
+      state.wall.tiles = c('7z')
+      expect(calculateRiichiDecisions(state, 'host')).toEqual([])
     })
 
     test('returns empty array if no tsumo', () => {

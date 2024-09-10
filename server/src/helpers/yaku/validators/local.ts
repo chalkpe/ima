@@ -1,5 +1,5 @@
 import { tileToCode } from '@ima/server/helpers/code'
-import { compareTile, isSyuupai, isZihai, syuntsuNumbers } from '@ima/server/helpers/tile'
+import { compareTile, isSyuupai, isYaochuuhai, isZihai, syuntsuNumbers } from '@ima/server/helpers/tile'
 import type { YakuValidator } from '@ima/server/types/yaku'
 import type { SyuupaiType } from '@ima/server/types/tile'
 
@@ -68,6 +68,7 @@ const isDaisharin: YakuValidator = {
   level: 'yakuman',
   predicate: ({ menzen, agariState }) => {
     if (!menzen || agariState.length !== 7 || !agariState.every((tsu) => tsu.type === 'toitsu')) return false
+    if (!agariState.every((tsu) => tsu.tiles.every((tile) => !isYaochuuhai(tile)))) return false
 
     const types = [...new Set(agariState.map((tsu) => tsu.tiles[0].type)).values()]
     if (types.length !== 1) return false
@@ -79,7 +80,7 @@ const isDaisharin: YakuValidator = {
         return { name: '대차륜', han: 13, isYakuman: true }
       case 'sou':
         return { name: '대죽림', han: 13, isYakuman: true }
-      default:
+      /* istanbul ignore next */ default:
         return false
     }
   },

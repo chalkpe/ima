@@ -11,7 +11,7 @@ const handler = applyWSSHandler({
   createContext,
   onError(obj) {
     console.error(obj.type, obj.path, obj.ctx?.username, obj.error.message)
-    console.error(obj.error.stack)
+    // console.error(obj.error.stack)
   },
   keepAlive: { enabled: true, pingMs: 30000, pongWaitMs: 5000 },
 })

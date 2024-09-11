@@ -91,14 +91,14 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         top: '15vmin',
         right: '15vmin',
         bottom: '15vmin',
-        padding: '5vmin',
+        padding: '3vmin',
       }}
     >
-      <Typography fontSize="7vmin">
+      <Typography fontSize="6vmin" fontWeight="bold">
         {data[scoreboard.winner]} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <Stack direction="column" gap="2vmin">
+      <Stack direction="column" gap="2vmin" bgcolor="green" padding="1.5vmin" borderRadius="1vmin">
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap={0}>
             {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
@@ -121,7 +121,9 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
 
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin">도라</Typography>
+            <Typography fontSize="3vmin" color="white">
+              도라
+            </Typography>
             <Stack direction="row">
               {scoreboard.doraTiles.map((tile) => (
                 <Mahgen key={tile.index} size={3} tile={tile} />
@@ -129,7 +131,9 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             </Stack>
           </Stack>
           <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin">뒷도라</Typography>
+            <Typography fontSize="3vmin" color="white">
+              뒷도라
+            </Typography>
             <Stack direction="row">
               {scoreboard.uraDoraTiles.map((tile) => (
                 <Mahgen key={tile.index} size={3} tile={tile} />
@@ -142,22 +146,27 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
       <ul>
         {scoreboard.yaku.map((yaku) => (
           <li key={yaku.name}>
-            <Typography fontSize="2vmin">
-              {yaku.name} - {yaku.han}판
-            </Typography>
+            <Stack direction="row" gap="1vmin">
+              <Typography fontSize="2vmin" fontWeight="bold">
+                {yaku.name}
+              </Typography>
+              <Typography fontSize="2vmin">{yaku.han}판</Typography>
+            </Stack>
           </li>
         ))}
       </ul>
 
       <Stack direction="row" gap="2vmin">
-        <Typography fontSize="5vmin">
+        <Typography fontSize="5vmin" fontWeight="bold">
           {scoreboard.yakuman > 0
             ? scoreboard.yakuman === 1
               ? '역만'
               : `${scoreboard.yakuman}배역만`
             : `${scoreboard.han}판`}
         </Typography>
-        <Typography fontSize="5vmin">{scoreboard.score}점</Typography>
+        <Typography fontSize="5vmin" fontWeight="bold">
+          {scoreboard.score}점
+        </Typography>
       </Stack>
 
       <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>

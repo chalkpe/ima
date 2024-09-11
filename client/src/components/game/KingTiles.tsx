@@ -10,15 +10,18 @@ interface KingTilesProps {
 }
 
 const KingTiles: FC<KingTilesProps> = ({ wall }) => {
-  const firstIndex = wall.kingTiles[0].index
+  const firstIndex = wall.kingTiles[0]?.index ?? -1
   const lastIndex = wall.supplementTiles[wall.supplementTiles.length - 1]?.index ?? -1
 
-  const kingTiles = [
-    ...Array(firstIndex - wall.firstKingTileIndex).fill(null),
-    ...wall.kingTiles,
-    ...wall.supplementTiles,
-    ...Array(4 - wall.supplementTiles.length).fill(null),
-  ] as (Tile | null)[]
+  const kingTiles =
+    firstIndex !== -1
+      ? ([
+          ...Array(firstIndex - wall.firstKingTileIndex).fill(null),
+          ...wall.kingTiles,
+          ...wall.supplementTiles,
+          ...Array(4 - wall.supplementTiles.length).fill(null),
+        ] as (Tile | null)[])
+      : []
 
   const lowerTiles = kingTiles.filter((_, index) => index % 2 === 1)
   const upperTiles = kingTiles.filter((_, index) => index % 2 === 0)

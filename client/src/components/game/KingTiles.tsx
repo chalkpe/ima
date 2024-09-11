@@ -10,60 +10,44 @@ interface KingTilesProps {
 }
 
 const KingTiles: FC<KingTilesProps> = ({ wall }) => {
-  const lowerTiles = wall.kingTiles.filter((_, index) => index % 2 === 0)
-  const upperTiles = wall.kingTiles.filter((_, index) => index % 2 === 1)
+  const firstIndex = wall.kingTiles[0].index
+  const lastIndex = wall.supplementTiles[wall.supplementTiles.length - 1].index
 
-  const supplementTiles = [
-    ...Array(4 - wall.supplementTiles.length).fill(null),
+  const kingTiles = [
+    ...Array(firstIndex - wall.firstKingTileIndex).fill(null),
+    ...wall.kingTiles,
     ...wall.supplementTiles,
+    ...Array(4 - wall.supplementTiles.length).fill(null),
   ] as (Tile | null)[]
-  const lowerSupplementTiles = supplementTiles.filter((_, index) => index % 2 === 0)
-  const upperSupplementTiles = supplementTiles.filter((_, index) => index % 2 === 1)
+
+  const lowerTiles = kingTiles.filter((_, index) => index % 2 === 1)
+  const upperTiles = kingTiles.filter((_, index) => index % 2 === 0)
+
+  const index = upperTiles.findIndex((tile) => tile !== null && tile.index === lastIndex)
+  if (lastIndex !== -1 && lowerTiles[index] === null) {
+    ;[upperTiles[index], lowerTiles[index]] = [lowerTiles[index], upperTiles[index]]
+  }
+
+  const sx = { transformOrigin: 'bottom left', transform: 'rotate(90deg)' }
 
   return (
     <>
-      <Stack
-        direction="row"
-        position="absolute"
-        left="2.5vmin"
-        top="30vmin"
-        sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
-      >
-        {lowerTiles.map((tile) => (
-          <Mahgen key={tile.index} size={3.5} tile={tile} />
-        ))}
-      </Stack>
-      <Stack
-        direction="row"
-        position="absolute"
-        left="2vmin"
-        top="30vmin"
-        sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
-      >
-        {upperTiles.map((tile) => (
-          <Mahgen key={tile.index} size={3.5} tile={tile} />
-        ))}
-      </Stack>
-      <Stack
-        direction="row"
-        position="absolute"
-        left="2.5vmin"
-        top="23vmin"
-        sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
-      >
-        {upperSupplementTiles.map((tile, index) =>
-          tile !== null ? <Mahgen key={tile.index} size={3.5} tile={tile} /> : <Box key={index} width="3.5vmin" />
+      <Stack direction="row" position="absolute" left="2.5vmin" top="30vmin" sx={sx}>
+        {lowerTiles.map((tile, index) =>
+          tile !== null ? (
+            <Mahgen key={tile.index} size={3.5} tile={tile} />
+          ) : (
+            <Box key={'lower' + index} width="3.5vmin" />
+          )
         )}
       </Stack>
-      <Stack
-        direction="row"
-        position="absolute"
-        left="2vmin"
-        top="23vmin"
-        sx={{ transformOrigin: 'bottom left', transform: 'rotate(90deg)' }}
-      >
-        {lowerSupplementTiles.map((tile, index) =>
-          tile !== null ? <Mahgen key={tile.index} size={3.5} tile={tile} /> : <Box key={index} width="3.5vmin" />
+      <Stack direction="row" position="absolute" left="2vmin" top="30vmin" sx={sx}>
+        {upperTiles.map((tile, index) =>
+          tile !== null ? (
+            <Mahgen key={tile.index} size={3.5} tile={tile} />
+          ) : (
+            <Box key={'upper' + index} width="3.5vmin" />
+          )
         )}
       </Stack>
     </>

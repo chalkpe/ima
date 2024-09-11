@@ -24,8 +24,10 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
     wall: {
       ...state.wall,
       tiles: state.wall.tiles.map((tile) => hideTile(tile)),
-      kingTiles: state.wall.kingTiles.map((tile, index) =>
-        doraIndices.slice(0, state.wall.doraCount).includes(index) ? tile : hideTile(tile)
+      kingTiles: state.wall.kingTiles.map((tile) =>
+        doraIndices.slice(0, state.wall.doraCount).includes(tile.index - state.wall.firstKingTileIndex)
+          ? tile
+          : hideTile(tile)
       ),
       supplementTiles: state.wall.supplementTiles.map((tile) => hideTile(tile)),
     },

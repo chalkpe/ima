@@ -140,14 +140,16 @@ export const getAvailableTiles = (state: GameState): Tile[] =>
 
 export const isMenzenHand = (hand: Hand) => hand.called.filter((s) => s.type !== 'ankan').length === 0
 
-export const doraIndices = [9, 7, 5, 3, 1]
-export const uraDoraIndices = [8, 6, 4, 2, 0]
+export const doraIndices = [4, 6, 8, 10, 12]
+export const uraDoraIndices = [5, 7, 9, 11, 13]
 
 export const getDoraTiles = (wall: Wall): Tile[] =>
-  wall.kingTiles.filter((_, index) => doraIndices.slice(0, wall.doraCount).includes(index))
+  wall.kingTiles.filter((tile) => doraIndices.slice(0, wall.doraCount).includes(tile.index - wall.firstKingTileIndex))
 
 export const getUraDoraTiles = (wall: Wall): Tile[] =>
-  wall.kingTiles.filter((_, index) => uraDoraIndices.slice(0, wall.doraCount).includes(index))
+  wall.kingTiles.filter((tile) =>
+    uraDoraIndices.slice(0, wall.doraCount).includes(tile.index - wall.firstKingTileIndex)
+  )
 
 export const tileSetToTsu = (s: TileSet): Tsu => {
   switch (s.type) {

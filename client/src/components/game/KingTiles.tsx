@@ -11,7 +11,7 @@ interface KingTilesProps {
 
 const KingTiles: FC<KingTilesProps> = ({ wall }) => {
   const firstIndex = wall.kingTiles[0].index
-  const lastIndex = wall.supplementTiles[wall.supplementTiles.length - 1].index
+  const lastIndex = wall.supplementTiles[wall.supplementTiles.length - 1]?.index ?? -1
 
   const kingTiles = [
     ...Array(firstIndex - wall.firstKingTileIndex).fill(null),

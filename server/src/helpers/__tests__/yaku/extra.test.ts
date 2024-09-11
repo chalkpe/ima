@@ -14,13 +14,17 @@ describe('yaku', () => {
     test.concurrent('dora', () => {
       expect(
         calc('123m234555p11s444z', [], 'ron', (state) => {
-          state.wall.kingTiles = c('1234567899s')
+          state.wall.kingTiles = c('12349956781234s')
+          state.wall.firstKingTileIndex = state.wall.kingTiles[0].index
+          state.wall.lastKingTileIndex = state.wall.kingTiles[state.wall.kingTiles.length - 1].index
           state.wall.doraCount = 1
         })
       ).toMatchObject([{ name: '도라', han: 2, isExtra: true }])
       expect(
         calc('123m234555p11s', ['4444z'], 'ron', (state) => {
-          state.wall.kingTiles = c('1234567899s')
+          state.wall.kingTiles = c('12349956781234s')
+          state.wall.firstKingTileIndex = state.wall.kingTiles[0].index
+          state.wall.lastKingTileIndex = state.wall.kingTiles[state.wall.kingTiles.length - 1].index
           state.wall.doraCount = 1
         })
       ).toMatchObject([{ name: '도라', han: 2, isExtra: true }])
@@ -31,7 +35,9 @@ describe('yaku', () => {
         calc('123m234555p11s444z', [], 'ron', (state) => {
           state.host.riichi = 2
           state.host.jun = 4
-          state.wall.kingTiles = c('1234567899s')
+          state.wall.kingTiles = c('12349956781234s')
+          state.wall.firstKingTileIndex = state.wall.kingTiles[0].index
+          state.wall.lastKingTileIndex = state.wall.kingTiles[state.wall.kingTiles.length - 1].index
           state.wall.doraCount = 1
         })
       ).toMatchObject([

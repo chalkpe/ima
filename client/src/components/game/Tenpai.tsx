@@ -31,7 +31,7 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         {current ? '현재' : ''}
       </Typography>
       <Stack direction="row" gap="1vmin">
-        {tenpaiList
+        {[...tenpaiList]
           .sort((a, b) => compareSimpleTile(a.agariTile, b.agariTile))
           .map((tenpai) => (
             <Stack direction="column" gap="1vmin" key={tenpai.agariTile.type + tenpai.agariTile.value}>

@@ -96,7 +96,7 @@ export const getDoraTile = (tile: SimpleTile, availableTiles: Tile[]): SimpleTil
 
   const { type, value } = availableTiles
     .filter((t) => t.type === tile.type && t.value !== tile.value)
-    .sort((a, b) => a.value - b.value)[0]
+    .toSorted((a, b) => a.value - b.value)[0]
   return { type, value }
 }
 
@@ -115,7 +115,7 @@ export const isKoutsu = (tiles: Koutsu): boolean => {
 }
 
 export const isSyuntsu = (tiles: Syuntsu): boolean => {
-  const [a, b, c] = tiles.sort(compareTile)
+  const [a, b, c] = tiles.toSorted(compareTile)
 
   const bb = getUpperTile(a)
   const cc = getUpperTile(b)
@@ -183,7 +183,7 @@ export const isMachiType = (type: string): type is MachiType => machiTypes.inclu
 export const isMachi = (set: Tsu | Machi): set is Machi => isMachiType(set.type)
 
 export const getMachiTiles = (machi: Machi): SimpleTile[] => {
-  const tiles = machi.tiles.sort(compareTile)
+  const tiles = machi.tiles.toSorted(compareTile)
 
   switch (machi.type) {
     case 'tanki': {
@@ -235,7 +235,7 @@ export const getTileWind = (tile: SimpleTile): Wind | undefined => (isWindHai(ti
 
 export const getTilesValueString = (tiles: SimpleTile[]) =>
   tiles
-    .sort(compareTile)
+    .toSorted(compareTile)
     .map((tile) => tile.value)
     .join('')
 

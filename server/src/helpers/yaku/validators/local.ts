@@ -33,7 +33,16 @@ const isSanrenkou: YakuValidator = {
           },
           { man: new Set(), pin: new Set(), sou: new Set() } as Record<SyuupaiType, Set<number>>
         )
-      ).some((v) => v.size >= 3 && syuntsuNumbers.some((s) => [...v].sort().join('').includes(s))) && {
+      ).some(
+        (v) =>
+          v.size >= 3 &&
+          syuntsuNumbers.some((s) =>
+            [...v]
+              .toSorted((a, b) => a - b)
+              .join('')
+              .includes(s)
+          )
+      ) && {
         name: '삼연각',
         han: 2,
       }
@@ -47,7 +56,7 @@ const isIsshokusanjun: YakuValidator = {
     const counts = Object.values(
       agariState
         .filter((tsu) => tsu.type === 'shuntsu')
-        .map((tsu) => tsu.tiles.sort(compareTile).map(tileToCode).join(''))
+        .map((tsu) => tsu.tiles.toSorted(compareTile).map(tileToCode).join(''))
         .reduce((map, code) => ({ ...map, [code]: (map[code] || 0) + 1 }), {} as Record<string, number>)
     )
     if (counts.some((count) => count === 4)) return { name: '일색사순', han: 13, isYakuman: true }

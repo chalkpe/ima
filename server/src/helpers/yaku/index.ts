@@ -98,7 +98,7 @@ export const calculateYaku = (
 
   const agariList = result.agari
     .map((agariState) => calculateYakuOfAgari(state, me, agariType, agariTile, agariState))
-    .sort((a, b) => b.reduce((res, yaku) => res + yaku.han, 0) - a.reduce((res, yaku) => res + yaku.han, 0))
+    .toSorted((a, b) => b.reduce((res, yaku) => res + yaku.han, 0) - a.reduce((res, yaku) => res + yaku.han, 0))
 
   return agariList[0]
 }

@@ -21,7 +21,7 @@ export const tileSetToCode = (tileSet: Tsu | Machi): string => {
 
 export const tenpaiStateToString = (state: TenpaiState): string => {
   return state
-    .sort((a, b) => compareTiles(a.tiles, b.tiles))
+    .toSorted((a, b) => compareTiles(a.tiles, b.tiles))
     .map((tileSet) => tileSetToCode(tileSet))
     .join('')
 }
@@ -48,7 +48,7 @@ export const mergeAgariResults = (result: AgariResult, r: AgariResult) => {
       )
     }
 
-    result.tenpai = new Map([...result.tenpai.entries()].sort(([a], [b]) => compareCode(a, b)))
+    result.tenpai = new Map([...result.tenpai.entries()].toSorted(([a], [b]) => compareCode(a, b)))
   }
 }
 
@@ -255,7 +255,7 @@ export const agariResultToString = (result: AgariResult): string => {
       return (
         'tenpai: ' +
         [...result.tenpai.entries()]
-          .sort(([a], [b]) => compareCode(a, b))
+          .toSorted(([a], [b]) => compareCode(a, b))
           .map(([code, states]) => code + ' => ' + states.map(tenpaiStateToString).join(' or '))
           .join(', ')
       )

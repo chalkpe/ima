@@ -178,7 +178,7 @@ const isIipeikou: YakuValidator = {
     if (!menzen) return false
     const syuntsuCounts = agariState
       .filter((tsu) => tsu.type === 'shuntsu')
-      .map((tsu) => tsu.tiles.sort(compareTile).map(tileToCode).join(''))
+      .map((tsu) => tsu.tiles.toSorted(compareTile).map(tileToCode).join(''))
       .reduce((map, code) => ({ ...map, [code]: (map[code] || 0) + 1 }), {} as Record<string, number>)
 
     const iipeikou = Object.values(syuntsuCounts).filter((count) => count === 2)

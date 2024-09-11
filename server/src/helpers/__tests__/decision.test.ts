@@ -224,8 +224,8 @@ describe('decision', () => {
 
     test('returns multiple ankan decisions', () => {
       const state = ss('1111p111s', '1s')
-      const sou = state.host.hand.closed.filter((t) => t.type === 'sou').sort((a, b) => a.index - b.index)
-      const pin = state.host.hand.closed.filter((t) => t.type === 'pin').sort((a, b) => a.index - b.index)
+      const sou = state.host.hand.closed.filter((t) => t.type === 'sou').toSorted((a, b) => a.index - b.index)
+      const pin = state.host.hand.closed.filter((t) => t.type === 'pin').toSorted((a, b) => a.index - b.index)
 
       expect(calculateAnkanDecisions(state, 'host')).toEqual([
         { type: 'ankan', tile: pin[pin.length - 1], otherTiles: pin.slice(0, -1) },

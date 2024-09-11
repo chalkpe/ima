@@ -1,4 +1,4 @@
-import { codeToTile, tileToCode } from '@ima/server/helpers/code'
+import { codeToTile, compareCode, tileToCode } from '@ima/server/helpers/code'
 import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
 import { calculateAgari } from '@ima/server/helpers/agari'
 import { calculateFuriten } from '@ima/server/helpers/tenpai'
@@ -116,7 +116,10 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
       .filter((tsu) => {
         const current = calculateAgari(state[me].hand.closed)
         const future = calculateAgari(closedHand.filter((tile) => !isEqualTile(tile, tsu[0])))
-        return [...current.tenpai.keys()].sort().join(',') === [...future.tenpai.keys()].sort().join(',')
+        return (
+          [...current.tenpai.keys()].toSorted(compareCode).join(',') ===
+          [...future.tenpai.keys()].toSorted(compareCode).join(',')
+        )
       })
       .map((tiles) => {
         const [tile, otherTiles] = partition(tiles, (t) => t.index === state[me].hand.tsumo?.index)
@@ -125,7 +128,7 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
   }
 
   return kantsu.map((tiles) => {
-    const sorted = tiles.sort((a, b) => a.index - b.index)
+    const sorted = tiles.toSorted((a, b) => a.index - b.index)
     return { type: 'ankan', tile: sorted[sorted.length - 1], otherTiles: sorted.slice(0, -1) }
   })
 }

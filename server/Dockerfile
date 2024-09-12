@@ -10,5 +10,5 @@ COPY /server/prisma /app/server/prisma
 COPY /server/package.json /app/server
 COPY /server/tsconfig.json /app/server
 
-RUN npm ci && npm run build -w server
+RUN npm ci && npm run generate -w server && npm run build -w server
 CMD ["npm", "run", "preview", "-w", "server"]

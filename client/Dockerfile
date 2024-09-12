@@ -13,8 +13,9 @@ COPY /client/tsconfig.json /app/client
 COPY /client/vite.config.ts /app/client
 
 COPY /server/src /app/server/src
+COPY /server/prisma /app/server/prisma
 COPY /server/package.json /app/server
 COPY /server/tsconfig.json /app/server
 
-RUN npm ci && npm run build -w client
+RUN npm ci && npm run generate -w server && npm run build -w client
 CMD ["npm", "run", "preview", "-w", "client"]

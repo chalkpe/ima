@@ -3,6 +3,7 @@ FROM node:22-alpine
 WORKDIR /app
 COPY /package.json /app
 COPY /package-lock.json /app
+COPY /node_modules /app/node_modules
 
 COPY /client/src /app/client/src
 COPY /client/public /app/client/public

@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "prisma generate && tsc -p tsconfig.json && tsc-alias",
-    "lint": "eslint .",
+    "lint": "eslint . && tsc --noEmit",
     "preview": "node dist/index.js",
     "test": "jest"
   }

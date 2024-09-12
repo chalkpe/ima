@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/vite-react/tsconfig.json",
   "compilerOptions": {
+    "lib": ["es2023", "DOM", "DOM.Iterable"],
     "paths": {
       "@ima/client/*": ["./src/*"],
       "@ima/server/*": ["../server/src/*"]

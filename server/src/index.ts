@@ -5,6 +5,10 @@ import { createContext } from '@ima/server/context'
 
 const wss = new ws.Server({ port: 5172 })
 
+wss.on('listening', () => {
+  console.log('✅ WebSocket Server listening on', wss.address())
+})
+
 const handler = applyWSSHandler({
   wss,
   router: appRouter,
@@ -16,8 +20,11 @@ const handler = applyWSSHandler({
   keepAlive: { enabled: true, pingMs: 30000, pongWaitMs: 5000 },
 })
 
-console.log('✅ WebSocket Server listening on', wss.address())
-process.on('SIGTERM', () => {
+const onCleanup = () => {
   handler.broadcastReconnectNotification()
   wss.close()
-})
+  process.exit()
+}
+
+process.on('SIGTERM', onCleanup)
+process.on('SIGINT', onCleanup)

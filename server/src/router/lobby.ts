@@ -15,7 +15,7 @@ const getRoom = async (username: string, onlyHost = false) => {
 
 export const lobbyRouter = router({
   list: publicProcedure.query(() =>
-    prisma.room.findMany({ where: { NOT: { started: true } }, select: { host: true, guest: true } })
+    prisma.room.findMany({ where: { NOT: { started: true } }, select: { host: true, guest: true, started: true } })
   ),
 
   create: publicProcedure.mutation(async (opts) => {

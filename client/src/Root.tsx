@@ -17,9 +17,7 @@ const Root = () => {
   const trpcClient = useMemo(
     () =>
       trpc.createClient({
-        links: [
-          wsLink({ client: createWSClient({ url: import.meta.env.VITE_SERVER_URL, connectionParams: { username } }) }),
-        ],
+        links: [wsLink({ client: createWSClient({ url: '/server', connectionParams: { username } }) })],
       }),
     [username]
   )

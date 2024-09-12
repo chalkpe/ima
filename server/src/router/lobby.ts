@@ -42,14 +42,16 @@ export const lobbyRouter = router({
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
 
     if (room.host === username) {
-      room.host = room.guest
-      room.guest = ''
+      if (room.guest) {
+        room.host = room.guest
+        room.guest = ''
+        await prisma.room.update({ where: { host: username }, data: room })
+      } else {
+        await prisma.room.delete({ where: { host: username } })
+      }
     } else {
       room.guest = ''
-    }
-
-    if (room.host === '') {
-      await prisma.room.delete({ where: { host: username } })
+      await prisma.room.update({ where: { host: room.host }, data: room })
     }
   }),
 

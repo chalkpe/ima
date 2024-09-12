@@ -48,16 +48,13 @@ export const gameRouter = router({
     const { username } = opts.ctx
     const room = await getRoom(username)
 
+    await sub.subscribe(room.host)
     return observable<StateChangeType>((emit) => {
       const listener = (host: string, type: StateChangeType) => {
         if (host === room.host) emit.next(type)
       }
-      sub.subscribe(room.host)
       sub.on('message', listener)
-      return () => {
-        sub.unsubscribe(room.host)
-        sub.off('message', listener)
-      }
+      return () => sub.off('message', listener)
     })
   }),
 

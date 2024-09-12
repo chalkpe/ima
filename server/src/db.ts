@@ -4,8 +4,14 @@ import { Redis } from 'iovalkey'
 import { PrismaClient } from '@prisma/client'
 import { GameState } from '@ima/server/types/game'
 
-export const pub = new Redis()
-export const sub = new Redis()
+export const pub = process.env.REDIS_HOST ? new Redis(6379, process.env.REDIS_HOST) : new Redis()
+pub.on('connect', () => console.log('✅ Redis Pub connected to', `${pub.options.host}:${pub.options.port}`))
+pub.on('error', (err) => console.error('❌ Redis Pub error', err))
+
+export const sub = process.env.REDIS_HOST ? new Redis(6379, process.env.REDIS_HOST) : new Redis()
+sub.on('connect', () => console.log('✅ Redis Sub connected to', `${sub.options.host}:${sub.options.port}`))
+sub.on('error', (err) => console.error('❌ Redis Sub error', err))
+
 export const prisma = new PrismaClient()
 
 declare global {

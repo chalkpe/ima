@@ -49,8 +49,9 @@ export const gameRouter = router({
     const room = await getRoom(username)
 
     return observable<StateChangeType>((emit) => {
-      const listener = (host: string, type: StateChangeType) => host === room.host && emit.next(type)
-
+      const listener = (host: string, type: StateChangeType) => {
+        if (host === room.host) emit.next(type)
+      }
       sub.subscribe(room.host)
       sub.on('message', listener)
       return () => {

@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import ws from 'ws'
 import { applyWSSHandler } from '@trpc/server/adapters/ws'
 import { appRouter } from '@ima/server/router'

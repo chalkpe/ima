@@ -26,7 +26,7 @@ import {
 } from '@ima/server/controllers/game/action'
 import { tileTypes } from '@ima/server/helpers/tile'
 import { createInitialState, getActiveMe, getOpponent } from '@ima/server/helpers/game'
-import type { GameState, StateChangeType } from '@ima/server/types/game'
+import type { StateChangeType } from '@ima/server/types/game'
 
 const getRoom = async (username: string, started?: boolean) => {
   const room = await prisma.room.findFirst({ where: { OR: [{ host: username }, { guest: username }] } })
@@ -41,7 +41,7 @@ export const gameRouter = router({
     const { username } = opts.ctx
     const room = await getRoom(username)
     const me = room.host === username ? 'host' : 'guest'
-    return { ...room, state: getVisibleState(room.state as unknown as GameState, me) }
+    return { ...room, state: getVisibleState(room.state, me) }
   }),
 
   onStateChange: publicProcedure.subscription(async (opts) => {

@@ -6,6 +6,7 @@ COPY /package-lock.json /app
 COPY /node_modules /app/node_modules
 
 COPY /server/src /app/server/src
+COPY /server/prisma /app/server/prisma
 COPY /server/package.json /app/server
 COPY /server/tsconfig.json /app/server
 

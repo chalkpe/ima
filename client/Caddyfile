@@ -1,0 +1,13 @@
+:80 {
+	encode gzip
+
+	handle /server {
+		reverse_proxy server:5172
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

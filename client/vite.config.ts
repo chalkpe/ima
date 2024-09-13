@@ -6,5 +6,4 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   server: { proxy: { '/server': { ws: true, target: 'ws://localhost:5172' } } },
-  preview: { proxy: {} },
 })

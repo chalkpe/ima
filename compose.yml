@@ -1,0 +1,66 @@
+name: ima
+
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - internal_network
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+
+  valkey:
+    image: valkey/valkey:8.0
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - internal_network
+    volumes:
+      - valkey:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5172:5172
+    networks:
+      - internal_network
+      - external_network
+    environment:
+      - DATABASE_URL=postgres://postgres@postgres:5432/postgres
+      - REDIS_HOST=valkey
+    depends_on:
+      - postgres
+      - valkey
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5173:80
+    networks:
+      - external_network
+    depends_on:
+      - server
+
+networks:
+  external_network:
+  internal_network:
+    internal: true
+
+volumes:
+  postgres:
+  valkey:

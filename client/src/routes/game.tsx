@@ -41,10 +41,11 @@ const Game = () => {
   const opponent = useMemo(() => (data?.host === payload?.username ? 'guest' : 'host'), [data?.host, payload?.username])
 
   useEffect(() => {
+    if (skip) return
     if (!data || !data.started || error) {
       navigate('/lobby')
     }
-  }, [data, error, navigate])
+  }, [data, error, navigate, skip])
 
   useEffect(() => {
     if (

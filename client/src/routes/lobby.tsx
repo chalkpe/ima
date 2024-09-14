@@ -15,10 +15,11 @@ const Lobby = () => {
   const { mutate: join } = trpc.lobby.join.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   useEffect(() => {
+    if (skip) return
     if (room && !error) {
       navigate('/room')
     }
-  }, [room, navigate, error])
+  }, [room, navigate, error, skip])
 
   return (
     <Box maxWidth="50vmin">

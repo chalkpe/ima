@@ -33,12 +33,13 @@ const Room = () => {
   const { mutate: setTransparentMode } = trpc.lobby.setTransparentMode.useMutation({ onSuccess: invalidate })
 
   useEffect(() => {
+    if (skip) return
     if (!data || error) {
       navigate('/lobby')
     } else if (data?.started) {
       navigate('/game')
     }
-  }, [data, error, navigate])
+  }, [data, error, navigate, skip])
 
   const isHost = useMemo(() => data?.host === payload?.username, [data?.host, payload?.username])
 

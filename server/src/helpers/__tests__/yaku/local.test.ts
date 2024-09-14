@@ -52,10 +52,10 @@ describe('yaku', () => {
       { name: '대차륜', type: 'p' },
       { name: '대죽림', type: 's' },
     ])('daisharin ($type)', ({ name, type }) => {
-      expect(calc(`22334455667788${type}`, [], 'ron')).toMatchObject([{ name, han: 13, isYakuman: true }])
-      expect(calc(`11223344556677${type}`, [], 'ron')).not.toMatchObject([{ name, han: 13, isYakuman: true }])
-      expect(calc(`33445566778899${type}`, [], 'ron')).not.toMatchObject([{ name, han: 13, isYakuman: true }])
-      expect(calc(`11334455667799${type}`, [], 'ron')).not.toMatchObject([{ name, han: 13, isYakuman: true }])
+      expect(calc(`22334455667788${type}`, [], 'ron')).toMatchObject([{ name, han: 26, isYakuman: true }])
+      expect(calc(`11223344556677${type}`, [], 'ron')).not.toMatchObject([{ name, han: 26, isYakuman: true }])
+      expect(calc(`33445566778899${type}`, [], 'ron')).not.toMatchObject([{ name, han: 26, isYakuman: true }])
+      expect(calc(`11334455667799${type}`, [], 'ron')).not.toMatchObject([{ name, han: 26, isYakuman: true }])
     })
 
     test.concurrent('daisharin (mixed)', () => {

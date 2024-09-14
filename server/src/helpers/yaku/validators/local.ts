@@ -84,11 +84,11 @@ const isDaisharin: YakuValidator = {
 
     switch (types[0]) {
       case 'man':
-        return { name: '대수린', han: 13, isYakuman: true }
+        return { name: '대수린', han: 26, isYakuman: true }
       case 'pin':
-        return { name: '대차륜', han: 13, isYakuman: true }
+        return { name: '대차륜', han: 26, isYakuman: true }
       case 'sou':
-        return { name: '대죽림', han: 13, isYakuman: true }
+        return { name: '대죽림', han: 26, isYakuman: true }
       /* istanbul ignore next */ default:
         return false
     }

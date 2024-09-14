@@ -1,8 +1,13 @@
-import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws'
+import type { VerifyPayloadType } from '@fastify/jwt'
 
-export function createContext({ req, res, info }: CreateWSSContextFnOptions) {
-  const username = info.connectionParams?.username ?? 'guest'
-  return { req, res, username }
+export type ContextOptions = { payload: VerifyPayloadType | undefined }
+export type Context = Awaited<{ username: string | undefined }>
+
+export const buildContext = ({ payload }: ContextOptions): Context => {
+  if (!payload || typeof payload !== 'object' || !('username' in payload) || typeof payload.username !== 'string') {
+    return { username: undefined }
+  }
+  return {
+    username: payload.username,
+  }
 }
-
-export type Context = Awaited<ReturnType<typeof createContext>>

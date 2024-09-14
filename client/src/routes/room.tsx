@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '@ima/client/hooks/useAuth'
@@ -17,7 +17,7 @@ import {
 
 const Room = () => {
   const navigate = useNavigate()
-  const { username, skip } = useAuth()
+  const { payload, skip } = useAuth()
   const { data, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
 
   const utils = trpc.useUtils()
@@ -33,12 +33,15 @@ const Room = () => {
   const { mutate: setTransparentMode } = trpc.lobby.setTransparentMode.useMutation({ onSuccess: invalidate })
 
   useEffect(() => {
+    if (skip) return
     if (!data || error) {
       navigate('/lobby')
     } else if (data?.started) {
       navigate('/game')
     }
-  }, [data, error, navigate])
+  }, [data, error, navigate, skip])
+
+  const isHost = useMemo(() => data?.host === payload?.username, [data?.host, payload?.username])
 
   return (
     <>
@@ -52,13 +55,13 @@ const Room = () => {
             <Button
               variant="contained"
               color="warning"
-              disabled={data.host === username ? data.hostReady : data.guestReady}
+              disabled={isHost ? data.hostReady : data.guestReady}
               onClick={() => leave()}
             >
               나가기
             </Button>
 
-            {data.host === username && (
+            {isHost && (
               <Button
                 variant="contained"
                 disabled={!data.hostReady || !data.guestReady}
@@ -101,7 +104,7 @@ const Room = () => {
               label="준비"
               control={
                 <Checkbox
-                  checked={data.host === username ? data.hostReady : data.guestReady}
+                  checked={isHost ? data.hostReady : data.guestReady}
                   onChange={(e) => ready({ ready: e.target.checked })}
                 />
               }
@@ -111,13 +114,13 @@ const Room = () => {
               value={data.state.rule.length}
               onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' | 'north' })}
             >
-              <FormControlLabel label="동풍전" value="east" disabled={data.host !== username} control={<Radio />} />
-              <FormControlLabel label="반장전" value="south" disabled={data.host !== username} control={<Radio />} />
-              <FormControlLabel label="일장전" value="north" disabled={data.host !== username} control={<Radio />} />
+              <FormControlLabel label="동풍전" value="east" disabled={!isHost} control={<Radio />} />
+              <FormControlLabel label="반장전" value="south" disabled={!isHost} control={<Radio />} />
+              <FormControlLabel label="일장전" value="north" disabled={!isHost} control={<Radio />} />
             </RadioGroup>
             <FormControlLabel
               label="로컬 역"
-              disabled={data.host !== username}
+              disabled={!isHost}
               control={
                 <Checkbox
                   checked={data.state.rule.localYaku}
@@ -127,7 +130,7 @@ const Room = () => {
             />
             <FormControlLabel
               label="만관 판수묶음"
-              disabled={data.host !== username}
+              disabled={!isHost}
               control={
                 <Checkbox
                   checked={data.state.rule.manganShibari}
@@ -137,7 +140,7 @@ const Room = () => {
             />
             <FormControlLabel
               label="투명패"
-              disabled={data.host !== username}
+              disabled={!isHost}
               control={
                 <Checkbox
                   checked={data.state.rule.transparentMode}

@@ -1,9 +1,9 @@
 import z from 'zod'
-import { publicProcedure, router } from '@ima/server/trpc'
+import { protectedProcedure, router } from '@ima/server/trpc'
 import { prisma } from '@ima/server/db'
 import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
-import type { Room } from '@ima/server/types/game'
+import type { GameState, Room } from '@ima/server/types/game'
 
 const getRoom = async (username: string, onlyHost = false) => {
   const room = await prisma.room.findFirst({
@@ -14,11 +14,11 @@ const getRoom = async (username: string, onlyHost = false) => {
 }
 
 export const lobbyRouter = router({
-  list: publicProcedure.query(() =>
+  list: protectedProcedure.query(() =>
     prisma.room.findMany({ where: { NOT: { started: true } }, select: { host: true, guest: true, started: true } })
   ),
 
-  create: publicProcedure.mutation(async (opts) => {
+  create: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
     if (await prisma.room.findFirst({ where: { host: username } })) {
       throw new TRPCError({ code: 'CONFLICT', message: '이미 호스트가 존재합니다.' })
@@ -36,7 +36,7 @@ export const lobbyRouter = router({
     await prisma.room.create({ data: room })
   }),
 
-  leave: publicProcedure.mutation(async (opts) => {
+  leave: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
     const room = await getRoom(username)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
@@ -55,7 +55,7 @@ export const lobbyRouter = router({
     }
   }),
 
-  join: publicProcedure.input(z.object({ host: z.string() })).mutation(async (opts) => {
+  join: protectedProcedure.input(z.object({ host: z.string() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { host } = opts.input
 
@@ -72,12 +72,14 @@ export const lobbyRouter = router({
     await prisma.room.deleteMany({ where: { host: username } })
   }),
 
-  room: publicProcedure.query((opts) => {
+  room: protectedProcedure.query(async (opts) => {
     const { username } = opts.ctx
-    return getRoom(username)
+    const room = await getRoom(username)
+    room.state = { rule: room.state.rule } as GameState
+    return { ...room }
   }),
 
-  ready: publicProcedure.input(z.object({ ready: z.boolean() })).mutation(async (opts) => {
+  ready: protectedProcedure.input(z.object({ ready: z.boolean() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const room = await getRoom(username)
 
@@ -87,7 +89,7 @@ export const lobbyRouter = router({
     await prisma.room.update({ where: { host: room.host }, data: room })
   }),
 
-  setLocalYaku: publicProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
+  setLocalYaku: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { value } = opts.input
 
@@ -97,7 +99,7 @@ export const lobbyRouter = router({
     await prisma.room.update({ where: { host: room.host }, data: room })
   }),
 
-  setManganShibari: publicProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
+  setManganShibari: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { value } = opts.input
 
@@ -107,17 +109,19 @@ export const lobbyRouter = router({
     await prisma.room.update({ where: { host: room.host }, data: room })
   }),
 
-  setLength: publicProcedure.input(z.object({ value: z.enum(['east', 'south', 'north']) })).mutation(async (opts) => {
-    const { username } = opts.ctx
-    const { value } = opts.input
+  setLength: protectedProcedure
+    .input(z.object({ value: z.enum(['east', 'south', 'north']) }))
+    .mutation(async (opts) => {
+      const { username } = opts.ctx
+      const { value } = opts.input
 
-    const room = await getRoom(username, true)
-    room.state.rule.length = value
+      const room = await getRoom(username, true)
+      room.state.rule.length = value
 
-    await prisma.room.update({ where: { host: room.host }, data: room })
-  }),
+      await prisma.room.update({ where: { host: room.host }, data: room })
+    }),
 
-  setTransparentMode: publicProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
+  setTransparentMode: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { value } = opts.input
 

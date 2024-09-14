@@ -1,30 +1,25 @@
 import 'dotenv/config'
 
-import ws from 'ws'
-import { applyWSSHandler } from '@trpc/server/adapters/ws'
-import { appRouter } from '@ima/server/router'
-import { createContext } from '@ima/server/context'
+import fastify from 'fastify'
+import trpc from '@ima/server/plugins/trpc'
+import twitter from '@ima/server/plugins/twitter'
 
-const wss = new ws.Server({ port: 5172 })
+const server = fastify()
 
-wss.on('listening', () => {
-  console.log('✅ WebSocket Server listening on', wss.address())
-})
+server.register(trpc)
+server.register(twitter)
 
-const handler = applyWSSHandler({
-  wss,
-  router: appRouter,
-  createContext,
-  onError(obj) {
-    console.error(obj.type, obj.path, obj.ctx?.username, obj.error.message)
-    // console.error(obj.error.stack)
-  },
-  keepAlive: { enabled: true, pingMs: 30000, pongWaitMs: 5000 },
+server.listen({ host: '0.0.0.0', port: 5172 }, (err, address) => {
+  if (err) {
+    console.error(err)
+    process.exit(1)
+  } else {
+    console.log('✅ Fastify Server listening on', address)
+  }
 })
 
 const onCleanup = () => {
-  handler.broadcastReconnectNotification()
-  wss.close()
+  server.close()
   process.exit()
 }
 

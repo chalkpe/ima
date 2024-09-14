@@ -3,7 +3,7 @@ import { protectedProcedure, router } from '@ima/server/trpc'
 import { prisma } from '@ima/server/db'
 import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
-import type { Room } from '@ima/server/types/game'
+import type { GameState, Room } from '@ima/server/types/game'
 
 const getRoom = async (username: string, onlyHost = false) => {
   const room = await prisma.room.findFirst({
@@ -72,9 +72,11 @@ export const lobbyRouter = router({
     await prisma.room.deleteMany({ where: { host: username } })
   }),
 
-  room: protectedProcedure.query((opts) => {
+  room: protectedProcedure.query(async (opts) => {
     const { username } = opts.ctx
-    return getRoom(username)
+    const room = await getRoom(username)
+    room.state = { rule: room.state.rule } as GameState
+    return { ...room }
   }),
 
   ready: protectedProcedure.input(z.object({ ready: z.boolean() })).mutation(async (opts) => {

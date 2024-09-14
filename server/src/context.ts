@@ -1,7 +1,9 @@
-import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws'
+import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify'
 
-export function createContext({ req, res, info }: CreateWSSContextFnOptions) {
-  const username = info.connectionParams?.username ?? 'guest'
+export function createContext({ req, res }: CreateFastifyContextOptions) {
+  const username = undefined
+
+  console.log(req.user, req.session)
   return { req, res, username }
 }
 

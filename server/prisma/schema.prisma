@@ -21,3 +21,11 @@ model Room {
   /// [RoomState]
   state Json
 }
+
+model User {
+  id String @id
+  displayName String
+  username String
+  token String
+  tokenSecret String
+}

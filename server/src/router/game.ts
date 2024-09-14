@@ -1,7 +1,7 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
 import { observable } from '@trpc/server/observable'
-import { publicProcedure, router } from '@ima/server/trpc'
+import { protectedProcedure, router } from '@ima/server/trpc'
 import { prisma, pub, sub } from '@ima/server/db'
 
 import {
@@ -37,14 +37,14 @@ const getRoom = async (username: string, started?: boolean) => {
 }
 
 export const gameRouter = router({
-  state: publicProcedure.query(async (opts) => {
+  state: protectedProcedure.query(async (opts) => {
     const { username } = opts.ctx
     const room = await getRoom(username)
     const me = room.host === username ? 'host' : 'guest'
     return { ...room, state: getVisibleState(room.state, me) }
   }),
 
-  onStateChange: publicProcedure.subscription(async (opts) => {
+  onStateChange: protectedProcedure.subscription(async (opts) => {
     const { username } = opts.ctx
     const room = await getRoom(username)
 
@@ -58,7 +58,7 @@ export const gameRouter = router({
     })
   }),
 
-  start: publicProcedure.mutation(async (opts) => {
+  start: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
     const room = await getRoom(username, false)
 
@@ -72,7 +72,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'start')
   }),
 
-  getRemainingTileCount: publicProcedure
+  getRemainingTileCount: protectedProcedure
     .input(z.object({ type: z.enum(tileTypes), value: z.number() }))
     .query(async (opts) => {
       const { username } = opts.ctx
@@ -83,7 +83,7 @@ export const gameRouter = router({
       return getRemainingTileCount(room.state, me, { type, value })
     }),
 
-  pon: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
+  pon: protectedProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { tatsu } = opts.input
 
@@ -95,7 +95,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'pon')
   }),
 
-  chi: publicProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
+  chi: protectedProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { tatsu } = opts.input
 
@@ -107,7 +107,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'chi')
   }),
 
-  daiminkan: publicProcedure.mutation(async (opts) => {
+  daiminkan: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)
@@ -118,7 +118,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'kan')
   }),
 
-  ankan: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
+  ankan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { type, value } = opts.input
 
@@ -130,7 +130,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'kan')
   }),
 
-  gakan: publicProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
+  gakan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { type, value } = opts.input
 
@@ -142,7 +142,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'kan')
   }),
 
-  skipAndTsumo: publicProcedure.mutation(async (opts) => {
+  skipAndTsumo: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)
@@ -153,7 +153,7 @@ export const gameRouter = router({
     pub.publish(room.host, result)
   }),
 
-  skipChankan: publicProcedure.mutation(async (opts) => {
+  skipChankan: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)
@@ -164,7 +164,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'update')
   }),
 
-  callTsumo: publicProcedure.mutation(async (opts) => {
+  callTsumo: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)
@@ -175,7 +175,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'tsumo')
   }),
 
-  callRon: publicProcedure.mutation(async (opts) => {
+  callRon: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)
@@ -186,7 +186,7 @@ export const gameRouter = router({
     pub.publish(room.host, 'ron')
   }),
 
-  giri: publicProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
+  giri: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { index } = opts.input
 
@@ -198,7 +198,7 @@ export const gameRouter = router({
     pub.publish(room.host, result)
   }),
 
-  riichi: publicProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
+  riichi: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
     const { username } = opts.ctx
     const { index } = opts.input
 
@@ -210,7 +210,7 @@ export const gameRouter = router({
     pub.publish(room.host, result)
   }),
 
-  confirmScoreboard: publicProcedure.mutation(async (opts) => {
+  confirmScoreboard: protectedProcedure.mutation(async (opts) => {
     const { username } = opts.ctx
 
     const room = await getRoom(username, true)

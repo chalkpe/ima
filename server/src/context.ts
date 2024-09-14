@@ -1,10 +1,13 @@
-import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify'
+import type { VerifyPayloadType } from '@fastify/jwt'
 
-export function createContext({ req, res }: CreateFastifyContextOptions) {
-  const username = undefined
+export type ContextOptions = { payload: VerifyPayloadType | undefined }
+export type Context = Awaited<{ username: string | undefined }>
 
-  console.log(req.user, req.session)
-  return { req, res, username }
+export const buildContext = ({ payload }: ContextOptions): Context => {
+  if (!payload || typeof payload !== 'object' || !('username' in payload) || typeof payload.username !== 'string') {
+    return { username: undefined }
+  }
+  return {
+    username: payload.username,
+  }
 }
-
-export type Context = Awaited<ReturnType<typeof createContext>>

@@ -1,6 +1,10 @@
 :80 {
 	encode gzip
 
+	handle /api/* {
+		reverse_proxy server:5172
+	}
+
 	handle /server {
 		reverse_proxy server:5172
 	}

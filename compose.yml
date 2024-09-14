@@ -37,15 +37,8 @@ services:
     networks:
       - internal_network
       - external_network
-    environment:
-      - DATABASE_URL=postgres://postgres@postgres:5432/postgres
-      - REDIS_HOST=valkey
-    healthcheck:
-      test:
-        - 'CMD-SHELL'
-        - 'if [ "$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:5172)" -ne 426 ]; then exit 1; fi'
-      retries: 10
-      interval: 1s
+    env_file:
+      - server/.env.local
     depends_on:
       - postgres
       - valkey
@@ -60,8 +53,7 @@ services:
     networks:
       - external_network
     depends_on:
-      server:
-        condition: service_healthy
+      - server
 
 networks:
   external_network:

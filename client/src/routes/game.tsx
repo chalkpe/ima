@@ -14,7 +14,7 @@ import StateChange from '@ima/client/components/game/StateChange'
 
 const Game = () => {
   const navigate = useNavigate()
-  const { username, skip } = useAuth()
+  const { payload, skip } = useAuth()
   const [type, setType] = useState<StateChangeType>()
 
   const { data, error } = trpc.game.state.useQuery(skip)
@@ -37,8 +37,8 @@ const Game = () => {
     },
   })
 
-  const me = useMemo(() => (data?.host === username ? 'host' : 'guest'), [data?.host, username])
-  const opponent = useMemo(() => (data?.host === username ? 'guest' : 'host'), [data?.host, username])
+  const me = useMemo(() => (data?.host === payload?.username ? 'host' : 'guest'), [data?.host, payload?.username])
+  const opponent = useMemo(() => (data?.host === payload?.username ? 'guest' : 'host'), [data?.host, payload?.username])
 
   useEffect(() => {
     if (!data || !data.started || error) {

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        workspace: [client, server]
+        workspace: [server]
     permissions:
       contents: read
       actions: read

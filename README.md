@@ -30,6 +30,11 @@ Two-player riichi mahjong (2인 리치 마작)
 - Renhou (인화)
 - Isshokuyonjun (일색사순)
 
+### Mangan
+
+- Iipin mouyue (일통모월)
+- Chuupin raoyui (구통노어)
+
 ### 2-han
 
 - Uumensai (오문제)

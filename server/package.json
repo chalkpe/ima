@@ -44,6 +44,6 @@
     "build": "tsc -p tsconfig.json && tsc-alias",
     "lint": "eslint . && tsc --noEmit",
     "start": "prisma db push && node dist/index.js",
-    "test": "jest"
+    "test": "jest --coverage"
   }
 }

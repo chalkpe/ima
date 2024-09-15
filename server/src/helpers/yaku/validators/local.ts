@@ -74,7 +74,7 @@ const isSanrenkou: YakuValidator = {
 
 const isIsshokusanjun: YakuValidator = {
   level: 'yakuman',
-  predicate: ({ agariState }) => {
+  predicate: ({ menzen, agariState }) => {
     const counts = Object.values(
       agariState
         .filter((tsu) => tsu.type === 'shuntsu')
@@ -82,7 +82,7 @@ const isIsshokusanjun: YakuValidator = {
         .reduce((map, code) => ({ ...map, [code]: (map[code] || 0) + 1 }), {} as Record<string, number>)
     )
     if (counts.some((count) => count === 4)) return { name: '일색사순', han: 13, isYakuman: true }
-    if (counts.some((count) => count === 3)) return { name: '일색삼순', han: 2, invalidates: ['이페코'] }
+    if (counts.some((count) => count === 3)) return { name: '일색삼순', han: menzen ? 3 : 2, invalidates: ['이페코'] }
     return false
   },
 }

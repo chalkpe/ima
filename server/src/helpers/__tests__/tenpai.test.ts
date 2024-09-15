@@ -6,7 +6,7 @@ import type { TenpaiState } from '@ima/server/types/agari'
 import type { Koritsu, Syuntsu, Tatsu } from '@ima/server/types/tile'
 import type { TileSet } from '@ima/server/types/game'
 
-describe('tenpai', () => {
+describe('helpers/tenpai', () => {
   const i = createInitialState()
   const c = (tiles: string) => codeSyntaxToHand(tiles)
   const t = (tiles: string) => codeSyntaxToHand(tiles).map(simpleTileToTile)

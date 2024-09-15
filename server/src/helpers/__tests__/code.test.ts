@@ -1,6 +1,6 @@
 import { backTile, backTileCode, codeSyntaxToHand, codeToTile, tileToCode } from '@ima/server/helpers/code'
 
-describe('code', () => {
+describe('helpers/code', () => {
   describe('tileToCode', () => {
     test('should return the tile', () => {
       expect(tileToCode({ type: 'man', value: 1 })).toEqual('1m')

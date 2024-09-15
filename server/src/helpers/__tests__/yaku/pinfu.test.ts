@@ -1,7 +1,7 @@
 import { calc } from '@ima/server/helpers/__utils__/yaku'
 
-describe('yaku', () => {
-  describe('calculateYaku (pinfu)', () => {
+describe('helpers/yaku (pinfu)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('valid cases', () => {
       expect(calc('234m345p23344s44z5s', [], 'ron')).toMatchObject([{ name: '핑후', han: 1 }])
       expect(

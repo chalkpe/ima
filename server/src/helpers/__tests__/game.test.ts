@@ -12,7 +12,7 @@ import {
 import { c } from '@ima/server/helpers/__utils__/tile'
 import type { Hand, Player, Room, Rule } from '@ima/server/types/game'
 
-describe('game', () => {
+describe('helpers/game', () => {
   describe('getOpponent', () => {
     test('should return the opponent', () => {
       expect(getOpponent('host')).toBe('guest')

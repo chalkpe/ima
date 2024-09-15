@@ -1,7 +1,7 @@
 import { calc } from '@ima/server/helpers/__utils__/yaku'
 
-describe('yaku', () => {
-  describe('calculateYaku (value: 2)', () => {
+describe('helpers/yaku (value: 2)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('double riichi', () => {
       expect(
         calc('234m345p23344s11z5s', [], 'ron', (state) => {

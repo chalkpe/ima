@@ -2,8 +2,8 @@ import { c } from '@ima/server/helpers/__utils__/tile'
 import { calc } from '@ima/server/helpers/__utils__/yaku'
 import type { GameState } from '@ima/server/types/game'
 
-describe('yaku', () => {
-  describe('calculateYaku (value: 1)', () => {
+describe('helpers/yaku (value: 1)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('chankan', () => {
       const updater = (called: string) => (state: GameState) => {
         const gakan = c(called.repeat(4))

@@ -3,7 +3,7 @@ import { isNagashiMangan, isYakuOverShibari } from '@ima/server/helpers/yaku'
 import { createInitialState } from '@ima/server/helpers/game'
 import type { TileSet } from '@ima/server/types/game'
 
-describe('yaku', () => {
+describe('helpers/yaku', () => {
   describe('isYakuOverShibari', () => {
     const ss = (enabled: boolean) => {
       const state = createInitialState()

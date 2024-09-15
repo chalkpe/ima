@@ -22,5 +22,5 @@ jobs:
         with:
           artifact: ${{ matrix.workspace }}
           name: ${{ matrix.workspace }}
-          path: ${{ matrix.workspace }}/junit.xml
+          path: junit.xml
           reporter: jest-junit

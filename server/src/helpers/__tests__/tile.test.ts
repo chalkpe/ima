@@ -22,7 +22,7 @@ import {
 } from '@ima/server/helpers/tile'
 import type { Koritsu, Koutsu, Tatsu } from '@ima/server/types/tile'
 
-describe('tile', () => {
+describe('helpers/tile', () => {
   describe('countTiles', () => {
     test('should return the count of tiles', () => {
       expect(countTiles(c('11123456789999m'))).toEqual({

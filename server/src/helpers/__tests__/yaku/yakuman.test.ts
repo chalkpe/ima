@@ -1,8 +1,8 @@
 import { c } from '@ima/server/helpers/__utils__/tile'
 import { calc } from '@ima/server/helpers/__utils__/yaku'
 
-describe('yaku', () => {
-  describe('calculateYaku (yakuman)', () => {
+describe('helpers/yaku (yakuman)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('tenhou', () => {
       expect(
         calc('234m345p23344s11z5s', [], 'tsumo', (state) => {

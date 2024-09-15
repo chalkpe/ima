@@ -13,7 +13,7 @@ import { combinations } from '@ima/server/helpers/common'
 import { c, r } from '@ima/server/helpers/__utils__/tile'
 import type { GameState, TileSet } from '@ima/server/types/game'
 
-describe('decision', () => {
+describe('helpers/decision', () => {
   const s = (hand: string, river: string, riichi = false): GameState => {
     const i = createInitialState()
     return {

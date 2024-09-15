@@ -2,7 +2,7 @@ import { agariResultToString, calculateAgari } from '@ima/server/helpers/agari'
 import { codeSyntaxToHand } from '@ima/server/helpers/code'
 import { simpleTileToTile } from '@ima/server/helpers/tile'
 
-describe('agari', () => {
+describe('helpers/agari', () => {
   describe('calculateAgari', () => {
     // shorthand for testing
     const calc = (codeSyntax: string) =>

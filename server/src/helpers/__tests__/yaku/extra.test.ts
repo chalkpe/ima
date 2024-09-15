@@ -1,8 +1,8 @@
 import { c } from '@ima/server/helpers/__utils__/tile'
 import { calc } from '@ima/server/helpers/__utils__/yaku'
 
-describe('yaku', () => {
-  describe('calculateYaku (extra)', () => {
+describe('helpers/yaku (extra)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('noten', () => {
       expect(calc('135m135p135s123z', [], 'ron')).toMatchObject([])
     })

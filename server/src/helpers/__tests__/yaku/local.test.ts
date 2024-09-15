@@ -81,12 +81,19 @@ describe('yaku', () => {
       expect(calc('111222333m23991p', [], 'ron')).toMatchObject([
         { name: '핑후', han: 1 },
         { name: '준찬타', han: 3 },
+        { name: '일색삼순', han: 3 },
+      ])
+      expect(calc('112233m23991p', ['123m'], 'ron')).toMatchObject([
+        { name: '준찬타', han: 2 },
         { name: '일색삼순', han: 2 },
       ])
     })
 
     test.concurrent('isshokuyonjun', () => {
       expect(calc('222233334444p11z', [], 'ron')).toMatchObject([{ name: '일색사순', han: 13, isYakuman: true }])
+      expect(calc('234p11z', ['234p', '234p', '234p'], 'ron')).toMatchObject([
+        { name: '일색사순', han: 13, isYakuman: true },
+      ])
     })
 
     test.concurrent('shiiaruraotai', () => {

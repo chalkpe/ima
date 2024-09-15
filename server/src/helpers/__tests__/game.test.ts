@@ -3,6 +3,7 @@ import { simpleTileToRiverTile, simpleTileToTile } from '@ima/server/helpers/til
 import {
   createInitialState,
   getActiveMe,
+  getAvailableTiles,
   getClosedHand,
   getNextWind,
   getOpponent,
@@ -93,6 +94,19 @@ describe('helpers/game', () => {
       expect(getNextWind(ss('east'), 'north')).toBeUndefined()
       expect(getNextWind(ss('south'), 'north')).toBeUndefined()
       expect(getNextWind(ss('north'), 'north')).toBeUndefined()
+    })
+  })
+
+  describe('getAvailableTiles', () => {
+    test('should return the available tiles', () => {
+      const s = createInitialState()
+      expect(getAvailableTiles(s)).toHaveLength(80)
+    })
+
+    test('should return transparent tiles', () => {
+      const s = createInitialState()
+      s.rule.transparentMode = true
+      expect(getAvailableTiles(s).filter((s) => s.background === 'transparent')).toHaveLength(60)
     })
   })
 

@@ -174,6 +174,27 @@ describe('helpers/tile', () => {
         index: 1234,
       })
     })
+
+    test('should keep the tile if the tile is transparent', () => {
+      expect(
+        hideTile(
+          {
+            type: 'pin',
+            value: 5,
+            attribute: 'red',
+            background: 'transparent',
+            index: 1234,
+          },
+          true
+        )
+      ).toEqual({
+        type: 'pin',
+        value: 5,
+        attribute: 'red',
+        background: 'transparent',
+        index: 1234,
+      })
+    })
   })
 
   describe('getLowerTile', () => {

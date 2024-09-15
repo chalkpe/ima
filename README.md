@@ -47,6 +47,27 @@ Two-player riichi mahjong (2인 리치 마작)
 - Tsubamegaeshi (츠바메가에시)
 - Shiiaruraotai (십이낙태)
 
+## Development
+
+### Requirements
+
+- Docker Compose v2
+- [Twitter application key](https://developer.x.com/apps)
+
+### Install
+
+```sh
+git clone https://github.com/chalkpe/ima
+cp ima/server/.env.example ima/server/.env.local # Copy server env file
+vim ima/server/.env.local # Update TWITTER_API_KEY, TWITTER_API_SECRET env
+```
+
+### Build and run
+
+```sh
+docker compose up --build
+```
+
 ## License
 
 [MIT License](LICENSE)

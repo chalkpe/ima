@@ -38,6 +38,7 @@ const calculateYakuOfAgari = (
     jikaze: state[me].wind,
     menzen: agariState.every((tsu) => !tsu.furo),
     riichi: state[me].riichi,
+    opponentRiichi: state[opponent].riichi,
     doraTiles: getDoraTiles(state.wall),
     uraDoraTiles: getUraDoraTiles(state.wall),
     called: {

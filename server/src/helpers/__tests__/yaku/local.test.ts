@@ -1,3 +1,4 @@
+import { c } from '@ima/server/helpers/__utils__/tile'
 import { calc as originalCalc } from '@ima/server/helpers/__utils__/yaku'
 
 const calc: typeof originalCalc = (h, c, t, s) =>
@@ -15,6 +16,54 @@ describe('yaku', () => {
           state.host.jun = 0
         })
       ).toMatchObject([{ name: '인화', han: 13, isYakuman: true }])
+    })
+
+    test.concurrent('kanfuri', () => {
+      expect(
+        calc('234m345p23344s55z5s', [], 'ron', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.hand.called.push({ type: 'ankan', jun: 5, tiles: c('1111z') })
+        })
+      ).toMatchObject([{ name: '깡후리', han: 1 }])
+      expect(
+        calc('234m345p23344s55z5s', [], 'ron', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.hand.called.push({ type: 'gakan', jun: 5, tiles: c('1111z') })
+        })
+      ).toMatchObject([{ name: '깡후리', han: 1 }])
+      expect(
+        calc('234m345p23344s55z5s', [], 'ron', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.hand.called.push({ type: 'daiminkan', jun: 3, tiles: c('1111z') })
+        })
+      ).toMatchObject([{ name: '깡후리', han: 1 }])
+      expect(
+        calc('234m345p23344s55z5s', [], 'ron', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.hand.called.push({ type: 'pon', jun: 3, tiles: c('111z') })
+        })
+      ).toMatchObject([])
+    })
+
+    test.concurrent('tsubamegaeshi', () => {
+      expect(
+        calc('234m345p23344s55z5s', [], 'ron', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.riichi = 5
+        })
+      ).toMatchObject([{ name: '츠바메가에시', han: 1 }])
+      expect(
+        calc('234m345p23344s55z5s', [], 'tsumo', (state) => {
+          state.host.jun = 3
+          state.guest.jun = 5
+          state.guest.riichi = 5
+        })
+      ).toMatchObject([{ name: '멘젠쯔모', han: 1 }])
     })
 
     test.concurrent('uumensai', () => {

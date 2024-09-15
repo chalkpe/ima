@@ -24,6 +24,7 @@ export interface YakuPredicateParams {
   jikaze: Wind
   menzen: boolean
   riichi: RiichiState
+  opponentRiichi: RiichiState
   doraTiles: Tile[]
   uraDoraTiles: Tile[]
   called: { me?: TileSet; opponent?: TileSet }

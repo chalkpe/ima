@@ -12,6 +12,28 @@ const isRenhou: YakuValidator = {
     called.opponent === undefined && { name: '인화', han: 13, isYakuman: true },
 }
 
+const isKanfuri: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariType, jun, opponentJun, called }) => {
+    if (agariType !== 'ron' || called.opponent === undefined) return false
+    switch (called.opponent.type) {
+      case 'daiminkan':
+        return called.opponent.jun === jun && { name: '깡후리', han: 1 }
+      case 'ankan':
+      case 'gakan':
+        return called.opponent.jun === opponentJun && { name: '깡후리', han: 1 }
+      default:
+        return false
+    }
+  },
+}
+
+const isTsubamegaeshi: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariType, opponentJun, opponentRiichi }) =>
+    agariType === 'ron' && opponentJun === opponentRiichi && { name: '츠바메가에시', han: 1 },
+}
+
 const isUumensai: YakuValidator = {
   level: 'normal',
   predicate: ({ agariState }) =>
@@ -110,6 +132,8 @@ const isDaichisei: YakuValidator = {
 
 const yakuValidators: YakuValidator[] = [
   isRenhou,
+  isKanfuri,
+  isTsubamegaeshi,
   isUumensai,
   isSanrenkou,
   isIsshokusanjun,

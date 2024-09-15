@@ -27,6 +27,15 @@ describe('helpers/yaku (local)', () => {
       expect(calc('78p233445s11z9p', ['111m'], 'ron', updater)).toMatchObject([{ name: '구통노어', han: 5 }])
     })
 
+    test.concurrent('ishinouenimosannen', () => {
+      expect(
+        calc('111m23p233445s11z1p', [], 'ron', (state) => {
+          state.wall.tiles = []
+          state.host.riichi = 1
+        })
+      ).toMatchObject([{ name: '석상삼년', han: 13, isYakuman: true }])
+    })
+
     test.concurrent('kanfuri', () => {
       expect(
         calc('234m345p23344s55z5s', [], 'ron', (state) => {

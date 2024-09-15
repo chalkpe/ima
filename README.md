@@ -28,6 +28,7 @@ Two-player riichi mahjong (2인 리치 마작)
 ### Yakuman
 
 - Renhou (인화)
+- Ishinouenimosannen (석상삼년)
 - Isshokuyonjun (일색사순)
 
 ### Mangan

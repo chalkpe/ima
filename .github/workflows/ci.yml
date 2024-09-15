@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [client, server]
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:ci -w ${{ matrix.workspace }}
+
+      - name: Code Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.4.0
+        with:
+          lcov-file: ./${{ matrix.workspace }}/coverage/lcov.info
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.workspace }}
+          path: ${{ matrix.workspace }}/junit.xml

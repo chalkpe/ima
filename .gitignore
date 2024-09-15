@@ -7,12 +7,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Deps and build output
 node_modules
 dist
-dist-ssr
+
+# Env files
 .env
 *.local
+
+# Test files
 coverage
+junit.xml
 secret-key
 
 # Editor directories and files

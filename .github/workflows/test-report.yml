@@ -1,0 +1,30 @@
+name: Report
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [client, server]
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.workspace }}
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: ${{ matrix.workspace }}
+          path: ${{ matrix.workspace }}/junit.xml
+          reporter: jest-junit

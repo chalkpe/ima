@@ -33,11 +33,13 @@ jobs:
 
       - name: Code Coverage Report
         uses: romeovs/lcov-reporter-action@v0.4.0
+        if: github.event_name == 'pull_request'
         with:
           lcov-file: ./${{ matrix.workspace }}/coverage/lcov.info
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
           name: ${{ matrix.workspace }}
           path: ${{ matrix.workspace }}/junit.xml

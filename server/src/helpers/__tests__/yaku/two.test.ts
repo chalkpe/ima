@@ -8,7 +8,7 @@ describe('yaku', () => {
           state.host.riichi = 1
           state.host.jun = 3
         })
-      ).toMatchObject([{ name: '더블리치', han: 2 }])
+      ).toMatchObject([{ name: '더블 리치', han: 2 }])
     })
 
     test.concurrent('toitoi', () => {

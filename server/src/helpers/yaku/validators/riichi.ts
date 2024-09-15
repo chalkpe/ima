@@ -60,7 +60,7 @@ const isMenzenTsumo: YakuValidator = {
 const isRiichi: YakuValidator = {
   level: 'normal',
   predicate: ({ menzen, riichi }) =>
-    menzen && riichi !== null && (riichi === 1 ? { name: '더블리치', han: 2 } : { name: '리치', han: 1 }),
+    menzen && riichi !== null && (riichi === 1 ? { name: '더블 리치', han: 2 } : { name: '리치', han: 1 }),
 }
 
 const isIppatsu: YakuValidator = {
@@ -193,7 +193,7 @@ const isSanankou: YakuValidator = {
     const ankou = agariState.filter((tsu) => (tsu.type === 'koutsu' || tsu.type === 'kantsu') && !tsu.open)
     if (ankou.length === 4) {
       return agariTsu.type === 'toitsu'
-        ? { name: '스안커단기', han: 26, isYakuman: true }
+        ? { name: '스안커 단기', han: 26, isYakuman: true }
         : { name: '스안커', han: 13, isYakuman: true }
     }
     if (ankou.length === 3) {

@@ -46,7 +46,7 @@ describe('yaku', () => {
 
     test.concurrent('suuankou', () => {
       expect(calc('222m333p22233s44z4z', [], 'tsumo')).toMatchObject([{ name: '스안커', han: 13, isYakuman: true }])
-      expect(calc('222m333p222333s44z', [], 'tsumo')).toMatchObject([{ name: '스안커단기', han: 26, isYakuman: true }])
+      expect(calc('222m333p222333s44z', [], 'tsumo')).toMatchObject([{ name: '스안커 단기', han: 26, isYakuman: true }])
     })
 
     test.concurrent('tsuuiisou', () => {

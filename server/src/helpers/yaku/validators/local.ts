@@ -12,6 +12,22 @@ const isRenhou: YakuValidator = {
     called.opponent === undefined && { name: '인화', han: 13, isYakuman: true },
 }
 
+const isIipinMouyue: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariTile, agariTileType }) =>
+    agariTileType === 'haitei' &&
+    agariTile.type === 'pin' &&
+    agariTile.value === 1 && { name: '일통모월', han: 5, invalidates: ['해저로월'] },
+}
+
+const isChuupinRaoyui: YakuValidator = {
+  level: 'normal',
+  predicate: ({ agariTile, agariTileType }) =>
+    agariTileType === 'houtei' &&
+    agariTile.type === 'pin' &&
+    agariTile.value === 9 && { name: '구통노어', han: 5, invalidates: ['하저로어'] },
+}
+
 const isKanfuri: YakuValidator = {
   level: 'normal',
   predicate: ({ agariType, jun, opponentJun, called }) => {
@@ -132,6 +148,8 @@ const isDaichisei: YakuValidator = {
 
 const yakuValidators: YakuValidator[] = [
   isRenhou,
+  isIipinMouyue,
+  isChuupinRaoyui,
   isKanfuri,
   isTsubamegaeshi,
   isUumensai,

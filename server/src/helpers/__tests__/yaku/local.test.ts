@@ -1,5 +1,6 @@
 import { c } from '@ima/server/helpers/__utils__/tile'
 import { calc as originalCalc } from '@ima/server/helpers/__utils__/yaku'
+import type { GameState } from '@ima/server/types/game'
 
 const calc: typeof originalCalc = (h, c, t, s) =>
   originalCalc(h, c, t, (state) => {
@@ -7,8 +8,8 @@ const calc: typeof originalCalc = (h, c, t, s) =>
     s?.(state)
   })
 
-describe('yaku', () => {
-  describe('calculateYaku (local)', () => {
+describe('helpers/yaku (local)', () => {
+  describe('calculateYaku', () => {
     test.concurrent('renhou', () => {
       expect(
         calc('234m345p23344s11z5s', [], 'ron', (state) => {
@@ -16,6 +17,14 @@ describe('yaku', () => {
           state.host.jun = 0
         })
       ).toMatchObject([{ name: '인화', han: 13, isYakuman: true }])
+    })
+
+    test.concurrent('iipin mouyue or chuupin raoyui', () => {
+      const updater = (state: GameState) => {
+        state.wall.tiles = []
+      }
+      expect(calc('23p233445s11z1p', ['111m'], 'tsumo', updater)).toMatchObject([{ name: '일통모월', han: 5 }])
+      expect(calc('78p233445s11z9p', ['111m'], 'ron', updater)).toMatchObject([{ name: '구통노어', han: 5 }])
     })
 
     test.concurrent('kanfuri', () => {

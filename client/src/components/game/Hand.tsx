@@ -33,17 +33,17 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
 
   return (
     <>
-      {currentTenpai && (
+      {currentTenpai && tedashiTenpai.length === 0 && (
         <Paper
           sx={{
             opacity: 0.5,
             position: 'absolute',
-            bottom: '28vmin',
-            left: '8vmin',
+            bottom: '27vmin',
+            left: '7vmin',
             padding: '1vmin',
           }}
         >
-          Tenpai
+          텐파이
         </Paper>
       )}
 
@@ -54,13 +54,13 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         direction={me ? 'row' : 'row-reverse'}
         gap="2vmin"
         position="absolute"
-        {...(me ? { bottom: '2vmin', left: '8vmin' } : { top: '2vmin', right: '8vmin' })}
+        {...(me ? { bottom: '2vmin', left: '7vmin' } : { top: '2vmin', right: '7vmin' })}
       >
         <Stack direction={me ? 'row' : 'row-reverse'} gap={0} alignItems="end">
           {closed.map((tile) => (
             <Mahgen
               key={tile.index}
-              size={5}
+              size={6}
               tile={tile}
               onClick={() => me && setHoveredIndex(tile.index)}
               onMouseEnter={() => me && setHoveredIndex(tile.index)}
@@ -74,7 +74,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         <Stack direction="row" gap={0} alignItems="end">
           {hand.tsumo ? (
             <Mahgen
-              size={5}
+              size={6}
               tile={hand.tsumo}
               onClick={() => me && setHoveredIndex(hand.tsumo!.index)}
               onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
@@ -83,7 +83,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
               style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : '0' }}
             />
           ) : (
-            <Box width="5vmin" />
+            <Box width="6vmin" />
           )}
         </Stack>
       </Stack>
@@ -99,7 +99,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         {hand.called.map((tileSet, index) => (
           <TileSet
             tileSet={tileSet}
-            size={5}
+            size={6}
             key={index + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
           />
         ))}

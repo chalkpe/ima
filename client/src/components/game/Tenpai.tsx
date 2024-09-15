@@ -21,8 +21,8 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
     <Paper
       sx={{
         position: 'absolute',
-        bottom: current ? '10vmin' : '28vmin',
-        left: '8vmin',
+        bottom: current ? '12vmin' : '27vmin',
+        left: '7vmin',
         padding: '1vmin',
         opacity: 0.5,
       }}

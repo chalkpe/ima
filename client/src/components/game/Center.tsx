@@ -44,7 +44,7 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           alignItems="center"
           textAlign="center"
         >
-          <Typography fontSize="2.25vmin">
+          <Typography fontSize="2.25vmin" fontWeight="bold">
             {getWindName(state.round.wind)}
             {state.round.kyoku}국 {state.round.honba}본장
           </Typography>
@@ -60,7 +60,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           alignItems="center"
           textAlign="center"
         >
-          <Typography fontSize="3vmin">{state.wall.tiles.length}/40</Typography>
+          <Typography fontSize="3vmin" fontWeight="bold">
+            {state.wall.tiles.length}/40
+          </Typography>
         </Box>
 
         <Box
@@ -74,7 +76,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           textAlign="center"
           sx={{ transform: 'rotate(180deg)' }}
         >
-          <Typography fontSize="2.75vmin">{getWindName(state[op].wind)}</Typography>
+          <Typography fontSize="2.75vmin" fontWeight="bold">
+            {getWindName(state[op].wind)}
+          </Typography>
         </Box>
         <Box
           position="absolute"
@@ -100,7 +104,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           alignItems="center"
           textAlign="center"
         >
-          <Typography fontSize="2.75vmin">{getWindName(state[me].wind)}</Typography>
+          <Typography fontSize="2.75vmin" fontWeight="bold">
+            {getWindName(state[me].wind)}
+          </Typography>
         </Box>
         <Box
           position="absolute"

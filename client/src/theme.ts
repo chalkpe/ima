@@ -1,8 +1,9 @@
+import '@fontsource/poor-story'
 import { createTheme } from '@mui/material'
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'Pretendard, sans-serif',
+    fontFamily: 'Poor Story, sans-serif',
   },
 })
 

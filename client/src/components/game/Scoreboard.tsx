@@ -92,6 +92,10 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         right: '15vmin',
         bottom: '15vmin',
         padding: '3vmin',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+        gap: '1vmin',
       }}
     >
       <Typography fontSize="6vmin" fontWeight="bold">
@@ -143,20 +147,23 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         </Stack>
       </Stack>
 
-      <ul>
+      <Stack direction="row" flexWrap="wrap" gap="1vmin">
         {scoreboard.yaku.map((yaku) => (
-          <li key={yaku.name}>
-            <Stack direction="row" gap="1vmin">
-              <Typography fontSize="2vmin" fontWeight="bold">
-                {yaku.name}
-              </Typography>
-              <Typography fontSize="2vmin">{yaku.han}판</Typography>
-            </Stack>
-          </li>
+          <Stack
+            key={yaku.name}
+            direction="row"
+            gap="1vmin"
+            sx={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc', padding: '0 1vmin', borderRadius: '1vmin' }}
+          >
+            <Typography fontSize="3vmin" fontWeight="bold">
+              {yaku.name}
+            </Typography>
+            <Typography fontSize="3vmin">{yaku.han}판</Typography>
+          </Stack>
         ))}
-      </ul>
+      </Stack>
 
-      <Stack direction="row" gap="2vmin">
+      <Stack direction="row" gap="2vmin" flex="1">
         <Typography fontSize="5vmin" fontWeight="bold">
           {scoreboard.yakuman > 0
             ? scoreboard.yakuman === 1
@@ -169,7 +176,13 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         </Typography>
       </Stack>
 
-      <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => confirm()}
+        disabled={meConfirmed}
+        sx={{ minWidth: '5vmin', fontSize: '3vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+      >
         {meConfirmed ? '대기 중...' : '확인'}
       </Button>
     </Paper>

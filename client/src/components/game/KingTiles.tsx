@@ -7,9 +7,10 @@ import type { Tile } from '@ima/server/types/tile'
 
 interface KingTilesProps {
   wall: Wall
+  size?: number
 }
 
-const KingTiles: FC<KingTilesProps> = ({ wall }) => {
+const KingTiles: FC<KingTilesProps> = ({ wall, size = 4 }) => {
   const firstIndex = wall.kingTiles[0]?.index ?? -1
   const lastIndex = wall.supplementTiles[wall.supplementTiles.length - 1]?.index ?? -1
 
@@ -35,21 +36,21 @@ const KingTiles: FC<KingTilesProps> = ({ wall }) => {
 
   return (
     <>
-      <Stack direction="row" position="absolute" left="2.5vmin" top="30vmin" sx={sx}>
+      <Stack direction="row" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 2}vmin)`} sx={sx}>
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} tile={tile} />
+            <Mahgen key={tile.index} size={size} tile={tile} />
           ) : (
-            <Box key={'lower' + index} width="3.5vmin" />
+            <Box key={'lower' + index} width={`${size}vmin`} />
           )
         )}
       </Stack>
-      <Stack direction="row" position="absolute" left="2vmin" top="30vmin" sx={sx}>
+      <Stack direction="row" position="absolute" top="34vmin" left="2vmin" sx={sx}>
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} tile={tile} />
+            <Mahgen key={tile.index} size={size} tile={tile} />
           ) : (
-            <Box key={'upper' + index} width="3.5vmin" />
+            <Box key={'upper' + index} width={`${size}vmin`} />
           )
         )}
       </Stack>

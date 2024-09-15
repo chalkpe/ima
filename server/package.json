@@ -30,6 +30,7 @@
     "eslint-plugin-import-alias": "^1.2.0",
     "globals": "^15.9.0",
     "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
     "prisma": "^5.19.1",
     "ts-jest": "^29.2.5",
     "tsc-alias": "^1.8.10",
@@ -44,6 +45,7 @@
     "build": "tsc -p tsconfig.json && tsc-alias",
     "lint": "eslint . && tsc --noEmit",
     "start": "prisma db push && node dist/index.js",
-    "test": "jest --coverage"
+    "test": "jest",
+    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit"
   }
 }

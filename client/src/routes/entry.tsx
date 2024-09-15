@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react'
-import { Avatar, Backdrop, Box, Button, CircularProgress, Typography } from '@mui/material'
+import { Avatar, Backdrop, Box, Button, CircularProgress, Stack, Typography } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
 import { tokenAtom } from '@ima/client/store/token'
@@ -36,8 +36,11 @@ const Entry: FC = () => {
           </Button>
         </form>
       </Box>
-      <Backdrop sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })} open={!!token}>
-        <CircularProgress color="inherit" />
+      <Backdrop open={!!token} sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}>
+        <Stack direction="column" gap="5vmin" alignItems="center">
+          <CircularProgress color="inherit" size="15vmin" />
+          <Typography fontSize="5vmin">서버에 연결 중...</Typography>
+        </Stack>
       </Backdrop>
     </Box>
   )

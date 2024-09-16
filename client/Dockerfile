@@ -1,12 +1,11 @@
 FROM node:22-alpine AS build
 WORKDIR /app
+RUN apk add --no-cache python3 make g++
 
 COPY /package.json /app/
 COPY /package-lock.json /app/
 COPY /server/package.json /app/server/
 COPY /client/package.json /app/client/
-
-RUN apk add --no-cache python3 make g++
 RUN npm ci
 
 COPY /server/tsconfig.json /app/server/

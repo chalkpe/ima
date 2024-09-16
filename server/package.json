@@ -44,7 +44,7 @@
     "generate": "prisma generate",
     "build": "tsc -p tsconfig.json && tsc-alias",
     "lint": "eslint . && tsc --noEmit",
-    "start": "prisma db push && node dist/index.js",
+    "start": "prisma db push --accept-data-loss && node dist/index.js",
     "test": "jest",
     "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit"
   }

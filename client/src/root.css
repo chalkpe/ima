@@ -2,5 +2,15 @@ body,
 #root {
   overflow: hidden;
   display: flex;
-  place-content: center;
+}
+
+body {
+  height: 100vh;
+  background-size: cover;
+  background-image: url(/background.png);
+  background-color: #cadf9f !important;
+}
+
+#root {
+  align-self: center;
 }

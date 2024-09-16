@@ -34,8 +34,6 @@ const Root = () => {
               display: 'flex',
               flexDirection: 'column',
               padding: '10vmin',
-              backgroundSize: 'cover',
-              backgroundImage: `url(/background.png)`,
             }}
           >
             <CssBaseline />

@@ -14,7 +14,7 @@ server.listen({ host: '0.0.0.0', port: 5172 }, (err, address) => {
     console.error(err)
     process.exit(1)
   } else {
-    console.log('✅ Fastify Server listening on', address)
+    console.info('✅ Fastify Server listening on', address)
   }
 })
 

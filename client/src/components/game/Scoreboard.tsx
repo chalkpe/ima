@@ -81,6 +81,10 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
           right: '15vmin',
           bottom: '15vmin',
           padding: '5vmin',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'start',
+          gap: '1vmin',
         }}
       >
         <Typography fontSize="7vmin">{ryuukyokuMap[scoreboard.ryuukyokuType]}</Typography>
@@ -128,7 +132,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <Stack direction="column" gap="2vmin" bgcolor="green" padding="1.5vmin" borderRadius="1vmin">
+      <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin" sx={{ backgroundColor: '#cadf9f' }}>
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap={0}>
             {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
@@ -151,9 +155,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
 
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin" color="white">
-              도라
-            </Typography>
+            <Typography fontSize="3vmin">도라</Typography>
             <Stack direction="row">
               {scoreboard.doraTiles.map((tile) => (
                 <Mahgen key={tile.index} size={3.5} tile={tile} />
@@ -161,9 +163,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             </Stack>
           </Stack>
           <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin" color="white">
-              뒷도라
-            </Typography>
+            <Typography fontSize="3vmin">뒷도라</Typography>
             <Stack direction="row">
               {scoreboard.uraDoraTiles.map((tile) => (
                 <Mahgen key={tile.index} size={3.5} tile={tile} />

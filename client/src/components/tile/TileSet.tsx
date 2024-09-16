@@ -4,6 +4,9 @@ import Mahgen from '@ima/client/components/tile/Mahgen'
 import { backTile, reorderCalledTiles } from '@ima/client/utils/tile'
 import type { TileSet } from '@ima/server/types/game'
 
+const attributeOrder = ['red', 'normal'] as const
+const backgroundOrder = ['transparent', 'white'] as const
+
 interface TileSetProps {
   tileSet: TileSet
   size: number
@@ -17,8 +20,17 @@ const TileSet: FC<TileSetProps> = ({ tileSet, size, rotate = true, stack = true 
       {tileSet.type === 'ankan' ? (
         <>
           <Mahgen size={size} tile={backTile} />
-          <Mahgen size={size} tile={tileSet.tiles.find((tile) => tile.attribute === 'red') ?? tileSet.tiles[0]} />
-          <Mahgen size={size} tile={tileSet.tiles.find((tile) => tile.attribute !== 'red') ?? tileSet.tiles[1]} />
+          {[...tileSet.tiles]
+            .sort(
+              (a, b) =>
+                attributeOrder.indexOf(a.attribute) - attributeOrder.indexOf(b.attribute) ||
+                backgroundOrder.indexOf(a.background) - backgroundOrder.indexOf(b.background) ||
+                a.index - b.index
+            )
+            .slice(0, 2)
+            .map((tile) => (
+              <Mahgen key={tile.index} size={size} tile={tile} />
+            ))}
           <Mahgen size={size} tile={backTile} />
         </>
       ) : tileSet.type === 'gakan' ? (

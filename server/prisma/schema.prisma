@@ -11,21 +11,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id          String @id
+  displayName String
+  username    String @unique
+  token       String
+  tokenSecret String
+  hostRoom    Room?  @relation(name: "hostUser")
+  guestRoom   Room?  @relation(name: "guestUser")
+}
+
 model Room {
-  host String @id
-  guest String
+  host      String  @id
   hostReady Boolean @default(false)
+  hostUser  User?   @relation(fields: [host], references: [username], name: "hostUser")
+
+  guest      String? @unique
   guestReady Boolean @default(false)
+  guestUser  User?   @relation(fields: [guest], references: [username], name: "guestUser")
+
   started Boolean @default(false)
 
   /// [RoomState]
   state Json
-}
-
-model User {
-  id String @id
-  displayName String
-  username String
-  token String
-  tokenSecret String
 }

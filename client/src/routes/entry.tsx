@@ -27,11 +27,16 @@ const Entry: FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Avatar sx={{ margin: '1vmin', width: '10vmin', height: '10vmin' }} src="/tiles/1s.png" />
-      <Typography fontSize="3vmin">IMA (2인 마작)</Typography>
+      <Avatar sx={{ width: '30vmin', height: '30vmin' }} src="/tiles/1s.png" />
+      <Typography fontSize="6vmin">IMA (2인 마작)</Typography>
       <Box sx={{ marginTop: '2vmin' }}>
         <form action="/api/twitter/auth" method="get">
-          <Button fullWidth variant="contained" type="submit">
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+          >
             트위터로 시작하기
           </Button>
         </form>

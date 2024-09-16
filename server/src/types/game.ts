@@ -132,8 +132,10 @@ export interface GameState {
 export interface Room {
   host: string
   hostReady: boolean
+  hostUser?: { username: string; displayName: string } | null
   guest: string
   guestReady: boolean
+  guestUser?: { username: string; displayName: string } | null
   started: boolean
   state: GameState
 }

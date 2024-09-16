@@ -39,7 +39,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
             opacity: 0.5,
             position: 'absolute',
             bottom: '27vmin',
-            left: '7vmin',
+            left: '2vmin',
             padding: '1vmin',
           }}
         >
@@ -54,7 +54,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         direction={me ? 'row' : 'row-reverse'}
         gap="2vmin"
         position="absolute"
-        {...(me ? { bottom: '2vmin', left: '7vmin' } : { top: '2vmin', right: '7vmin' })}
+        {...(me ? { bottom: '2vmin', left: '2vmin' } : { top: '2vmin', right: '2vmin' })}
       >
         <Stack direction={me ? 'row' : 'row-reverse'} gap={0} alignItems="end">
           {closed.map((tile) => (
@@ -99,7 +99,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         {hand.called.map((tileSet, index) => (
           <TileSet
             tileSet={tileSet}
-            size={6}
+            size={5}
             key={index + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
           />
         ))}

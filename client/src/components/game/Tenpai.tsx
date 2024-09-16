@@ -22,7 +22,7 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
       sx={{
         position: 'absolute',
         bottom: current ? '12vmin' : '27vmin',
-        left: '7vmin',
+        left: '2vmin',
         padding: '1vmin',
         opacity: 0.5,
       }}

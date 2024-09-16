@@ -91,7 +91,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           textAlign="center"
           sx={{ transform: 'rotate(180deg)' }}
         >
-          <Typography fontSize="2vmin">{state[op].score}점</Typography>
+          <Typography fontSize="2vmin" fontWeight="bold">
+            {state[op].score}점
+          </Typography>
         </Box>
 
         <Box
@@ -118,7 +120,9 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           alignItems="center"
           textAlign="center"
         >
-          <Typography fontSize="2vmin">{state[me].score}점</Typography>
+          <Typography fontSize="2vmin" fontWeight="bold">
+            {state[me].score}점
+          </Typography>
         </Box>
       </Box>
     </Paper>

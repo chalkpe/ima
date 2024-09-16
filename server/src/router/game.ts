@@ -29,11 +29,28 @@ import { createInitialState, getActiveMe, getOpponent } from '@ima/server/helper
 import type { StateChangeType } from '@ima/server/types/game'
 
 const getRoom = async (username: string, started?: boolean) => {
-  const room = await prisma.room.findFirst({ where: { OR: [{ host: username }, { guest: username }] } })
+  const room = await prisma.room.findFirst({
+    where: { OR: [{ host: username }, { guest: username }] },
+    select: {
+      host: true,
+      hostReady: true,
+      hostUser: { select: { username: true, displayName: true } },
+      guest: true,
+      guestReady: true,
+      guestUser: { select: { username: true, displayName: true } },
+      started: true,
+      state: true,
+    },
+  })
   if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: 'Room not found' })
+
+  const { guest } = room
+  if (!guest) throw new TRPCError({ code: 'FORBIDDEN', message: 'Guest not found' })
+
   if (started === true && !room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game not started' })
   if (started === false && room.started) throw new TRPCError({ code: 'FORBIDDEN', message: 'Game already started' })
-  return room
+
+  return { ...room, guest }
 }
 
 export const gameRouter = router({
@@ -217,13 +234,18 @@ export const gameRouter = router({
     const result = confirmScoreboard(room.state, room.host === username ? 'host' : 'guest')
 
     if (result === 'end') {
-      room.started = false
-      room.hostReady = false
-      room.guestReady = false
-      room.state = createInitialState()
+      await prisma.room.update({
+        where: { host: room.host },
+        data: {
+          started: false,
+          hostReady: false,
+          guestReady: false,
+          state: createInitialState(),
+        },
+      })
+    } else {
+      await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     }
-
-    await prisma.room.update({ where: { host: room.host }, data: room })
     pub.publish(room.host, result)
   }),
 })

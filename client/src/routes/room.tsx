@@ -14,6 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import UserHandle from '@ima/client/components/user/UserHandle'
 
 const Room = () => {
   const navigate = useNavigate()
@@ -46,52 +47,58 @@ const Room = () => {
   return (
     <>
       {data ? (
-        <Stack direction="column" gap="2vmin">
-          <Stack direction="row" alignItems="center" gap="2vmin">
-            <Typography fontSize="3vmin" fontWeight="bold">
+        <Stack direction="column" gap="4vmin">
+          <Stack direction="row" alignItems="center" gap="4vmin" justifyContent="space-between">
+            <Typography fontSize="7vmin" fontWeight="bold">
               방
             </Typography>
 
-            <Button
-              variant="contained"
-              color="warning"
-              disabled={isHost ? data.hostReady : data.guestReady}
-              onClick={() => leave()}
-            >
-              나가기
-            </Button>
-
-            {isHost && (
+            <Stack direction="row" gap="2vmin">
               <Button
                 variant="contained"
-                disabled={!data.hostReady || !data.guestReady}
-                onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
+                color="warning"
+                disabled={isHost ? data.hostReady : data.guestReady}
+                sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+                onClick={() => leave()}
               >
-                게임 시작
+                나가기
               </Button>
-            )}
+
+              {isHost && (
+                <Button
+                  variant="contained"
+                  disabled={!data.hostReady || !data.guestReady}
+                  sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+                  onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
+                >
+                  게임 시작
+                </Button>
+              )}
+            </Stack>
           </Stack>
 
           <div>
-            <Stack direction="row" sx={{ fontSize: '2vmin' }} alignItems="center" gap="1vmin">
-              <span>방장: {data.host}</span>
+            <Stack direction="row" sx={{ fontSize: '4vmin' }} alignItems="center" gap="1vmin">
+              <span>방장: </span>
+              {data.hostUser && <UserHandle {...data.hostUser} fontSize={4} />}
               {data.host !== '' ? (
                 data.hostReady ? (
-                  <CheckOutlined sx={{ width: '2vmin ' }} />
+                  <CheckOutlined sx={{ width: '4vmin ' }} />
                 ) : (
-                  <CircularProgress size="2vmin" />
+                  <CircularProgress size="4vmin" />
                 )
               ) : (
                 ''
               )}
             </Stack>
-            <Stack direction="row" sx={{ fontSize: '2vmin' }} alignItems="center" gap="1vmin">
-              <span>상대: {data.guest}</span>
+            <Stack direction="row" sx={{ fontSize: '4vmin' }} alignItems="center" gap="1vmin">
+              <span>상대: </span>
+              {data.guestUser && <UserHandle {...data.guestUser} fontSize={4} />}
               {data.guest !== '' ? (
                 data.guestReady ? (
-                  <CheckOutlined sx={{ width: '2vmin ' }} />
+                  <CheckOutlined sx={{ width: '4vmin ' }} />
                 ) : (
-                  <CircularProgress size="2vmin" />
+                  <CircularProgress size="4vmin" />
                 )
               ) : (
                 ''
@@ -101,7 +108,7 @@ const Room = () => {
 
           <FormGroup>
             <FormControlLabel
-              label="준비"
+              label={<Typography fontSize="4vmin">준비</Typography>}
               control={
                 <Checkbox
                   checked={isHost ? data.hostReady : data.guestReady}
@@ -114,12 +121,27 @@ const Room = () => {
               value={data.state.rule.length}
               onChange={(e) => setLength({ value: e.target.value as 'east' | 'south' | 'north' })}
             >
-              <FormControlLabel label="동풍전" value="east" disabled={!isHost} control={<Radio />} />
-              <FormControlLabel label="반장전" value="south" disabled={!isHost} control={<Radio />} />
-              <FormControlLabel label="일장전" value="north" disabled={!isHost} control={<Radio />} />
+              <FormControlLabel
+                label={<Typography fontSize="4vmin">동풍전</Typography>}
+                value="east"
+                disabled={!isHost}
+                control={<Radio />}
+              />
+              <FormControlLabel
+                label={<Typography fontSize="4vmin">반장전</Typography>}
+                value="south"
+                disabled={!isHost}
+                control={<Radio />}
+              />
+              <FormControlLabel
+                label={<Typography fontSize="4vmin">일장전</Typography>}
+                value="north"
+                disabled={!isHost}
+                control={<Radio />}
+              />
             </RadioGroup>
             <FormControlLabel
-              label="로컬 역"
+              label={<Typography fontSize="4vmin">로컬 역</Typography>}
               disabled={!isHost}
               control={
                 <Checkbox
@@ -129,7 +151,7 @@ const Room = () => {
               }
             />
             <FormControlLabel
-              label="만관 판수묶음"
+              label={<Typography fontSize="4vmin">만관 판수묶음</Typography>}
               disabled={!isHost}
               control={
                 <Checkbox
@@ -139,7 +161,7 @@ const Room = () => {
               }
             />
             <FormControlLabel
-              label="투명패"
+              label={<Typography fontSize="4vmin">투명패</Typography>}
               disabled={!isHost}
               control={
                 <Checkbox

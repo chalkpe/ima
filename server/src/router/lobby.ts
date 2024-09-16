@@ -3,11 +3,21 @@ import { protectedProcedure, router } from '@ima/server/trpc'
 import { prisma } from '@ima/server/db'
 import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
-import type { GameState, Room } from '@ima/server/types/game'
+import type { GameState } from '@ima/server/types/game'
 
 const getRoom = async (username: string, onlyHost = false) => {
   const room = await prisma.room.findFirst({
     where: onlyHost ? { host: username } : { OR: [{ host: username }, { guest: username }] },
+    select: {
+      host: true,
+      hostReady: true,
+      hostUser: { select: { username: true, displayName: true } },
+      guest: true,
+      guestReady: true,
+      guestUser: { select: { username: true, displayName: true } },
+      started: true,
+      state: true,
+    },
   })
   if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: 'Room not found' })
   return room
@@ -15,7 +25,16 @@ const getRoom = async (username: string, onlyHost = false) => {
 
 export const lobbyRouter = router({
   list: protectedProcedure.query(() =>
-    prisma.room.findMany({ where: { NOT: { started: true } }, select: { host: true, guest: true, started: true } })
+    prisma.room.findMany({
+      where: { NOT: { started: true } },
+      select: {
+        started: true,
+        host: true,
+        hostUser: { select: { username: true, displayName: true } },
+        guest: true,
+        guestUser: { select: { username: true, displayName: true } },
+      },
+    })
   ),
 
   create: protectedProcedure.mutation(async (opts) => {
@@ -24,16 +43,12 @@ export const lobbyRouter = router({
       throw new TRPCError({ code: 'CONFLICT', message: '이미 호스트가 존재합니다.' })
     }
 
-    const room: Room = {
-      host: username,
-      hostReady: false,
-      guest: '',
-      guestReady: false,
-      started: false,
-      state: createInitialState(),
-    }
-
-    await prisma.room.create({ data: room })
+    await prisma.room.create({
+      data: {
+        hostUser: { connect: { username } },
+        state: createInitialState(),
+      },
+    })
   }),
 
   leave: protectedProcedure.mutation(async (opts) => {
@@ -43,15 +58,26 @@ export const lobbyRouter = router({
 
     if (room.host === username) {
       if (room.guest) {
-        room.host = room.guest
-        room.guest = ''
-        await prisma.room.update({ where: { host: username }, data: room })
+        await prisma.room.update({
+          where: { host: username },
+          data: {
+            guestUser: { disconnect: true },
+            guestReady: false,
+            hostUser: { connect: { username: room.guest } },
+            hostReady: room.guestReady,
+          },
+        })
       } else {
         await prisma.room.delete({ where: { host: username } })
       }
     } else {
-      room.guest = ''
-      await prisma.room.update({ where: { host: room.host }, data: room })
+      await prisma.room.update({
+        where: { host: room.host },
+        data: {
+          guestUser: { disconnect: true },
+          guestReady: false,
+        },
+      })
     }
   }),
 
@@ -66,9 +92,7 @@ export const lobbyRouter = router({
 
     if (room.guest) throw new TRPCError({ code: 'FORBIDDEN', message: '이미 게스트가 존재합니다.' })
 
-    room.guest = username
-
-    await prisma.room.update({ where: { host }, data: room })
+    await prisma.room.update({ where: { host }, data: { guestUser: { connect: { username } } } })
     await prisma.room.deleteMany({ where: { host: username } })
   }),
 
@@ -86,7 +110,10 @@ export const lobbyRouter = router({
     if (room.host === username) room.hostReady = opts.input.ready
     else room.guestReady = opts.input.ready
 
-    await prisma.room.update({ where: { host: room.host }, data: room })
+    await prisma.room.update({
+      where: { host: room.host },
+      data: { hostReady: room.hostReady, guestReady: room.guestReady },
+    })
   }),
 
   setLocalYaku: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
@@ -96,7 +123,7 @@ export const lobbyRouter = router({
     const room = await getRoom(username, true)
     room.state.rule.localYaku = value
 
-    await prisma.room.update({ where: { host: room.host }, data: room })
+    await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
   }),
 
   setManganShibari: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
@@ -106,7 +133,7 @@ export const lobbyRouter = router({
     const room = await getRoom(username, true)
     room.state.rule.manganShibari = value
 
-    await prisma.room.update({ where: { host: room.host }, data: room })
+    await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
   }),
 
   setLength: protectedProcedure
@@ -118,7 +145,7 @@ export const lobbyRouter = router({
       const room = await getRoom(username, true)
       room.state.rule.length = value
 
-      await prisma.room.update({ where: { host: room.host }, data: room })
+      await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     }),
 
   setTransparentMode: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
@@ -128,6 +155,6 @@ export const lobbyRouter = router({
     const room = await getRoom(username, true)
     room.state.rule.transparentMode = value
 
-    await prisma.room.update({ where: { host: room.host }, data: room })
+    await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
   }),
 })

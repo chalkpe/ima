@@ -1,15 +1,18 @@
 import { FC } from 'react'
-import { Button, Paper, Stack, Typography } from '@mui/material'
+import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 import Mahgen from '@ima/client/components/tile/Mahgen'
 import { compareTile, convertTileToCode } from '@ima/client/utils/tile'
 import { trpc } from '@ima/client/utils/trpc'
 import type { PlayerType, Room, RyuukyokuType } from '@ima/server/types/game'
 import TileSet from '@ima/client/components/tile/TileSet'
+import UserHandle from '@ima/client/components/user/UserHandle'
 
 const ryuukyokuMap: Record<RyuukyokuType, string> = {
   ryuukyoku: '황패유국',
   suukaikan: '사깡유국',
 }
+
+const players = ['host', 'guest'] as const
 
 interface ScoreboardProps {
   data: Room
@@ -34,22 +37,34 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
           right: '15vmin',
           bottom: '15vmin',
           padding: '5vmin',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'start',
+          gap: '1vmin',
         }}
       >
         <Typography fontSize="5vmin">최종 점수</Typography>
-        <ul>
-          <li>
-            <Typography fontSize="3vmin">
-              {data.host} - {scoreboard.hostScore.toLocaleString()}점
-            </Typography>
-          </li>
-          <li>
-            <Typography fontSize="3vmin">
-              {data.guest} - {scoreboard.guestScore.toLocaleString()}점
-            </Typography>
-          </li>
-        </ul>
-        <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+        <Stack direction="column" gap="1vmin" flex={1}>
+          {[...players]
+            .sort((a, b) => scoreboard[`${b}Score`] - scoreboard[`${a}Score`])
+            .map((player) => {
+              const user = data[`${player}User`]
+              return (
+                <Box key={player} sx={{ backgroundColor: '#ccc', padding: '0 1vmin', borderRadius: '1vmin' }}>
+                  <Typography fontSize="3vmin">
+                    {user && <UserHandle {...user} fontSize={3} />} - {scoreboard[`${player}Score`].toLocaleString()}점
+                  </Typography>
+                </Box>
+              )
+            })}
+        </Stack>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => confirm()}
+          disabled={meConfirmed}
+          sx={{ minWidth: '5vmin', fontSize: '3vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+        >
           {meConfirmed ? '대기 중...' : '확인'}
         </Button>
       </Paper>
@@ -69,19 +84,30 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
         }}
       >
         <Typography fontSize="7vmin">{ryuukyokuMap[scoreboard.ryuukyokuType]}</Typography>
-        <ul>
-          {scoreboard.tenpai.map((player) => (
-            <li key={player}>
-              <Typography fontSize="2vmin">{data[player]} - 텐파이</Typography>
-            </li>
-          ))}
-        </ul>
-        <Button variant="contained" color="primary" onClick={() => confirm()} disabled={meConfirmed}>
+        <Stack direction="column" gap="1vmin" flex={1}>
+          {scoreboard.tenpai.map((player) => {
+            const user = data[`${player}User`]
+            return (
+              <Box key={player} sx={{ backgroundColor: '#ccc', padding: '0 1vmin', borderRadius: '1vmin' }}>
+                <Typography fontSize="2vmin">{user && <UserHandle {...user} fontSize={2} />} - 텐파이</Typography>
+              </Box>
+            )
+          })}
+        </Stack>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => confirm()}
+          disabled={meConfirmed}
+          sx={{ minWidth: '5vmin', fontSize: '3vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+        >
           {meConfirmed ? '대기 중...' : '확인'}
         </Button>
       </Paper>
     )
   }
+
+  const winner = data[`${scoreboard.winner}User`]
 
   return (
     <Paper
@@ -99,14 +125,14 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
       }}
     >
       <Typography fontSize="6vmin" fontWeight="bold">
-        {data[scoreboard.winner]} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
+        {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
       <Stack direction="column" gap="2vmin" bgcolor="green" padding="1.5vmin" borderRadius="1vmin">
         <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap={0}>
             {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-              <Mahgen key={tile.index} size={3} tile={tile} />
+              <Mahgen key={tile.index} size={3.5} tile={tile} />
             ))}
           </Stack>
           <Stack direction="row" gap="0.5vmin">
@@ -114,13 +140,13 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
               <TileSet
                 key={tileSet.type + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
                 tileSet={tileSet}
-                size={3}
+                size={3.5}
                 rotate={false}
                 stack={false}
               />
             ))}
           </Stack>
-          {scoreboard.hand.tsumo && <Mahgen size={3} tile={scoreboard.hand.tsumo} />}
+          {scoreboard.hand.tsumo && <Mahgen size={3.5} tile={scoreboard.hand.tsumo} />}
         </Stack>
 
         <Stack direction="row" gap="1vmin">
@@ -130,7 +156,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             </Typography>
             <Stack direction="row">
               {scoreboard.doraTiles.map((tile) => (
-                <Mahgen key={tile.index} size={3} tile={tile} />
+                <Mahgen key={tile.index} size={3.5} tile={tile} />
               ))}
             </Stack>
           </Stack>
@@ -140,7 +166,7 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
             </Typography>
             <Stack direction="row">
               {scoreboard.uraDoraTiles.map((tile) => (
-                <Mahgen key={tile.index} size={3} tile={tile} />
+                <Mahgen key={tile.index} size={3.5} tile={tile} />
               ))}
             </Stack>
           </Stack>

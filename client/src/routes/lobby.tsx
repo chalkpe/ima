@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
-import { Box, Button, CircularProgress, IconButton, List, ListItem, Stack } from '@mui/material'
-import { BlockOutlined, CheckOutlined } from '@mui/icons-material'
+import { Button, CircularProgress, IconButton, List, ListItem, Stack, Typography } from '@mui/material'
+import { BlockOutlined, LoginOutlined } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@ima/client/utils/trpc'
 import useAuth from '@ima/client/hooks/useAuth'
+import UserHandle from '@ima/client/components/user/UserHandle'
 
 const Lobby = () => {
   const navigate = useNavigate()
@@ -22,47 +23,65 @@ const Lobby = () => {
   }, [room, navigate, error, skip])
 
   return (
-    <Box maxWidth="50vmin">
-      <h1>로비</h1>
-
-      <Stack direction="row" gap="2vmin">
-        <Button variant="contained" onClick={() => create()}>
-          방 생성
-        </Button>
-
-        <Button
-          variant="contained"
-          onClick={() => {
-            setToken('')
-            navigate('/')
-          }}
-        >
-          나가기
-        </Button>
+    <Stack direction="column" gap="2vmin">
+      <Stack direction="row" gap="2vmin" justifyContent="space-between">
+        <Typography fontSize="7vmin" fontWeight="bold">
+          로비
+        </Typography>
+        <Stack direction="row" gap="2vmin">
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => {
+              setToken('')
+              navigate('/')
+            }}
+            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+          >
+            나가기
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => create()}
+            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+          >
+            방 생성
+          </Button>
+        </Stack>
       </Stack>
 
-      <h2>접속자</h2>
-      {list ? (
+      <Typography fontSize="7vmin">방 목록</Typography>
+      {list?.length ? (
         <List>
           {list.map((room) => (
             <ListItem
               key={room.host}
               secondaryAction={
-                <IconButton edge="end" onClick={() => join({ host: room.host })}>
-                  {room.started ? <BlockOutlined /> : <CheckOutlined />}
+                <IconButton edge="end" onClick={() => join({ host: room.host })} sx={{ fontSize: '4vmin' }}>
+                  {room.guestUser ? <BlockOutlined fontSize="inherit" /> : <LoginOutlined fontSize="inherit" />}
                 </IconButton>
               }
             >
-              {room.host} vs {room.guest}
+              <Stack direction="row" gap="1vmin">
+                {room.hostUser && <UserHandle {...room.hostUser} fontSize={4} />}
+                {room.guestUser && (
+                  <>
+                    <Typography fontSize="4vmin"> vs </Typography>
+                    <UserHandle {...room.guestUser} fontSize={4} />
+                  </>
+                )}
+              </Stack>
             </ListItem>
           ))}
         </List>
+      ) : list ? (
+        <Typography fontSize="4vmin">비어 있음</Typography>
       ) : (
         <p>
           <CircularProgress />
         </p>
       )}
-    </Box>
+    </Stack>
   )
 }
 

@@ -139,6 +139,18 @@ describe('helpers/yaku (local)', () => {
       ])
     })
 
+    test.concurrent('daichikurin or kazoe yakuman', () => {
+      expect(
+        calc('22334455667788s', [], 'tsumo', (state) => {
+          state.host.jun = 2
+          state.host.riichi = 1
+          state.wall.doraCount = 5
+          state.wall.kingTiles = c('1111m1122334455s') // dora 10
+          state.wall.firstKingTileIndex = state.wall.kingTiles[0].index
+        })
+      ).toMatchObject([{ name: '대죽림', han: 26, isYakuman: true }])
+    })
+
     test.concurrent('daichisei', () => {
       expect(calc('11223344556666z', [], 'ron')).toMatchObject([])
       expect(calc('11223344556677z', [], 'ron')).toMatchObject([{ name: '대칠성', han: 26, isYakuman: true }])

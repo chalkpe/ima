@@ -81,6 +81,9 @@ const calculateYakuOfAgari = (
   return result.filter((yaku) => yaku.isYakuman).filter(invalidator)
 }
 
+const compareByHan = (a: Yaku[], b: Yaku[], filter: (yaku: Yaku) => boolean = () => true) =>
+  b.filter(filter).reduce((han, yaku) => han + yaku.han, 0) - a.filter(filter).reduce((han, yaku) => han + yaku.han, 0)
+
 export const calculateYaku = (
   state: GameState,
   me: PlayerType,
@@ -99,7 +102,7 @@ export const calculateYaku = (
 
   const agariList = result.agari
     .map((agariState) => calculateYakuOfAgari(state, me, agariType, agariTile, agariState))
-    .toSorted((a, b) => b.reduce((res, yaku) => res + yaku.han, 0) - a.reduce((res, yaku) => res + yaku.han, 0))
+    .toSorted((a, b) => compareByHan(a, b, (y) => !!y.isYakuman) || compareByHan(a, b))
 
   return agariList[0]
 }

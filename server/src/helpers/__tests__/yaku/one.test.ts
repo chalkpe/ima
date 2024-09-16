@@ -85,29 +85,39 @@ describe('helpers/yaku (value: 1)', () => {
       expect(
         calc('234m345p23344s11z5s', [], 'ron', (state) => {
           state.host.riichi = 2
-          state.host.jun = 3
+          state.host.jun = 2
         })
       ).toMatchObject([
         { name: '리치', han: 1 },
         { name: '일발', han: 1 },
       ])
       expect(
+        calc('234m345p23344s11z5s', [], 'tsumo', (state) => {
+          state.host.riichi = 2
+          state.host.jun = 3
+        })
+      ).toMatchObject([
+        { name: '리치', han: 1 },
+        { name: '일발', han: 1 },
+        { name: '멘젠쯔모', han: 1 },
+      ])
+      expect(
         calc('234m345p23344s11z5s', [], 'ron', (state) => {
           state.host.riichi = 2
           state.host.jun = 3
-          state.guest.hand.called = [{ type: 'pon', tiles: c('111p'), jun: 2 }]
         })
       ).toMatchObject([{ name: '리치', han: 1 }])
       expect(
         calc('234m345p23344s11z5s', [], 'ron', (state) => {
           state.host.riichi = 2
-          state.host.jun = 4
+          state.host.jun = 2
+          state.guest.hand.called = [{ type: 'pon', tiles: c('111p'), jun: 2 }]
         })
       ).toMatchObject([{ name: '리치', han: 1 }])
       expect(
         calc('345p23344s11z5s', ['11111m'], 'ron', (state) => {
           state.host.riichi = 2
-          state.host.jun = 3
+          state.host.jun = 2
         })
       ).toMatchObject([{ name: '리치', han: 1 }])
     })

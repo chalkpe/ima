@@ -65,9 +65,9 @@ const isRiichi: YakuValidator = {
 
 const isIppatsu: YakuValidator = {
   level: 'normal',
-  predicate: ({ riichi, jun, called }) =>
+  predicate: ({ riichi, jun, agariType, called }) =>
     riichi !== null &&
-    jun - riichi <= 1 &&
+    ((agariType === 'tsumo' && jun - riichi === 1) || (agariType === 'ron' && jun === riichi)) &&
     (!called.me || called.me.jun < riichi) &&
     (!called.opponent || called.opponent.jun < riichi) && { name: '일발', han: 1, isHidden: true },
 }

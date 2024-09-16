@@ -39,6 +39,9 @@ services:
       - external_network
     env_file:
       - server/.env.local
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5172/server/entry.me']
+      start_period: 10s
     depends_on:
       - postgres
       - valkey
@@ -52,8 +55,11 @@ services:
       - 5173:80
     networks:
       - external_network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80']
     depends_on:
-      - server
+      server:
+        condition: service_healthy
 
 networks:
   external_network:

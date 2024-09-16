@@ -1,4 +1,5 @@
 import type { Wind } from '@ima/server/types/game'
+import type { Tenpai } from '@ima/server/types/tenpai'
 
 export const getWindName = (wind: Wind) => {
   switch (wind) {
@@ -11,4 +12,10 @@ export const getWindName = (wind: Wind) => {
     case 'north':
       return '북'
   }
+}
+
+export const tenpaiStatusText: Record<Tenpai['status'], string> = {
+  tenpai: '텐파이',
+  furiten: '후리텐',
+  muyaku: '역 없음',
 }

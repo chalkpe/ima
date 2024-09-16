@@ -2,6 +2,7 @@ body,
 #root {
   overflow: hidden;
   display: flex;
+  place-content: center;
 }
 
 body {

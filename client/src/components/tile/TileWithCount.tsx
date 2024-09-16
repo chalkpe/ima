@@ -17,7 +17,7 @@ const TileWithCount: FC<TileWithCountProps> = ({ tile, size }) => {
   return (
     <Stack direction="row">
       <Mahgen size={size} tile={tile} />
-      <Typography variant="h6" align="center">
+      <Typography fontSize={`${size * 0.75}vmin`} align="center">
         &nbsp;x{data}
       </Typography>
     </Stack>

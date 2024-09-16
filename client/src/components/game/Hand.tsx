@@ -1,14 +1,14 @@
 import { FC, useMemo } from 'react'
-import { Box, Paper, Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import Mahgen from '@ima/client/components/tile/Mahgen'
+import TileSet from '@ima/client/components/tile/TileSet'
 import Tenpai from '@ima/client/components/game/Tenpai'
+import TenpaiLabel from '@ima/client/components/game/TenpaiLabel'
 import { trpc } from '@ima/client/utils/trpc'
 import { convertTileToCode, sortTiles } from '@ima/client/utils/tile'
-
-import type { Hand } from '@ima/server/types/game'
-import TileSet from '@ima/client/components/tile/TileSet'
 import { useAtom } from 'jotai'
 import { hoveredAtom } from '@ima/client/store/hovered'
+import type { Hand } from '@ima/server/types/game'
 
 interface HandProps {
   hand: Hand
@@ -19,7 +19,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
   const [hoveredIndex, setHoveredIndex] = useAtom(hoveredAtom)
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
 
-  const currentTenpai = useMemo(() => hand.tenpai.find((tenpai) => tenpai.giriTile === null), [hand.tenpai])
+  const currentTenpai = useMemo(() => hand.tenpai.filter((tenpai) => tenpai.giriTile === null), [hand.tenpai])
   const tedashiTenpai = useMemo(
     () => hand.tenpai.filter((tenpai) => hoveredIndex !== undefined && tenpai.giriTile?.index === hoveredIndex),
     [hand.tenpai, hoveredIndex]
@@ -33,20 +33,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
 
   return (
     <>
-      {currentTenpai && tedashiTenpai.length === 0 && (
-        <Paper
-          sx={{
-            opacity: 0.5,
-            position: 'absolute',
-            bottom: '27vmin',
-            left: '2vmin',
-            padding: '1vmin',
-          }}
-        >
-          텐파이
-        </Paper>
-      )}
-
+      {tedashiTenpai.length === 0 && currentTenpai.length > 0 && <TenpaiLabel list={currentTenpai} />}
       {tedashiTenpai.length > 0 && <Tenpai tenpaiList={tedashiTenpai} />}
       {tsumogiriTenpai.length > 0 && <Tenpai tenpaiList={tsumogiriTenpai} current />}
 

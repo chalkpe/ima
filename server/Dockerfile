@@ -26,4 +26,4 @@ COPY --from=build /app/server/dist /app/server/dist
 COPY --from=build /app/server/prisma /app/server/prisma
 
 WORKDIR /app
-CMD ["npm", "run", "start", "-w", "server"]
+CMD ["npm", "start", "-w", "server"]

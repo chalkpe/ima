@@ -40,6 +40,7 @@ jobs:
           tags: |
             type=edge
             type=ref,event=branch
+            type=sha,format=short
 
       - name: Build and push
         uses: docker/build-push-action@v6

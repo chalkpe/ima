@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
-import { getWindName } from '@ima/client/utils/game'
+import { getWindCode, getWindName } from '@ima/client/utils/game'
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
 interface CenterProps {
@@ -18,26 +18,65 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         left: '32.5vmin',
         width: '35vmin',
         height: '20vmin',
-        backgroundSize: 'cover',
-        backgroundImage: `url(/center.jpg)`,
       }}
     >
       <Box
         position="absolute"
-        {...(state.turn === me ? { bottom: '2.2vmin', right: '2.2vmin' } : { top: '2.2vmin', left: '2.2vmin' })}
-        width="3.5vmin"
-        height="3.5vmin"
-        display="flex"
-        bgcolor="yellow"
-        borderRadius="50%"
+        width="5vmin"
+        height="5vmin"
+        {...(state.turn === me ? { bottom: '1.5vmin', right: '1.5vmin' } : { top: '1.5vmin', left: '1.5vmin' })}
+        sx={{ backgroundColor: '#ef5172' }}
+      />
+
+      <img
+        src="/center.png"
+        alt="center"
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+        }}
       />
 
       <Box position="relative" width="100%" height="100%">
         <Box
           position="absolute"
+          left="1.5vmin"
+          right="calc(100% - 9.6vmin)"
           top="calc(50% - 2.5vmin)"
-          left="2.75vmin"
-          right="calc(50% + 0.9vmin)"
+          bottom="calc(50% - 2.5vmin)"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+        >
+          <Typography fontSize="2.5vmin" fontWeight="bold">
+            {getWindName(state.round.wind)}
+            {state.round.kyoku}국
+          </Typography>
+        </Box>
+
+        <Box
+          position="absolute"
+          left="calc(50% - 3.75vmin)"
+          right="calc(50% - 0.1vmin)"
+          top="calc(50% - 2.5vmin)"
+          bottom="calc(50% + 0.15vmin)"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          textAlign="center"
+        >
+          <Typography fontSize="2.25vmin" fontWeight="bold">
+            {state.round.riichiSticks}
+          </Typography>
+        </Box>
+
+        <Box
+          position="absolute"
+          left="calc(50% - 3.75vmin)"
+          right="calc(50% - 0.1vmin)"
+          top="calc(50% + 0.15vmin)"
           bottom="calc(50% - 2.5vmin)"
           display="flex"
           justifyContent="center"
@@ -45,15 +84,15 @@ const Center: FC<CenterProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.25vmin" fontWeight="bold">
-            {getWindName(state.round.wind)}
-            {state.round.kyoku}국 {state.round.honba}본장
+            {state.round.honba}
           </Typography>
         </Box>
+
         <Box
           position="absolute"
+          left="calc(50% + 1vmin)"
+          right="1.7vmin"
           top="calc(50% - 2.5vmin)"
-          left="calc(50% + 0.9vmin)"
-          right="2.75vmin"
           bottom="calc(50% - 2.5vmin)"
           display="flex"
           justifyContent="center"
@@ -67,63 +106,102 @@ const Center: FC<CenterProps> = ({ state, me }) => {
 
         <Box
           position="absolute"
-          top="1.55vmin"
-          right="2.75vmin"
-          width="4vmin"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          textAlign="center"
-          sx={{ transform: 'rotate(180deg)' }}
-        >
-          <Typography fontSize="2.75vmin" fontWeight="bold">
-            {getWindName(state[op].wind)}
-          </Typography>
-        </Box>
+          top="1.3vmin"
+          right="1.5vmin"
+          width="5.25vmin"
+          height="5.25vmin"
+          padding="0.5vmin"
+          sx={{
+            backgroundOrigin: 'content-box',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: `url(/tiles/${getWindCode(state[op].wind)}.png)`,
+            transform: 'rotate(180deg)',
+          }}
+        />
+
         <Box
           position="absolute"
-          top="3.5vmin"
-          left="0"
-          right="0"
+          left="7.25vmin"
+          right="8.15vmin"
+          top="3.85vmin"
+          bottom="calc(100% - 6.5vmin)"
           display="flex"
           justifyContent="center"
           alignItems="center"
           textAlign="center"
           sx={{ transform: 'rotate(180deg)' }}
         >
-          <Typography fontSize="2vmin" fontWeight="bold" letterSpacing="0.2vmin">
+          <Typography fontSize="2.25vmin" fontWeight="bold" letterSpacing="0.2vmin">
             {state[op].score}
           </Typography>
         </Box>
 
+        {state[op].riichi !== null && (
+          <Box
+            position="absolute"
+            right="8.2vmin"
+            top="1.5vmin"
+            width="19.5vmin"
+            height="1.95vmin"
+            sx={{
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundImage: 'url(/riichi_red.png)',
+              transform: 'rotate(180deg)',
+            }}
+          />
+        )}
+
         <Box
           position="absolute"
-          bottom="1.55vmin"
-          left="2.75vmin"
-          width="4vmin"
+          bottom="1.3vmin"
+          left="1.5vmin"
+          width="5.25vmin"
+          height="5.25vmin"
+          padding="0.5vmin"
+          sx={{
+            backgroundOrigin: 'content-box',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: `url(/tiles/${getWindCode(state[me].wind)}.png)`,
+          }}
+        />
+
+        <Box
+          position="absolute"
+          left="8.15vmin"
+          right="7.25vmin"
+          top="calc(100% - 6.5vmin)"
+          bottom="3.85vmin"
           display="flex"
           justifyContent="center"
           alignItems="center"
           textAlign="center"
         >
-          <Typography fontSize="2.75vmin" fontWeight="bold">
-            {getWindName(state[me].wind)}
-          </Typography>
-        </Box>
-        <Box
-          position="absolute"
-          display="flex"
-          bottom="3.5vmin"
-          left="0"
-          right="0"
-          justifyContent="center"
-          alignItems="center"
-          textAlign="center"
-        >
-          <Typography fontSize="2vmin" fontWeight="bold" letterSpacing="0.2vmin">
+          <Typography fontSize="2.25vmin" fontWeight="bold" letterSpacing="0.2vmin">
             {state[me].score}
           </Typography>
         </Box>
+
+        {state[me].riichi !== null && (
+          <Box
+            position="absolute"
+            left="8.2vmin"
+            bottom="1.5vmin"
+            width="19.5vmin"
+            height="1.95vmin"
+            sx={{
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundImage: 'url(/riichi_red.png)',
+            }}
+          />
+        )}
       </Box>
     </Paper>
   )

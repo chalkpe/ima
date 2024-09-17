@@ -16,7 +16,7 @@ const River: FC<RiverProps> = ({ river, me }) => {
       sx={{
         position: 'absolute',
         left: me ? '32.5vmin' : '67.5vmin',
-        top: me ? '60vmin' : '40vmin',
+        top: me ? '60.25vmin' : '39.75vmin',
         transformOrigin: 'top left',
         transform: me ? undefined : 'rotate(180deg)',
         display: 'flex',

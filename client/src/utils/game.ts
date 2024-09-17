@@ -14,6 +14,19 @@ export const getWindName = (wind: Wind) => {
   }
 }
 
+export const getWindCode = (wind: Wind) => {
+  switch (wind) {
+    case 'east':
+      return '1z'
+    case 'south':
+      return '2z'
+    case 'west':
+      return '3z'
+    case 'north':
+      return '4z'
+  }
+}
+
 export const tenpaiStatusText: Record<Tenpai['status'], string> = {
   tenpai: '텐파이',
   furiten: '후리텐',

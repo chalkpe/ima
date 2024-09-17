@@ -86,6 +86,7 @@ export const calculatePonDaiminkanDecisions = (state: GameState, me: PlayerType)
 
 export const calculateGakanDecisions = (state: GameState, me: PlayerType): Decision[] => {
   if (state[me].riichi) return []
+  if (state.wall.tiles.length === 0) return []
   if (state.wall.doraCount === 5) return []
 
   const hand = state[me].hand
@@ -101,6 +102,7 @@ export const calculateGakanDecisions = (state: GameState, me: PlayerType): Decis
 }
 
 export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+  if (state.wall.tiles.length === 0) return []
   if (state.wall.doraCount === 5) return []
 
   const closedHand = getClosedHand(state[me].hand)

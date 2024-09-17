@@ -156,6 +156,12 @@ describe('helpers/decision', () => {
       expect(calculateGakanDecisions(ss('55p', '1p', '111p', true), 'host')).toEqual([])
     })
 
+    test('returns empty array if no tiles in wall', () => {
+      const state = ss('55p', '1p', '111p')
+      state.wall.tiles = []
+      expect(calculateGakanDecisions(state, 'host')).toEqual([])
+    })
+
     test('returns empty array if dora count is 5', () => {
       const state = ss('55p', '1p', '111p')
       state.wall.doraCount = 5
@@ -179,6 +185,12 @@ describe('helpers/decision', () => {
       state.host.hand.tsumo = c(tsumo)[0]
       return state
     }
+
+    test('returns empty array if no tiles in wall', () => {
+      const state = ss('1112p', '1p')
+      state.wall.tiles = []
+      expect(calculateAnkanDecisions(state, 'host')).toEqual([])
+    })
 
     test('returns empty array if dora count is 5', () => {
       const state = ss('1112p', '1p')

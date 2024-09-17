@@ -56,7 +56,7 @@ const Game = () => {
       data.state[me].decisions.length === 0
     ) {
       const { index } = data.state[me].hand.tsumo
-      setTimeout(() => giri({ index }), 750) // auto tsumogiri after riichi
+      setTimeout(() => giri({ index }), 250) // auto tsumogiri after riichi
     }
   }, [data, giri, me])
 

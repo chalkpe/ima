@@ -22,10 +22,11 @@ const River: FC<RiverProps> = ({ river, me }) => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'start',
+        gap: '0.2vmin',
       }}
     >
       {chunk(river, 6).map((line, index) => (
-        <Box key={index} sx={{ display: 'flex', flexFlow: 'row' }}>
+        <Box key={index} sx={{ display: 'flex', flexFlow: 'row', gap: '0.1vmin' }}>
           {line.map((riverTile) => (
             <Mahgen
               key={riverTile.tile.index}

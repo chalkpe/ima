@@ -36,6 +36,7 @@ const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
         bottom: '26vmin',
         padding: '1vmin',
         backgroundColor: state.color,
+        userSelect: 'none',
       }}
     >
       <Typography fontSize="2.5vmin" fontWeight={state.isYakuman ? 'bold' : undefined}>

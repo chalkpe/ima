@@ -52,7 +52,8 @@ const Scoreboard: FC<ScoreboardProps> = ({ data, me }) => {
               return (
                 <Box key={player} sx={{ backgroundColor: '#ccc', padding: '0 1vmin', borderRadius: '1vmin' }}>
                   <Typography fontSize="3vmin">
-                    {user && <UserHandle {...user} fontSize={3} />} - {scoreboard[`${player}Score`].toLocaleString()}점
+                    {user && <UserHandle {...user} fontSize={3} />}
+                    {scoreboard[`${player}Score`].toLocaleString()}점
                   </Typography>
                 </Box>
               )

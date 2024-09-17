@@ -20,6 +20,7 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         left: '2vmin',
         padding: '1vmin 2vmin',
         opacity: 0.5,
+        userSelect: 'none',
       }}
     >
       <Typography fontSize="2.5vmin" fontWeight="bold">

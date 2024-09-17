@@ -18,6 +18,7 @@ const Center: FC<CenterProps> = ({ state, me }) => {
         left: '32.5vmin',
         width: '35vmin',
         height: '20vmin',
+        userSelect: 'none',
       }}
     >
       <Box

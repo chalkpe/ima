@@ -14,7 +14,7 @@ interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HT
 
 const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natural, style, ...rest }) => {
   const transform = useMemo(
-    () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 5 - 2.5}deg)` : ''),
+    () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 3 - 1.5}deg)` : ''),
     [natural, tile]
   )
 

@@ -240,7 +240,7 @@ export const gameRouter = router({
           started: false,
           hostReady: false,
           guestReady: false,
-          state: createInitialState(),
+          state: { ...createInitialState(), rule: room.state.rule },
         },
       })
     } else {

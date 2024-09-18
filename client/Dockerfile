@@ -26,3 +26,7 @@ RUN apk add --no-cache curl
 
 COPY --from=build /app/client/dist /srv
 COPY /client/Caddyfile /etc/caddy/Caddyfile
+
+LABEL org.opencontainers.image.source=https://github.com/chalkpe/ima
+LABEL org.opencontainers.image.description="Two-player riichi mahjong client"
+LABEL org.opencontainers.image.licenses=MIT

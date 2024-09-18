@@ -27,3 +27,7 @@ COPY --from=build /app/server/prisma /app/server/prisma
 
 WORKDIR /app
 CMD ["npm", "start", "-w", "server"]
+
+LABEL org.opencontainers.image.source=https://github.com/chalkpe/ima
+LABEL org.opencontainers.image.description="Two-player riichi mahjong server"
+LABEL org.opencontainers.image.licenses=MIT

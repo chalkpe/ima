@@ -6,7 +6,7 @@ COPY /server/package.json /app/server/
 COPY /client/package.json /app/client/
 
 WORKDIR /app
-RUN apk add --no-cache python3 make g++
+RUN apk add python3 make g++
 RUN npm ci
 
 COPY /server/tsconfig.json /app/server/
@@ -22,7 +22,7 @@ WORKDIR /app
 RUN npm run generate -w server && npm run build -w client
 
 FROM caddy:2-alpine AS production
-RUN apk add --no-cache curl
+RUN apk add curl
 
 COPY --from=build /app/client/dist /srv
 COPY /client/Caddyfile /etc/caddy/Caddyfile

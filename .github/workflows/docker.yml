@@ -41,6 +41,7 @@ jobs:
             type=edge
             type=ref,event=branch
             type=sha,format=short,prefix=
+            type=raw,value={{date 'YYYYMMDD-HHmmss' tz='Asia/Seoul'}}
 
       - name: Build and push
         uses: docker/build-push-action@v6

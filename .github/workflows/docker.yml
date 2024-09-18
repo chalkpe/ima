@@ -42,13 +42,6 @@ jobs:
             type=ref,event=branch
             type=sha,format=short,prefix=
             type=raw,value={{date 'YYYYMMDD-HHmmss' tz='Asia/Seoul'}}
-          labels: |
-            org.opencontainers.image.title=${{ github.event.repository.name }}-${{ matrix.workspace }}
-            org.opencontainers.image.description=${{ github.event.repository.description }}
-            org.opencontainers.image.url=${{ github.event.repository.html_url }}
-            org.opencontainers.image.source=${{ github.repositoryUrl}}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.licenses=MIT
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -57,6 +50,13 @@ jobs:
           file: ${{ matrix.workspace }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.title=${{ github.event.repository.name }}-${{ matrix.workspace }}
+            org.opencontainers.image.description=${{ github.event.repository.description }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.source=${{ github.repositoryUrl}}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
           cache-from: type=gha
           cache-to: type=gha,mode=max

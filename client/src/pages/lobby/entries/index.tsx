@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
-import { Button, CircularProgress, IconButton, List, ListItem, Stack, Typography } from '@mui/material'
-import { BlockOutlined, LoginOutlined } from '@mui/icons-material'
+import { Button, Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@ima/client/utils/trpc'
 import useAuth from '@ima/client/hooks/useAuth'
-import UserHandle from '@ima/client/components/user/UserHandle'
+import RoomList from '@ima/client/pages/lobby/components/room-list'
 
 const Lobby = () => {
   const navigate = useNavigate()
@@ -13,7 +12,6 @@ const Lobby = () => {
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
   const { data: room, error } = trpc.lobby.room.useQuery(skip)
   const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
-  const { mutate: join } = trpc.lobby.join.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   useEffect(() => {
     if (skip) return
@@ -51,36 +49,7 @@ const Lobby = () => {
       </Stack>
 
       <Typography fontSize="7vmin">방 목록</Typography>
-      {list?.length ? (
-        <List>
-          {list.map((room) => (
-            <ListItem
-              key={room.host}
-              secondaryAction={
-                <IconButton edge="end" onClick={() => join({ host: room.host })} sx={{ fontSize: '4vmin' }}>
-                  {room.guestUser ? <BlockOutlined fontSize="inherit" /> : <LoginOutlined fontSize="inherit" />}
-                </IconButton>
-              }
-            >
-              <Stack direction="row" gap="1vmin">
-                {room.hostUser && <UserHandle {...room.hostUser} fontSize={4} />}
-                {room.guestUser && (
-                  <>
-                    <Typography fontSize="4vmin"> vs </Typography>
-                    <UserHandle {...room.guestUser} fontSize={4} />
-                  </>
-                )}
-              </Stack>
-            </ListItem>
-          ))}
-        </List>
-      ) : list ? (
-        <Typography fontSize="4vmin">비어 있음</Typography>
-      ) : (
-        <p>
-          <CircularProgress />
-        </p>
-      )}
+      <RoomList list={list} />
     </Stack>
   )
 }

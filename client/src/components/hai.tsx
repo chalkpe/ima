@@ -3,7 +3,7 @@ import Rand from 'rand-seed'
 import { convertTileToCode, getBackground } from '@ima/client/utils/tile'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
-interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
+interface HaiProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
   size: number
   tile: Tile | SimpleTile
   dim?: boolean
@@ -12,7 +12,7 @@ interface MahgenProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HT
   natural?: boolean
 }
 
-const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natural, style, ...rest }) => {
+const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, stack, natural, style, ...rest }) => {
   const transform = useMemo(
     () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 3 - 1.5}deg)` : ''),
     [natural, tile]
@@ -55,10 +55,10 @@ const MahgenElement: FC<MahgenProps> = ({ size, tile, dim, rotate, stack, natura
       {tile.type === 'back' ? (
         <div style={commonImageStyle} />
       ) : (
-        <img src={`./tiles/${convertTileToCode(tile)}.png`} style={commonImageStyle} />
+        <img alt={convertTileToCode(tile)} src={`./tiles/${convertTileToCode(tile)}.png`} style={commonImageStyle} />
       )}
     </div>
   )
 }
 
-export default MahgenElement
+export default Hai

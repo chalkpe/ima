@@ -14,7 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import UserHandle from '@ima/client/components/user/UserHandle'
+import UserHandle from '@ima/client/components/user-handle'
 
 const Room = () => {
   const navigate = useNavigate()

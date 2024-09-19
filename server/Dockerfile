@@ -5,8 +5,7 @@ COPY /package-lock.json /app/
 COPY /server/package.json /app/server/
 
 WORKDIR /app
-RUN apk add python3 make g++
-RUN npm ci
+RUN apk add --no-cache g++ make python3 && npm ci
 
 COPY /server/tsconfig.json /app/server/
 COPY /server/src /app/server/src
@@ -16,7 +15,7 @@ WORKDIR /app
 RUN npm run generate -w server && npm run build -w server && npm prune --omit=dev
 
 FROM node:22-alpine AS production
-RUN apk add curl
+RUN apk add --no-cache curl
 
 COPY --from=build /app/package.json /app/
 COPY --from=build /app/node_modules /app/node_modules

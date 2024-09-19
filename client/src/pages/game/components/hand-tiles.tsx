@@ -1,21 +1,21 @@
 import { FC, useMemo } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from '@ima/client/components/tile/Mahgen'
-import TileSet from '@ima/client/components/tile/TileSet'
-import Tenpai from '@ima/client/components/game/Tenpai'
-import TenpaiLabel from '@ima/client/components/game/TenpaiLabel'
+import Hai from '@ima/client/components/hai'
+import HaiGroup from '@ima/client/components/hai-group'
+import TenpaiTiles from '@ima/client/pages/game/components/tenpai-tiles'
+import TenpaiLabel from '@ima/client/pages/game/components/tenpai-label'
 import { trpc } from '@ima/client/utils/trpc'
-import { convertTileToCode, sortTiles } from '@ima/client/utils/tile'
+import { sortTiles } from '@ima/client/utils/tile'
 import { useAtom } from 'jotai'
 import { hoveredAtom } from '@ima/client/store/hovered'
 import type { Hand } from '@ima/server/types/game'
 
-interface HandProps {
+interface HandTilesProps {
   hand: Hand
   me?: boolean
 }
 
-const Hand: FC<HandProps> = ({ hand, me }) => {
+const HandTiles: FC<HandTilesProps> = ({ hand, me }) => {
   const [hoveredIndex, setHoveredIndex] = useAtom(hoveredAtom)
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
 
@@ -34,8 +34,8 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
   return (
     <>
       {tedashiTenpai.length === 0 && currentTenpai.length > 0 && <TenpaiLabel list={currentTenpai} />}
-      {tedashiTenpai.length > 0 && <Tenpai tenpaiList={tedashiTenpai} />}
-      {tsumogiriTenpai.length > 0 && <Tenpai tenpaiList={tsumogiriTenpai} current />}
+      {tedashiTenpai.length > 0 && <TenpaiTiles list={tedashiTenpai} />}
+      {tsumogiriTenpai.length > 0 && <TenpaiTiles list={tsumogiriTenpai} current />}
 
       <Stack
         direction={me ? 'row' : 'row-reverse'}
@@ -45,7 +45,7 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
       >
         <Stack direction={me ? 'row' : 'row-reverse'} gap={0} alignItems="end">
           {closed.map((tile) => (
-            <Mahgen
+            <Hai
               key={tile.index}
               size={6}
               tile={tile}
@@ -60,14 +60,16 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         </Stack>
         <Stack direction="row" gap={0} alignItems="end">
           {hand.tsumo ? (
-            <Mahgen
+            <Hai
               size={6}
               tile={hand.tsumo}
-              onClick={() => me && setHoveredIndex(hand.tsumo!.index)}
-              onMouseEnter={() => me && setHoveredIndex(hand.tsumo!.index)}
+              onClick={() => me && hand.tsumo && setHoveredIndex(hand.tsumo.index)}
+              onMouseEnter={() => me && hand.tsumo && setHoveredIndex(hand.tsumo.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
-              onDoubleClick={() => me && hoveredIndex === hand.tsumo!.index && giri({ index: hand.tsumo!.index })}
-              style={{ paddingBottom: hoveredIndex === hand.tsumo!.index ? '1vmin' : '0' }}
+              onDoubleClick={() =>
+                me && hand.tsumo && hoveredIndex === hand.tsumo.index && giri({ index: hand.tsumo.index })
+              }
+              style={{ paddingBottom: hoveredIndex === hand.tsumo.index ? '1vmin' : '0' }}
             />
           ) : (
             <Box width="6vmin" />
@@ -83,16 +85,12 @@ const Hand: FC<HandProps> = ({ hand, me }) => {
         {...(me ? { bottom: '2vmin', right: '2vmin' } : { top: '2vmin', left: '2vmin' })}
         sx={me ? {} : { transform: 'rotate(180deg)' }}
       >
-        {hand.called.map((tileSet, index) => (
-          <TileSet
-            tileSet={tileSet}
-            size={5}
-            key={index + tileSet.jun + tileSet.tiles.map(convertTileToCode).join('')}
-          />
+        {hand.called.map((set) => (
+          <HaiGroup set={set} size={5} key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()} />
         ))}
       </Stack>
     </>
   )
 }
 
-export default Hand
+export default HandTiles

@@ -139,3 +139,10 @@ export interface Room {
   started: boolean
   state: GameState
 }
+
+export interface LobbyRoom {
+  host: string
+  hostUser?: { username: string; displayName: string } | null
+  guest: string | null
+  guestUser?: { username: string; displayName: string } | null
+}

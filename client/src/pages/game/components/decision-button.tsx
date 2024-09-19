@@ -1,8 +1,8 @@
-import { ComponentProps, FC, useCallback } from 'react'
+import { ComponentProps, FC, useCallback, useMemo } from 'react'
 import { Button, Stack } from '@mui/material'
-import Mahgen from '@ima/client/components/tile/Mahgen'
+import Hai from '@ima/client/components/hai'
 import { trpc } from '@ima/client/utils/trpc'
-import { compareDecisions } from '@ima/client/utils/tile'
+import { compareDecisions } from '@ima/client/utils/game'
 import { useSetAtom } from 'jotai'
 import { hoveredAtom } from '@ima/client/store/hovered'
 import type { Decision } from '@ima/server/types/game'
@@ -35,17 +35,17 @@ const typeColor: Record<Decision['type'], ComponentProps<typeof Button>['color']
   skip_and_tsumo: 'secondary',
 }
 
-interface DecisionsProps {
+interface DecisionButtonProps {
   decisions: Decision[]
 }
 
-const Decisions: FC<DecisionsProps> = ({ decisions }) => {
+const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
   const setHovered = useSetAtom(hoveredAtom)
 
-  const { mutate: pon } = trpc.game.pon.useMutation()
-  const { mutate: chi } = trpc.game.chi.useMutation()
   const { mutate: ankan } = trpc.game.ankan.useMutation()
   const { mutate: gakan } = trpc.game.gakan.useMutation()
+  const { mutate: pon } = trpc.game.pon.useMutation()
+  const { mutate: chi } = trpc.game.chi.useMutation()
   const { mutate: daiminkan } = trpc.game.daiminkan.useMutation()
   const { mutate: skipAndTsumo } = trpc.game.skipAndTsumo.useMutation()
   const { mutate: skipChankan } = trpc.game.skipChankan.useMutation()
@@ -53,54 +53,24 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   const { mutate: callRon } = trpc.game.callRon.useMutation()
   const { mutate: riichi } = trpc.game.riichi.useMutation()
 
-  const onClick = useCallback(
-    (decision: Decision) => {
-      if (decision.type === 'ankan' && decision.tile) {
-        const type = decision.tile.type
-        const value = decision.tile.value
-        if (type !== 'back') ankan({ type, value })
-      }
-
-      if (decision.type === 'gakan' && decision.tile) {
-        const type = decision.tile.type
-        const value = decision.tile.value
-        if (type !== 'back') gakan({ type, value })
-      }
-
-      if (decision.type === 'pon' && decision.otherTiles) {
-        pon({ tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] })
-      }
-
-      if (decision.type === 'chi' && decision.otherTiles) {
-        chi({ tatsu: [decision.otherTiles[0].index, decision.otherTiles[1].index] })
-      }
-
-      if (decision.type === 'daiminkan') {
-        daiminkan()
-      }
-
-      if (decision.type === 'skip_and_tsumo') {
-        skipAndTsumo()
-      }
-
-      if (decision.type === 'skip_chankan') {
-        skipChankan()
-      }
-
-      if (decision.type === 'tsumo') {
-        callTsumo()
-      }
-
-      if (decision.type === 'ron') {
-        callRon()
-      }
-
-      if (decision.type === 'riichi' && decision.tile) {
-        riichi({ index: decision.tile.index })
-      }
-    },
+  const handlers: Record<Decision['type'], (decision: Decision) => unknown> = useMemo(
+    () => ({
+      ankan: (d) => d.tile && d.tile.type !== 'back' && ankan({ type: d.tile.type, value: d.tile.value }),
+      gakan: (d) => d.tile && d.tile.type !== 'back' && gakan({ type: d.tile.type, value: d.tile.value }),
+      pon: (d) => d.otherTiles && pon({ tatsu: [d.otherTiles[0].index, d.otherTiles[1].index] }),
+      chi: (d) => d.otherTiles && chi({ tatsu: [d.otherTiles[0].index, d.otherTiles[1].index] }),
+      daiminkan: () => daiminkan(),
+      skip_and_tsumo: () => skipAndTsumo(),
+      skip_chankan: () => skipChankan(),
+      tsumo: () => callTsumo(),
+      ron: () => callRon(),
+      riichi: (d) => d.tile && riichi({ index: d.tile.index }),
+      nuki: () => {},
+    }),
     [ankan, callRon, callTsumo, chi, daiminkan, gakan, pon, riichi, skipAndTsumo, skipChankan]
   )
+
+  const onClick = useCallback((decision: Decision) => handlers[decision.type](decision), [handlers])
 
   return (
     <Stack
@@ -117,7 +87,7 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
     >
       {[...decisions].sort(compareDecisions).map((decision) => (
         <Button
-          key={[decision.type, decision.tile?.index, decision.otherTiles?.map((t) => t.index).join('')].join('')}
+          key={[decision.type, decision.tile?.index, decision.otherTiles?.map((t) => t.index).join()].join()}
           variant="contained"
           color={typeColor[decision.type]}
           size="large"
@@ -137,8 +107,8 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
         >
           {typeText[decision.type]}
           <Stack direction="row">
-            {decision.tile && <Mahgen size={3} tile={decision.tile} />}
-            {decision.otherTiles?.map((tile) => <Mahgen key={tile.index} size={3} tile={tile} />)}
+            {decision.tile && <Hai size={3} tile={decision.tile} />}
+            {decision.otherTiles?.map((tile) => <Hai key={tile.index} size={3} tile={tile} />)}
           </Stack>
         </Button>
       ))}
@@ -146,4 +116,4 @@ const Decisions: FC<DecisionsProps> = ({ decisions }) => {
   )
 }
 
-export default Decisions
+export default DecisionButton

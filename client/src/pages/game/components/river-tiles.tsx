@@ -1,16 +1,16 @@
 import { FC } from 'react'
-import Mahgen from '@ima/client/components/tile/Mahgen'
+import Hai from '@ima/client/components/hai'
 import { Box } from '@mui/material'
 import { chunk } from '@ima/client/utils/tile'
 
 import type { RiverTile } from '@ima/server/types/game'
 
-interface RiverProps {
+interface RiverTilesProps {
   river: RiverTile[]
   me?: boolean
 }
 
-const River: FC<RiverProps> = ({ river, me }) => {
+const RiverTiles: FC<RiverTilesProps> = ({ river, me }) => {
   return (
     <Box
       sx={{
@@ -25,10 +25,10 @@ const River: FC<RiverProps> = ({ river, me }) => {
         gap: '0.2vmin',
       }}
     >
-      {chunk(river, 6).map((line, index) => (
-        <Box key={index} sx={{ display: 'flex', flexFlow: 'row', gap: '0.1vmin' }}>
+      {chunk(river, 6).map((line) => (
+        <Box key={line.map((t) => t.tile.index).join()} sx={{ display: 'flex', flexFlow: 'row', gap: '0.1vmin' }}>
           {line.map((riverTile) => (
-            <Mahgen
+            <Hai
               key={riverTile.tile.index}
               size={5}
               natural
@@ -43,4 +43,4 @@ const River: FC<RiverProps> = ({ river, me }) => {
   )
 }
 
-export default River
+export default RiverTiles

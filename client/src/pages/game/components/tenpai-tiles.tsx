@@ -1,17 +1,17 @@
 import { FC } from 'react'
 import { Paper, Stack, Typography } from '@mui/material'
-import TileWithCount from '@ima/client/components/tile/TileWithCount'
+import HaiCounter from '@ima/client/components/hai-counter'
 import { tenpaiStatusText } from '@ima/client/utils/game'
 import { compareSimpleTile } from '@ima/client/utils/tile'
 
 import type { Tenpai } from '@ima/server/types/tenpai'
 
-interface TenpaiProps {
-  tenpaiList: Tenpai[]
+interface TenpaiTilesProps {
+  list: Tenpai[]
   current?: boolean
 }
 
-const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
+const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
   return (
     <Paper
       sx={{
@@ -27,11 +27,11 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
         {current ? '현재' : ''}
       </Typography>
       <Stack direction="row" gap="1vmin">
-        {[...tenpaiList]
+        {[...list]
           .sort((a, b) => compareSimpleTile(a.agariTile, b.agariTile))
           .map((tenpai) => (
-            <Stack direction="column" gap="0.25vmin" key={tenpai.agariTile.type + tenpai.agariTile.value}>
-              <TileWithCount tile={tenpai.agariTile} size={3} />
+            <Stack direction="column" gap="0.25vmin" key={[tenpai.agariTile.type, tenpai.agariTile.value].join()}>
+              <HaiCounter tile={tenpai.agariTile} size={3} />
               <Typography fontSize="2vmin" align="left">
                 {tenpai.status === 'tenpai' ? `${tenpai.han}판` : tenpaiStatusText[tenpai.status]}
               </Typography>
@@ -42,4 +42,4 @@ const Tenpai: FC<TenpaiProps> = ({ tenpaiList, current }) => {
   )
 }
 
-export default Tenpai
+export default TenpaiTiles

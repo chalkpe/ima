@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from '@ima/client/components/tile/Mahgen'
+import Hai from '@ima/client/components/hai'
 
 import type { Wall } from '@ima/server/types/game'
 import type { Tile } from '@ima/server/types/tile'
@@ -39,18 +39,18 @@ const KingTiles: FC<KingTilesProps> = ({ wall, size = 4 }) => {
       <Stack direction="row" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 2}vmin)`} sx={sx}>
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={size} tile={tile} />
+            <Hai key={tile.index} size={size} tile={tile} />
           ) : (
-            <Box key={'lower' + index} width={`${size}vmin`} />
+            <Box key={['lower', index].join()} width={`${size}vmin`} />
           )
         )}
       </Stack>
       <Stack direction="row" position="absolute" top="34vmin" left="2vmin" sx={sx}>
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={size} tile={tile} />
+            <Hai key={tile.index} size={size} tile={tile} />
           ) : (
-            <Box key={'upper' + index} width={`${size}vmin`} />
+            <Box key={['upper', index].join()} width={`${size}vmin`} />
           )
         )}
       </Stack>

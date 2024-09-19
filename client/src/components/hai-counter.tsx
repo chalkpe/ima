@@ -2,21 +2,21 @@ import { FC } from 'react'
 import { trpc } from '@ima/client/utils/trpc'
 import { skipToken } from '@tanstack/react-query'
 import { Stack, Typography } from '@mui/material'
-import Mahgen from '@ima/client/components/tile/Mahgen'
+import Hai from '@ima/client/components/hai'
 import type { SimpleTile } from '@ima/server/types/tile'
 
-interface TileWithCountProps {
+interface HaiCounterProps {
   tile: SimpleTile
   size: number
 }
 
-const TileWithCount: FC<TileWithCountProps> = ({ tile, size }) => {
+const HaiCounter: FC<HaiCounterProps> = ({ tile, size }) => {
   const { type, value } = tile
   const { data } = trpc.game.getRemainingTileCount.useQuery(type === 'back' ? skipToken : { type, value })
 
   return (
     <Stack direction="row">
-      <Mahgen size={size} tile={tile} />
+      <Hai size={size} tile={tile} />
       <Typography fontSize={`${size * 0.75}vmin`} align="center">
         &nbsp;x{data}
       </Typography>
@@ -24,4 +24,4 @@ const TileWithCount: FC<TileWithCountProps> = ({ tile, size }) => {
   )
 }
 
-export default TileWithCount
+export default HaiCounter

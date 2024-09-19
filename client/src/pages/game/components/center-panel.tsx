@@ -3,12 +3,12 @@ import { Box, Paper, Typography } from '@mui/material'
 import { getWindCode, getWindName } from '@ima/client/utils/game'
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
-interface CenterProps {
+interface CenterPanelProps {
   state: GameState
   me: PlayerType
 }
 
-const Center: FC<CenterProps> = ({ state, me }) => {
+const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
   const op = me === 'host' ? 'guest' : 'host'
   return (
     <Paper
@@ -208,4 +208,4 @@ const Center: FC<CenterProps> = ({ state, me }) => {
   )
 }
 
-export default Center
+export default CenterPanel

@@ -1,15 +1,15 @@
 import { FC } from 'react'
 import { Box, Stack } from '@mui/material'
-import Mahgen from '@ima/client/components/tile/Mahgen'
+import Hai from '@ima/client/components/hai'
 
 import type { Tile } from '@ima/server/types/tile'
 import type { Wall } from '@ima/server/types/game'
 
-interface WallProps {
+interface WallTilesProps {
   wall: Wall
 }
 
-const Wall: FC<WallProps> = ({ wall }) => {
+const WallTiles: FC<WallTilesProps> = ({ wall }) => {
   if (wall.tiles.length === 0) return null
 
   const firstIndex = wall.tiles[0].index
@@ -40,9 +40,9 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} tile={tile} />
+            <Hai key={tile.index} size={3.5} tile={tile} />
           ) : (
-            <Box key={'lower' + index} width="3.5vmin" />
+            <Box key={['lower', index].join()} width="3.5vmin" />
           )
         )}
       </Stack>
@@ -55,9 +55,9 @@ const Wall: FC<WallProps> = ({ wall }) => {
       >
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Mahgen key={tile.index} size={3.5} tile={tile} />
+            <Hai key={tile.index} size={3.5} tile={tile} />
           ) : (
-            <Box key={'upper' + index} width="3.5vmin" />
+            <Box key={['upper', index].join()} width="3.5vmin" />
           )
         )}
       </Stack>
@@ -65,4 +65,4 @@ const Wall: FC<WallProps> = ({ wall }) => {
   )
 }
 
-export default Wall
+export default WallTiles

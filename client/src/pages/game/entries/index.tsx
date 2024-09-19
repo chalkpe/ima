@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react'
 import useAuth from '@ima/client/hooks/useAuth'
 import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
-import Hand from '@ima/client/components/game/Hand'
-import River from '@ima/client/components/game/River'
-import KingTiles from '@ima/client/components/game/KingTiles'
-import Center from '@ima/client/components/game/Center'
-import Wall from '@ima/client/components/game/Wall'
-import Decisions from '@ima/client/components/game/Decisions'
-import Scoreboard from '@ima/client/components/game/Scoreboard'
+import HandTiles from '@ima/client/pages/game/components/hand-tiles'
+import RiverTiles from '@ima/client/pages/game/components/river-tiles'
+import KingTiles from '@ima/client/pages/game/components/king-tiles'
+import CenterPanel from '@ima/client/pages/game/components/center-panel'
+import WallTiles from '@ima/client/pages/game/components/wall-tiles'
+import DecisionButton from '@ima/client/pages/game/components/decision-button'
+import GameResult from '@ima/client/pages/game/components/game-result'
+import StateChange from '@ima/client/pages/game/components/state-change'
 import type { StateChangeType } from '@ima/server/types/game'
-import StateChange from '@ima/client/components/game/StateChange'
 
 const Game = () => {
   const navigate = useNavigate()
@@ -64,18 +64,18 @@ const Game = () => {
 
   return (
     <>
-      <Center state={data.state} me={me} />
-      <Wall wall={data.state.wall} />
+      <CenterPanel state={data.state} me={me} />
+      <WallTiles wall={data.state.wall} />
       <KingTiles wall={data.state.wall} />
 
-      <Hand hand={data.state[opponent].hand} />
-      <River river={data.state[opponent].river} />
+      <HandTiles hand={data.state[opponent].hand} />
+      <RiverTiles river={data.state[opponent].river} />
 
-      <River river={data.state[me].river} me />
-      <Hand hand={data.state[me].hand} me />
+      <RiverTiles river={data.state[me].river} me />
+      <HandTiles hand={data.state[me].hand} me />
 
-      <Decisions decisions={data.state[me].decisions} />
-      <Scoreboard data={data} me={me} />
+      <DecisionButton decisions={data.state[me].decisions} />
+      <GameResult room={data} me={me} />
 
       {type && <StateChange type={type} />}
     </>

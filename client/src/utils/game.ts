@@ -1,5 +1,26 @@
-import type { Wind } from '@ima/server/types/game'
+import { compareTile } from '@ima/client/utils/tile'
+import { byOrder, compareArray, falsyFirst } from '@ima/client/utils/comparator'
 import type { Tenpai } from '@ima/server/types/tenpai'
+import type { AgariScoreboard, Decision, Wind } from '@ima/server/types/game'
+
+const decisionTypeOrder: Decision['type'][] = [
+  'ankan',
+  'gakan',
+  'daiminkan',
+  'pon',
+  'chi',
+  'nuki',
+  'riichi',
+  'tsumo',
+  'ron',
+  'skip_chankan',
+  'skip_and_tsumo',
+]
+
+export const compareDecisions = (a: Decision, b: Decision) =>
+  byOrder(a.type, b.type, decisionTypeOrder) ||
+  falsyFirst(a.tile, b.tile, compareTile) ||
+  falsyFirst(a.otherTiles, b.otherTiles, (a, b) => compareArray(a, b, compareTile))
 
 export const getWindName = (wind: Wind) => {
   switch (wind) {
@@ -31,4 +52,27 @@ export const tenpaiStatusText: Record<Tenpai['status'], string> = {
   tenpai: '텐파이',
   furiten: '후리텐',
   muyaku: '역 없음',
+}
+
+export const calculateTenpaiState = (list: Tenpai[]) => {
+  if (list.every((t) => t.han >= 13)) {
+    return { text: '역만 준비', color: '#fac12d', isYakuman: true }
+  }
+
+  if (list.some((t) => t.han >= 13)) {
+    return { text: '역만 기회', color: '#ccc', isYakuman: true }
+  }
+
+  if (list.some((t) => t.status === 'tenpai')) {
+    return { text: tenpaiStatusText['tenpai'], color: undefined, isYakuman: false }
+  }
+
+  return undefined
+}
+
+export const calculateScoreName = (scoreboard: AgariScoreboard) => {
+  if (scoreboard.yakuman > 0) {
+    return scoreboard.yakuman === 1 ? '역만' : `${scoreboard.yakuman}배역만`
+  }
+  return `${scoreboard.han}판`
 }

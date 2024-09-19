@@ -64,7 +64,7 @@ export const calculateTenpaiState = (list: Tenpai[]) => {
   }
 
   if (list.some((t) => t.status === 'tenpai')) {
-    return { text: tenpaiStatusText['tenpai'], color: undefined, isYakuman: false }
+    return { text: tenpaiStatusText['tenpai'], color: 'white', isYakuman: false }
   }
 
   return undefined

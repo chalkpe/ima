@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import { WiredCard } from 'react-wired-elements'
 import { Backdrop, Dialog, Typography } from '@mui/material'
 import type { StateChangeType } from '@ima/server/types/game'
 
@@ -15,6 +16,19 @@ const typeText: Record<StateChangeType, string> = {
   end: '종료',
 }
 
+const typeColor: Record<StateChangeType, string> = {
+  kan: '#4caf50',
+  pon: '#42a5f5',
+  chi: '#03a9f4',
+  nuki: '#03a9f4',
+  riichi: '#ff9800',
+  tsumo: '#ef5350',
+  ron: '#ef5350',
+  update: '',
+  start: '#ffffff',
+  end: '#ffffff',
+}
+
 interface StateChangeProps {
   type: StateChangeType
 }
@@ -26,9 +40,13 @@ const StateChange: FC<StateChangeProps> = ({ type }) => {
       open={true}
       slots={{ backdrop: Backdrop }}
       slotProps={{ backdrop: { sx: { backgroundColor: 'transparent' } } }}
-      PaperProps={{ sx: { padding: '2vmin' } }}
+      PaperProps={{ sx: { overflow: 'hidden', backgroundColor: typeColor[type] } }}
     >
-      <Typography fontSize="10vmin">{typeText[type]}</Typography>
+      <WiredCard elevation={5}>
+        <Typography fontSize="10vmin" margin="0vmin 3vmin">
+          {typeText[type]}
+        </Typography>
+      </WiredCard>
     </Dialog>
   )
 }

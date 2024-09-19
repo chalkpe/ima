@@ -1,5 +1,7 @@
-import { ComponentProps, FC, useCallback, useMemo } from 'react'
-import { Button, Stack } from '@mui/material'
+import { FC, useCallback, useMemo } from 'react'
+import styled from '@emotion/styled'
+import { WiredCard } from 'react-wired-elements'
+import { Stack, Typography } from '@mui/material'
 import Hai from '@ima/client/components/hai'
 import { trpc } from '@ima/client/utils/trpc'
 import { compareDecisions } from '@ima/client/utils/game'
@@ -21,18 +23,18 @@ const typeText: Record<Decision['type'], string> = {
   skip_and_tsumo: '스킵',
 }
 
-const typeColor: Record<Decision['type'], ComponentProps<typeof Button>['color']> = {
-  ankan: 'success',
-  gakan: 'success',
-  daiminkan: 'success',
-  pon: 'primary',
-  chi: 'info',
-  nuki: 'info',
-  riichi: 'warning',
-  tsumo: 'error',
-  ron: 'error',
-  skip_chankan: 'secondary',
-  skip_and_tsumo: 'secondary',
+const typeColor: Record<Decision['type'], string> = {
+  ankan: '#4caf50',
+  gakan: '#4caf50',
+  daiminkan: '#4caf50',
+  pon: '#42a5f5',
+  chi: '#03a9f4',
+  nuki: '#03a9f4',
+  riichi: '#ff9800',
+  tsumo: '#ef5350',
+  ron: '#ef5350',
+  skip_chankan: '#ba68c8',
+  skip_and_tsumo: '#ba68c8',
 }
 
 interface DecisionButtonProps {
@@ -86,34 +88,44 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
       justifyContent="flex-end"
     >
       {[...decisions].sort(compareDecisions).map((decision) => (
-        <Button
+        <div
           key={[decision.type, decision.tile?.index, decision.otherTiles?.map((t) => t.index).join()].join()}
-          variant="contained"
-          color={typeColor[decision.type]}
-          size="large"
           onClick={() => onClick(decision)}
           onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            fontSize: '3vmin',
-            fontWeight: 'bold',
-            padding: '1vmin 2vmin',
-            minWidth: '12vmin',
-            opacity: 0.7,
-            ':hover': { opacity: 1 },
-          }}
         >
-          {typeText[decision.type]}
-          <Stack direction="row">
-            {decision.tile && <Hai size={3} tile={decision.tile} />}
-            {decision.otherTiles?.map((tile) => <Hai key={tile.index} size={3} tile={tile} />)}
-          </Stack>
-        </Button>
+          <Card
+            elevation={5}
+            style={{
+              padding: '1vmin 2vmin',
+              minWidth: '12vmin',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: typeColor[decision.type],
+            }}
+          >
+            <Stack direction="column" alignItems="center" justifyContent="center">
+              <Typography fontSize="3vmin" fontWeight="bold">
+                {typeText[decision.type]}
+              </Typography>
+              <Stack direction="row" justifyContent="center">
+                {decision.tile && <Hai size={3} tile={decision.tile} />}
+                {decision.otherTiles?.map((tile) => <Hai key={tile.index} size={3} tile={tile} />)}
+              </Stack>
+            </Stack>
+          </Card>
+        </div>
       ))}
     </Stack>
   )
 }
 
 export default DecisionButton
+
+const Card = styled(WiredCard)`
+  opacity: 0.7;
+  :hover {
+    opacity: 1;
+  }
+`

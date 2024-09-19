@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
-import { Paper, Typography } from '@mui/material'
+import { WiredCard } from 'react-wired-elements'
+import { Typography } from '@mui/material'
 import { calculateTenpaiState } from '@ima/client/utils/game'
 import type { Tenpai } from '@ima/server/types/tenpai'
 
@@ -12,12 +13,13 @@ const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
 
   if (!state) return null
   return (
-    <Paper
-      sx={{
+    <WiredCard
+      elevation={3}
+      style={{
         opacity: state.isYakuman ? 0.75 : 0.5,
         position: 'absolute',
         left: '2vmin',
-        bottom: '26vmin',
+        bottom: '25.75vmin',
         padding: '1vmin',
         backgroundColor: state.color,
         userSelect: 'none',
@@ -26,7 +28,7 @@ const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
       <Typography fontSize="2.5vmin" fontWeight={state.isYakuman ? 'bold' : undefined}>
         {state.text}
       </Typography>
-    </Paper>
+    </WiredCard>
   )
 }
 

@@ -5,6 +5,7 @@ import HaiGroup from '@ima/client/components/hai-group'
 import { calculateScoreName } from '@ima/client/utils/game'
 import { compareTile } from '@ima/client/utils/tile'
 import type { AgariScoreboard, Room } from '@ima/server/types/game'
+import { WiredCard } from 'react-wired-elements'
 
 interface GameResultAgariProps {
   room: Room
@@ -20,60 +21,59 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
         {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin" sx={{ backgroundColor: '#cadf9f' }}>
-        <Stack direction="row" gap="1vmin">
-          <Stack direction="row" gap={0}>
-            {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-              <Hai key={tile.index} size={3.5} tile={tile} />
-            ))}
+      <WiredCard elevation={3} style={{ backgroundColor: '#cadf9f' }}>
+        <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin">
+          <Stack direction="row" gap="1vmin">
+            <Stack direction="row" gap={0}>
+              {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
+                <Hai key={tile.index} size={3.5} tile={tile} />
+              ))}
+            </Stack>
+            <Stack direction="row" gap="0.5vmin">
+              {scoreboard.hand.called.map((set) => (
+                <HaiGroup
+                  key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()}
+                  set={set}
+                  size={3.5}
+                  rotate={false}
+                  stack={false}
+                />
+              ))}
+            </Stack>
+            {scoreboard.hand.tsumo && <Hai size={3.5} tile={scoreboard.hand.tsumo} />}
           </Stack>
-          <Stack direction="row" gap="0.5vmin">
-            {scoreboard.hand.called.map((set) => (
-              <HaiGroup
-                key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()}
-                set={set}
-                size={3.5}
-                rotate={false}
-                stack={false}
-              />
-            ))}
-          </Stack>
-          {scoreboard.hand.tsumo && <Hai size={3.5} tile={scoreboard.hand.tsumo} />}
-        </Stack>
 
-        <Stack direction="row" gap="1vmin">
           <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin">도라</Typography>
-            <Stack direction="row">
-              {scoreboard.doraTiles.map((tile) => (
-                <Hai key={tile.index} size={3.5} tile={tile} />
-              ))}
+            <Stack direction="row" gap="1vmin">
+              <Typography fontSize="3vmin">도라</Typography>
+              <Stack direction="row">
+                {scoreboard.doraTiles.map((tile) => (
+                  <Hai key={tile.index} size={3.5} tile={tile} />
+                ))}
+              </Stack>
             </Stack>
-          </Stack>
-          <Stack direction="row" gap="1vmin">
-            <Typography fontSize="3vmin">뒷도라</Typography>
-            <Stack direction="row">
-              {scoreboard.uraDoraTiles.map((tile) => (
-                <Hai key={tile.index} size={3.5} tile={tile} />
-              ))}
+            <Stack direction="row" gap="1vmin">
+              <Typography fontSize="3vmin">뒷도라</Typography>
+              <Stack direction="row">
+                {scoreboard.uraDoraTiles.map((tile) => (
+                  <Hai key={tile.index} size={3.5} tile={tile} />
+                ))}
+              </Stack>
             </Stack>
           </Stack>
         </Stack>
-      </Stack>
+      </WiredCard>
 
       <Stack direction="row" flexWrap="wrap" gap="1vmin">
         {scoreboard.yaku.map((yaku) => (
-          <Stack
-            key={yaku.name}
-            direction="row"
-            gap="1vmin"
-            sx={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc', padding: '0 1vmin', borderRadius: '1vmin' }}
-          >
-            <Typography fontSize="3vmin" fontWeight="bold">
-              {yaku.name}
-            </Typography>
-            <Typography fontSize="3vmin">{yaku.han}판</Typography>
-          </Stack>
+          <WiredCard key={yaku.name} elevation={1} style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc' }}>
+            <Stack direction="row" gap="1vmin" sx={{ padding: '0 1vmin' }}>
+              <Typography fontSize="3vmin" fontWeight="bold">
+                {yaku.name}
+              </Typography>
+              <Typography fontSize="3vmin">{yaku.han}판</Typography>
+            </Stack>
+          </WiredCard>
         ))}
       </Stack>
 

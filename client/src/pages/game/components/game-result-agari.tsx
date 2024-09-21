@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Stack, Typography } from '@mui/material'
 import Hai from '@ima/client/components/hai'
 import HaiGroup from '@ima/client/components/hai-group'
-import { calculateScoreName } from '@ima/client/utils/game'
+import { calculateScoreName, getAgariHaiSize, getYakuFontSize } from '@ima/client/utils/game'
 import { compareTile } from '@ima/client/utils/tile'
 import type { AgariScoreboard, Room } from '@ima/server/types/game'
 import { WiredCard } from 'react-wired-elements'
@@ -26,7 +26,7 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
           <Stack direction="row" gap="1vmin">
             <Stack direction="row" gap={0}>
               {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-                <Hai key={tile.index} size={3.5} tile={tile} />
+                <Hai key={tile.index} size={getAgariHaiSize(scoreboard.hand)} tile={tile} />
               ))}
             </Stack>
             <Stack direction="row" gap="0.5vmin">
@@ -34,13 +34,13 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
                 <HaiGroup
                   key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()}
                   set={set}
-                  size={3.5}
+                  size={getAgariHaiSize(scoreboard.hand)}
                   rotate={false}
                   stack={false}
                 />
               ))}
             </Stack>
-            {scoreboard.hand.tsumo && <Hai size={3.5} tile={scoreboard.hand.tsumo} />}
+            {scoreboard.hand.tsumo && <Hai size={getAgariHaiSize(scoreboard.hand)} tile={scoreboard.hand.tsumo} />}
           </Stack>
 
           <Stack direction="row" gap="1vmin">
@@ -65,13 +65,13 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
       </WiredCard>
 
       <Stack direction="row" flexWrap="wrap" gap="1vmin">
-        {scoreboard.yaku.map((yaku) => (
+        {scoreboard.yaku.map((yaku, index, array) => (
           <WiredCard key={yaku.name} elevation={1} style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc' }}>
             <Stack direction="row" gap="1vmin" sx={{ padding: '0 1vmin' }}>
-              <Typography fontSize="3vmin" fontWeight="bold">
+              <Typography fontSize={getYakuFontSize(yaku, index, array)} fontWeight="bold">
                 {yaku.name}
               </Typography>
-              <Typography fontSize="3vmin">{yaku.han}판</Typography>
+              <Typography fontSize={getYakuFontSize(yaku, index, array)}>{yaku.han}판</Typography>
             </Stack>
           </WiredCard>
         ))}

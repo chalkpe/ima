@@ -1,7 +1,8 @@
 import { compareTile } from '@ima/client/utils/tile'
 import { byOrder, compareArray, falsyFirst } from '@ima/client/utils/comparator'
+import type { Yaku } from '@ima/server/types/yaku'
 import type { Tenpai } from '@ima/server/types/tenpai'
-import type { AgariScoreboard, Decision, Wind } from '@ima/server/types/game'
+import type { AgariScoreboard, Decision, Hand, Wind } from '@ima/server/types/game'
 
 const decisionTypeOrder: Decision['type'][] = [
   'ankan',
@@ -70,9 +71,41 @@ export const calculateTenpaiState = (list: Tenpai[]) => {
   return undefined
 }
 
+export const getAgariHaiSize = (hand: Hand) => {
+  return 3.5 - hand.called.filter((set) => set.tiles.length > 3).length * 0.25
+}
+
+const scoreNames: Record<number, string> = {
+  5: '만관',
+  6: '하네만',
+  7: '하네만',
+  8: '배만',
+  9: '배만',
+  10: '배만',
+  11: '삼배만',
+  12: '삼배만',
+  13: '헤아림 역만',
+}
+
 export const calculateScoreName = (scoreboard: AgariScoreboard) => {
   if (scoreboard.yakuman > 0) {
     return scoreboard.yakuman === 1 ? '역만' : `${scoreboard.yakuman}배역만`
   }
-  return `${scoreboard.han}판`
+  return `${scoreboard.han}판 ${scoreNames[Math.min(scoreboard.han, 13)] ?? ''}`
+}
+
+export const getYakuFontSize = (yaku: Yaku, _: number, array: Yaku[]) => {
+  if (array.length > 10) {
+    return '1.5vmin'
+  }
+
+  if (array.length > 5) {
+    return '2vmin'
+  }
+
+  if (!yaku.isYakuman) {
+    return '3vmin'
+  }
+
+  return '4vmin'
 }

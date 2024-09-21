@@ -94,7 +94,7 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
           onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
         >
           <Card
-            elevation={5}
+            elevation={1}
             style={{
               padding: '1vmin 2vmin',
               minWidth: '12vmin',

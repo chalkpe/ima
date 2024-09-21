@@ -15,7 +15,7 @@ interface TenpaiTilesProps {
 const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
   return (
     <WiredCard
-      elevation={3}
+      elevation={1}
       style={{
         position: 'absolute',
         bottom: current ? '11.5vmin' : '26vmin',

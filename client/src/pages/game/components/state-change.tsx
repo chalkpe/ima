@@ -42,7 +42,7 @@ const StateChange: FC<StateChangeProps> = ({ type }) => {
       slotProps={{ backdrop: { sx: { backgroundColor: 'transparent' } } }}
       PaperProps={{ sx: { overflow: 'hidden', backgroundColor: typeColor[type] } }}
     >
-      <WiredCard elevation={5}>
+      <WiredCard elevation={1}>
         <Typography fontSize="10vmin" margin="0vmin 3vmin">
           {typeText[type]}
         </Typography>

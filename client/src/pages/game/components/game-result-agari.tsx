@@ -21,7 +21,7 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
         {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <WiredCard elevation={3} style={{ backgroundColor: '#cadf9f' }}>
+      <WiredCard elevation={1} style={{ backgroundColor: '#cadf9f' }}>
         <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin">
           <Stack direction="row" gap="1vmin">
             <Stack direction="row" gap={0}>

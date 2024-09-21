@@ -21,7 +21,7 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
 
   return (
     <WiredCard
-      elevation={5}
+      elevation={1}
       style={{
         backgroundColor: 'white',
         position: 'absolute',

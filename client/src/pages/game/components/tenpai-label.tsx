@@ -14,7 +14,7 @@ const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
   if (!state) return null
   return (
     <WiredCard
-      elevation={3}
+      elevation={1}
       style={{
         opacity: state.isYakuman ? 0.75 : 0.5,
         position: 'absolute',

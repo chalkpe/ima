@@ -30,7 +30,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
       />
 
       <img
-        src="/center.png"
+        src="/center/center_green.png"
         alt="center"
         style={{
           position: 'absolute',
@@ -150,7 +150,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              backgroundImage: 'url(/riichi_red.png)',
+              backgroundImage: 'url(/center/riichi_stick_red.png)',
               transform: 'rotate(180deg)',
             }}
           />
@@ -199,7 +199,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              backgroundImage: 'url(/riichi_red.png)',
+              backgroundImage: 'url(/center/riichi_stick_red.png)',
             }}
           />
         )}

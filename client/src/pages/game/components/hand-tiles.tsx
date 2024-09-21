@@ -13,9 +13,10 @@ import type { Hand } from '@ima/server/types/game'
 interface HandTilesProps {
   hand: Hand
   me?: boolean
+  turn?: boolean
 }
 
-const HandTiles: FC<HandTilesProps> = ({ hand, me }) => {
+const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
   const [hoveredIndex, setHoveredIndex] = useAtom(hoveredAtom)
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
 
@@ -53,7 +54,10 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me }) => {
               onMouseEnter={() => me && setHoveredIndex(tile.index)}
               onMouseLeave={() => setHoveredIndex(undefined)}
               onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
-              style={{ paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0' }}
+              style={{
+                paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0',
+                cursor: hand.banned.includes(tile.index) ? 'not-allowed' : me && turn ? 'pointer' : 'default',
+              }}
               dim={hand.banned.includes(tile.index)}
             />
           ))}
@@ -69,7 +73,10 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me }) => {
               onDoubleClick={() =>
                 me && hand.tsumo && hoveredIndex === hand.tsumo.index && giri({ index: hand.tsumo.index })
               }
-              style={{ paddingBottom: hoveredIndex === hand.tsumo.index ? '1vmin' : '0' }}
+              style={{
+                paddingBottom: hoveredIndex === hand.tsumo.index ? '1vmin' : '0',
+                cursor: me && turn ? 'pointer' : 'default',
+              }}
             />
           ) : (
             <Box width="6vmin" />

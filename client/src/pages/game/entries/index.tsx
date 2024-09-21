@@ -9,6 +9,7 @@ import CenterPanel from '@ima/client/pages/game/components/center-panel'
 import WallTiles from '@ima/client/pages/game/components/wall-tiles'
 import DecisionButton from '@ima/client/pages/game/components/decision-button'
 import GameResult from '@ima/client/pages/game/components/game-result'
+import MenuPopup from '@ima/client/pages/game/components/menu-popup'
 import StateChange from '@ima/client/pages/game/components/state-change'
 import type { StateChangeType } from '@ima/server/types/game'
 
@@ -72,11 +73,12 @@ const Game = () => {
       <RiverTiles river={data.state[opponent].river} />
 
       <RiverTiles river={data.state[me].river} me />
-      <HandTiles hand={data.state[me].hand} me />
+      <HandTiles hand={data.state[me].hand} me turn={data.state.turn === me} />
 
       <DecisionButton decisions={data.state[me].decisions} />
-      <GameResult room={data} me={me} />
+      <MenuPopup />
 
+      <GameResult room={data} me={me} />
       {type && <StateChange type={type} />}
     </>
   )

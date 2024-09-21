@@ -2,10 +2,10 @@ import { FC } from 'react'
 import { Stack, Typography } from '@mui/material'
 import Hai from '@ima/client/components/hai'
 import HaiGroup from '@ima/client/components/hai-group'
+import SketchBox from '@ima/client/components/sketch-box'
 import { calculateScoreName, getAgariHaiSize, getYakuFontSize } from '@ima/client/utils/game'
 import { compareTile } from '@ima/client/utils/tile'
 import type { AgariScoreboard, Room } from '@ima/server/types/game'
-import { WiredCard } from 'react-wired-elements'
 
 interface GameResultAgariProps {
   room: Room
@@ -21,7 +21,7 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
         {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
       </Typography>
 
-      <WiredCard elevation={1} style={{ backgroundColor: '#cadf9f' }}>
+      <SketchBox style={{ backgroundColor: '#cadf9f' }}>
         <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin">
           <Stack direction="row" gap="1vmin">
             <Stack direction="row" gap={0}>
@@ -62,18 +62,18 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
             </Stack>
           </Stack>
         </Stack>
-      </WiredCard>
+      </SketchBox>
 
       <Stack direction="row" flexWrap="wrap" gap="1vmin">
         {scoreboard.yaku.map((yaku, index, array) => (
-          <WiredCard key={yaku.name} elevation={1} style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc' }}>
+          <SketchBox key={yaku.name} style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc' }}>
             <Stack direction="row" gap="1vmin" sx={{ padding: '0 1vmin' }}>
               <Typography fontSize={getYakuFontSize(yaku, index, array)} fontWeight="bold">
                 {yaku.name}
               </Typography>
               <Typography fontSize={getYakuFontSize(yaku, index, array)}>{yaku.han}판</Typography>
             </Stack>
-          </WiredCard>
+          </SketchBox>
         ))}
       </Stack>
 

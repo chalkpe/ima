@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { WiredCard } from 'react-wired-elements'
+import SketchBox from '@ima/client/components/sketch-box'
 import { Backdrop, Dialog, Typography } from '@mui/material'
 import type { StateChangeType } from '@ima/server/types/game'
 
@@ -42,11 +42,11 @@ const StateChange: FC<StateChangeProps> = ({ type }) => {
       slotProps={{ backdrop: { sx: { backgroundColor: 'transparent' } } }}
       PaperProps={{ sx: { overflow: 'hidden', backgroundColor: typeColor[type] } }}
     >
-      <WiredCard elevation={1}>
+      <SketchBox>
         <Typography fontSize="10vmin" margin="0vmin 3vmin">
           {typeText[type]}
         </Typography>
-      </WiredCard>
+      </SketchBox>
     </Dialog>
   )
 }

@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { WiredCard } from 'react-wired-elements'
 import { Stack, Typography } from '@mui/material'
+import SketchBox from '@ima/client/components/sketch-box'
 import UserHandle from '@ima/client/components/user-handle'
 import type { Room, RyuukyokuScoreboard, RyuukyokuType } from '@ima/server/types/game'
 
@@ -22,10 +22,10 @@ const GameResultRyuukyoku: FC<GameResultRyuukyokuProps> = ({ room, scoreboard })
         {scoreboard.tenpai.map((player) => {
           const user = room[`${player}User`]
           return (
-            <WiredCard key={player} elevation={1} style={{ padding: '1vmin 2vmin', backgroundColor: '#ccc' }}>
+            <SketchBox key={player} style={{ backgroundColor: '#ccc' }}>
               {user && <UserHandle {...user} fontSize={3} />}
               <Typography fontSize="3vmin">텐파이</Typography>
-            </WiredCard>
+            </SketchBox>
           )
         })}
       </Stack>

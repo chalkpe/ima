@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { WiredCard } from 'react-wired-elements'
 import { Stack, Typography } from '@mui/material'
+import SketchBox from '@ima/client/components/sketch-box'
 import HaiCounter from '@ima/client/components/hai-counter'
 import { tenpaiStatusText } from '@ima/client/utils/game'
 import { compareSimpleTile } from '@ima/client/utils/tile'
@@ -14,8 +14,7 @@ interface TenpaiTilesProps {
 
 const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
   return (
-    <WiredCard
-      elevation={1}
+    <SketchBox
       style={{
         position: 'absolute',
         bottom: current ? '11.5vmin' : '26vmin',
@@ -23,7 +22,6 @@ const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
         padding: '1vmin 2vmin',
         opacity: 0.5,
         backgroundColor: '#fff',
-        userSelect: 'none',
       }}
     >
       <Typography fontSize="2.5vmin" fontWeight="bold">
@@ -41,7 +39,7 @@ const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
             </Stack>
           ))}
       </Stack>
-    </WiredCard>
+    </SketchBox>
   )
 }
 

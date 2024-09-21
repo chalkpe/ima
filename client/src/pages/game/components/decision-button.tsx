@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import styled from '@emotion/styled'
-import { WiredCard } from 'react-wired-elements'
+import SketchButton from '@ima/client/components/sketch-button'
 import { Stack, Typography } from '@mui/material'
 import Hai from '@ima/client/components/hai'
 import { trpc } from '@ima/client/utils/trpc'
@@ -88,34 +88,26 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
       justifyContent="flex-end"
     >
       {[...decisions].sort(compareDecisions).map((decision) => (
-        <div
+        <HoverSketchButton
           key={[decision.type, decision.tile?.index, decision.otherTiles?.map((t) => t.index).join()].join()}
           onClick={() => onClick(decision)}
           onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
+          style={{
+            minWidth: '12vmin',
+            height: '100%',
+            backgroundColor: typeColor[decision.type],
+          }}
         >
-          <Card
-            elevation={1}
-            style={{
-              padding: '1vmin 2vmin',
-              minWidth: '12vmin',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: typeColor[decision.type],
-            }}
-          >
-            <Stack direction="column" alignItems="center" justifyContent="center">
-              <Typography fontSize="3vmin" fontWeight="bold">
-                {typeText[decision.type]}
-              </Typography>
-              <Stack direction="row" justifyContent="center">
-                {decision.tile && <Hai size={3} tile={decision.tile} />}
-                {decision.otherTiles?.map((tile) => <Hai key={tile.index} size={3} tile={tile} />)}
-              </Stack>
+          <Stack direction="column" alignItems="center" justifyContent="center">
+            <Typography fontSize="3vmin" fontWeight="bold">
+              {typeText[decision.type]}
+            </Typography>
+            <Stack direction="row" justifyContent="center">
+              {decision.tile && <Hai size={3} tile={decision.tile} />}
+              {decision.otherTiles?.map((tile) => <Hai key={tile.index} size={3} tile={tile} />)}
             </Stack>
-          </Card>
-        </div>
+          </Stack>
+        </HoverSketchButton>
       ))}
     </Stack>
   )
@@ -123,8 +115,8 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
 
 export default DecisionButton
 
-const Card = styled(WiredCard)`
-  opacity: 0.7;
+const HoverSketchButton = styled(SketchButton)`
+  opacity: 0.75;
   :hover {
     opacity: 1;
   }

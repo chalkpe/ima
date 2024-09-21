@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { WiredCard } from 'react-wired-elements'
 import { Stack, Typography } from '@mui/material'
+import SketchBox from '@ima/client/components/sketch-box'
 import UserHandle from '@ima/client/components/user-handle'
 import type { FinalScoreboard, Room } from '@ima/server/types/game'
 
@@ -21,12 +21,12 @@ const GameResultFinal: FC<GameResultFinalProps> = ({ room, scoreboard }) => {
           .map((player) => {
             const user = room[`${player}User`]
             return (
-              <WiredCard key={player} elevation={1} style={{ backgroundColor: '#ccc' }}>
+              <SketchBox key={player} style={{ backgroundColor: '#ccc' }}>
                 <Typography fontSize="3vmin" margin="1vmin 2vmin">
                   {user && <UserHandle {...user} fontSize={3} />}
                   {scoreboard[`${player}Score`].toLocaleString()}점
                 </Typography>
-              </WiredCard>
+              </SketchBox>
             )
           })}
       </Stack>

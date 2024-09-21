@@ -1,6 +1,7 @@
 import { FC } from 'react'
-import { WiredButton, WiredCard } from 'react-wired-elements'
-import { Stack } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
+import SketchBox from '@ima/client/components/sketch-box'
+import SketchButton from '@ima/client/components/sketch-button'
 import { trpc } from '@ima/client/utils/trpc'
 import GameResultAgari from '@ima/client/pages/game/components/game-result-agari'
 import GameResultFinal from '@ima/client/pages/game/components/game-result-final'
@@ -20,8 +21,7 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
   const meConfirmed = me === 'host' ? scoreboard.hostConfirmed : scoreboard.guestConfirmed
 
   return (
-    <WiredCard
-      elevation={1}
+    <SketchBox
       style={{
         backgroundColor: 'white',
         position: 'absolute',
@@ -36,15 +36,15 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
         {scoreboard.type === 'agari' && <GameResultAgari room={room} scoreboard={scoreboard} />}
         {scoreboard.type === 'final' && <GameResultFinal room={room} scoreboard={scoreboard} />}
         {scoreboard.type === 'ryuukyoku' && <GameResultRyuukyoku room={room} scoreboard={scoreboard} />}
-        <WiredButton
-          onClick={() => confirm()}
-          disabled={meConfirmed}
-          style={{ minWidth: '5vmin', fontSize: '3vmin', borderRadius: '1vmin', alignSelf: 'flex-end' }}
-        >
-          <div style={{ padding: '1vmin' }}>{meConfirmed ? '대기 중...' : '확인'}</div>
-        </WiredButton>
+        <Stack alignSelf="flex-end">
+          <SketchButton disabled={meConfirmed} onClick={() => confirm()}>
+            <Typography fontSize="3vmin" style={{ padding: '1vmin' }}>
+              {meConfirmed ? '대기 중...' : '확인'}
+            </Typography>
+          </SketchButton>
+        </Stack>
       </Stack>
-    </WiredCard>
+    </SketchBox>
   )
 }
 

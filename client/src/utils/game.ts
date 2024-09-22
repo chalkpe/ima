@@ -56,11 +56,11 @@ export const tenpaiStatusText: Record<Tenpai['status'], string> = {
 }
 
 export const calculateTenpaiState = (list: Tenpai[]) => {
-  if (list.every((t) => t.han >= 13)) {
+  if (list.every((t) => t.han && t.han.tsumo >= 13 && t.han.ron >= 13)) {
     return { text: '역만 준비', color: '#fac12d', isYakuman: true }
   }
 
-  if (list.some((t) => t.han >= 13)) {
+  if (list.some((t) => t.han && (t.han.tsumo >= 13 || t.han.ron >= 13))) {
     return { text: '역만 기회', color: '#ccc', isYakuman: true }
   }
 
@@ -69,6 +69,15 @@ export const calculateTenpaiState = (list: Tenpai[]) => {
   }
 
   return undefined
+}
+
+export const getTenpaiStatusText = (tenpai: Tenpai) => {
+  if (tenpai.status === 'tenpai' && tenpai.han) {
+    const min = Math.min(tenpai.han.tsumo, tenpai.han.ron)
+    const max = Math.max(tenpai.han.tsumo, tenpai.han.ron)
+    return min === max ? `${max}판` : `${min}-${max}판`
+  }
+  return tenpaiStatusText[tenpai.status]
 }
 
 export const getAgariHaiSize = (hand: Hand) => {

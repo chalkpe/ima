@@ -24,7 +24,7 @@ const calculateYakuOfAgari = (
   const agariTsu = agariState.find((tsu) => tsu.tiles.some((tile) => tile.index === agariTile.index))
   /* istanbul ignore next */ if (!agariTsu) return []
 
-  if (agariType === 'ron') agariTsu.open = true
+  if (agariType !== 'tsumo') agariTsu.open = true
 
   const opponent = getOpponent(me)
   const params: YakuPredicateParams = {

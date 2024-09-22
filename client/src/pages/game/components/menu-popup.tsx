@@ -1,10 +1,27 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Stack, Typography } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import SketchButton from '@ima/client/components/sketch-button'
+import type { PlayerType, Room } from '@ima/server/types/game'
+import { trpc } from '@ima/client/utils/trpc'
 
-const MenuPopup: FC = () => {
+interface MenuPopupProps {
+  room: Room
+  me: PlayerType
+}
+
+const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
   const [open, setOpen] = useState(false)
+
+  const { mutate: stop } = trpc.game.stop.useMutation()
+  const { mutate: revertStop } = trpc.game.revertStop.useMutation()
+  const { mutate: confirmStop } = trpc.game.confirmStop.useMutation()
+
+  useEffect(() => {
+    if (room.remainingTimeToStop !== null) {
+      setOpen(true)
+    }
+  }, [room.remainingTimeToStop])
 
   return (
     <>
@@ -33,7 +50,7 @@ const MenuPopup: FC = () => {
             bottom: 0,
             left: 0,
           }}
-          onClick={() => setOpen(false)}
+          onClick={() => room.remainingTimeToStop === null && setOpen(false)}
         />
       )}
 
@@ -50,34 +67,45 @@ const MenuPopup: FC = () => {
           }}
         >
           <Stack direction="column" gap="1vmin" alignItems="center" justifyContent="center" height="22.5vmin">
+            {room.remainingTimeToStop === null && (
+              <SketchButton
+                onClick={() => {
+                  // TODO
+                }}
+                style={{ backgroundColor: 'white' }}
+              >
+                <Typography fontSize="3vmin">환경설정</Typography>
+              </SketchButton>
+            )}
             <SketchButton
-              onClick={() => {
-                // TODO
-              }}
-              style={{
-                backgroundColor: 'white',
-                minWidth: '12vmin',
-                maxWidth: '12vmin',
-                minHeight: '4vmin',
-                maxHeight: '4vmin',
-              }}
+              disabled={room.remainingTimeToStop !== null}
+              onClick={() => stop()}
+              onDoubleClick={() => stop()}
+              style={{ backgroundColor: 'white' }}
             >
-              <Typography fontSize="3vmin">환경설정</Typography>
+              <Typography fontSize="3vmin">
+                종료
+                {room.remainingTimeToStop !== null ? `까지 ${room.remainingTimeToStop}초` : ' 요청'}
+              </Typography>
             </SketchButton>
-            <SketchButton
-              onClick={() => {
-                // TODO
-              }}
-              style={{
-                backgroundColor: 'white',
-                minWidth: '12vmin',
-                maxWidth: '12vmin',
-                minHeight: '4vmin',
-                maxHeight: '4vmin',
-              }}
-            >
-              <Typography fontSize="3vmin">중단투표</Typography>
-            </SketchButton>
+
+            {room.remainingTimeToStop !== null && (
+              <Stack direction="row" gap="1vmin">
+                <SketchButton
+                  onClick={() => revertStop(undefined, { onSuccess: () => setOpen(false) })}
+                  style={{ backgroundColor: '#03a9f4' }}
+                >
+                  <Typography fontSize="3vmin">
+                    {room.stopRequestedBy?.toLowerCase() === me ? '종료 취소' : '종료 거부'}
+                  </Typography>
+                </SketchButton>
+                {room.stopRequestedBy?.toLowerCase() !== me && (
+                  <SketchButton onClick={() => confirmStop()} style={{ backgroundColor: '#ef5350' }}>
+                    <Typography fontSize="3vmin">종료 동의</Typography>
+                  </SketchButton>
+                )}
+              </Stack>
+            )}
           </Stack>
         </SketchBox>
       )}

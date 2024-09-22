@@ -21,6 +21,12 @@ model User {
   guestRoom   Room?  @relation(name: "guestUser")
 }
 
+
+enum PlayerType {
+  HOST
+  GUEST
+}
+
 model Room {
   host      String  @id
   hostReady Boolean @default(false)
@@ -30,7 +36,10 @@ model Room {
   guestReady Boolean @default(false)
   guestUser  User?   @relation(fields: [guest], references: [username], name: "guestUser")
 
-  started Boolean @default(false)
+  started             Boolean @default(false)
+
+  stopRequestedBy     PlayerType?
+  remainingTimeToStop Int?
 
   /// [RoomState]
   state Json

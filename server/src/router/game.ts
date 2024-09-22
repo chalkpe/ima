@@ -40,6 +40,8 @@ const getRoom = async (username: string, started?: boolean) => {
       guestUser: { select: { username: true, displayName: true } },
       started: true,
       state: true,
+      stopRequestedBy: true,
+      remainingTimeToStop: true,
     },
   })
   if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: 'Room not found' })
@@ -87,6 +89,76 @@ export const gameRouter = router({
 
     await prisma.room.update({ where: { host: room.host }, data: { started: true, state: room.state } })
     pub.publish(room.host, 'start')
+  }),
+
+  stop: protectedProcedure.mutation(async (opts) => {
+    const { username } = opts.ctx
+    const room = await getRoom(username, true)
+
+    const check = async () => {
+      const r = await prisma.room.findFirst({
+        where: { host: room.host },
+        select: { remainingTimeToStop: true },
+      })
+      if (!r || r.remainingTimeToStop === null) return
+
+      const remainingTimeToStop = r.remainingTimeToStop - 1
+      if (remainingTimeToStop <= 0) {
+        await prisma.room.update({
+          where: { host: room.host },
+          data: {
+            stopRequestedBy: null,
+            remainingTimeToStop: null,
+            started: false,
+            hostReady: false,
+            guestReady: false,
+            state: { ...createInitialState(), rule: room.state.rule },
+          },
+        })
+        pub.publish(room.host, 'end')
+      } else {
+        await prisma.room.update({ where: { host: room.host }, data: { remainingTimeToStop } })
+        pub.publish(room.host, 'update')
+        setTimeout(check, 1000)
+      }
+    }
+
+    await prisma.room.update({
+      where: { host: room.host },
+      data: { remainingTimeToStop: 30, stopRequestedBy: room.host === username ? 'HOST' : 'GUEST' },
+    })
+    pub.publish(room.host, 'stop')
+    setTimeout(check, 1000)
+  }),
+
+  confirmStop: protectedProcedure.mutation(async (opts) => {
+    const { username } = opts.ctx
+    const room = await getRoom(username, true)
+
+    const me = room.host === username ? 'HOST' : 'GUEST'
+    if (room.stopRequestedBy === me)
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'Cannot confirm stop by yourself' })
+
+    await prisma.room.update({
+      where: { host: room.host },
+      data: {
+        stopRequestedBy: null,
+        remainingTimeToStop: null,
+        started: false,
+        hostReady: false,
+        guestReady: false,
+        state: { ...createInitialState(), rule: room.state.rule },
+      },
+    })
+    pub.publish(room.host, 'end')
+  }),
+
+  revertStop: protectedProcedure.mutation(async (opts) => {
+    const { username } = opts.ctx
+    const room = await getRoom(username, true)
+
+    await prisma.room.update({ where: { host: room.host }, data: { remainingTimeToStop: null } })
+    pub.publish(room.host, 'update')
   }),
 
   getRemainingTileCount: protectedProcedure

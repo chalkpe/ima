@@ -76,8 +76,7 @@ const Game = () => {
       <HandTiles hand={data.state[me].hand} me turn={data.state.turn === me} />
 
       <DecisionButton decisions={data.state[me].decisions} />
-      <MenuPopup />
-
+      <MenuPopup room={data} me={me} />
       <GameResult room={data} me={me} />
       {type && <StateChange type={type} />}
     </>

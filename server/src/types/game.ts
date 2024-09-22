@@ -40,7 +40,18 @@ export interface Decision {
   otherTiles?: Tile[]
 }
 
-export type StateChangeType = 'update' | 'start' | 'end' | 'tsumo' | 'ron' | 'riichi' | 'nuki' | 'kan' | 'pon' | 'chi'
+export type StateChangeType =
+  | 'update'
+  | 'start'
+  | 'stop'
+  | 'end'
+  | 'tsumo'
+  | 'ron'
+  | 'riichi'
+  | 'nuki'
+  | 'kan'
+  | 'pon'
+  | 'chi'
 
 export type RiichiState = number | null
 
@@ -138,6 +149,8 @@ export interface Room {
   guestUser?: { username: string; displayName: string } | null
   started: boolean
   state: GameState
+  stopRequestedBy: 'HOST' | 'GUEST' | null
+  remainingTimeToStop: number | null
 }
 
 export interface LobbyRoom {

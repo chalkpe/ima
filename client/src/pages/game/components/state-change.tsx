@@ -13,6 +13,7 @@ const typeText: Record<StateChangeType, string> = {
   ron: '론',
   update: '',
   start: '시작',
+  stop: '종료 요청',
   end: '종료',
 }
 
@@ -26,6 +27,7 @@ const typeColor: Record<StateChangeType, string> = {
   ron: '#ef5350',
   update: '',
   start: '#ffffff',
+  stop: '#ffffff',
   end: '#ffffff',
 }
 

@@ -5,7 +5,7 @@ import useSketchToggle from '@ima/client/hooks/useSketchToggle'
 type SketchBoxProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 const SketchBox: FC<SketchBoxProps> = ({ style, children, ...props }) => {
-  const toggle = useSketchToggle()
+  const { toggle } = useSketchToggle()
   return (
     <div {...props}>
       {toggle ? (

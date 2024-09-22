@@ -13,7 +13,7 @@ const useSketchToggle = () => {
   }, [])
 
   const toggle = useMemo(() => vmin >= 5, [vmin])
-  return toggle
+  return { vmin, toggle }
 }
 
 export default useSketchToggle

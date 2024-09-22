@@ -1,15 +1,18 @@
-import { FC, useEffect } from 'react'
-import { Avatar, Backdrop, Box, Button, CircularProgress, Stack, Typography } from '@mui/material'
+import { FC, useEffect, useRef } from 'react'
+import { Avatar, Backdrop, Box, CircularProgress, Stack, Typography } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
 import { tokenAtom } from '@ima/client/store/token'
 import { trpc } from '@ima/client/utils/trpc'
+import SketchButton from '@ima/client/components/sketch-button'
 
 const Entry: FC = () => {
   const navigate = useNavigate()
   const [token, setToken] = useAtom(tokenAtom)
   const [searchParams, setSearchParams] = useSearchParams()
   const { data } = trpc.entry.me.useQuery(undefined, { refetchInterval: 1000 })
+
+  const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     const token = searchParams.get('token')
@@ -30,15 +33,13 @@ const Entry: FC = () => {
       <Avatar sx={{ width: '30vmin', height: '30vmin' }} src="/tiles/1s.png" />
       <Typography fontSize="6vmin">IMA (2인 마작)</Typography>
       <Box sx={{ marginTop: '2vmin' }}>
-        <form action="/api/twitter/auth" method="get">
-          <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+        <form action="/api/twitter/auth" method="get" ref={formRef}>
+          <SketchButton
+            onClick={() => formRef.current?.submit()}
+            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#1da1f2' }}
           >
             트위터로 시작하기
-          </Button>
+          </SketchButton>
         </form>
       </Box>
       <Backdrop open={!!token} sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}>

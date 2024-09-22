@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, FC, HTMLAttributes, MouseEventHandler, useCallback } from 'react'
+import { CSSProperties, DetailedHTMLProps, FC, HTMLAttributes, MouseEventHandler, useCallback, useMemo } from 'react'
 import { WiredCard } from 'react-wired-elements'
 import useSketchToggle from '@ima/client/hooks/useSketchToggle'
 
@@ -9,12 +9,17 @@ type SketchButtonProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLD
 }
 
 const SketchButton: FC<SketchButtonProps> = ({ onClick, loading, disabled, style, children, ...props }) => {
-  const toggle = useSketchToggle()
+  const { toggle } = useSketchToggle()
 
   const handleClick: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => !loading && !disabled && onClick(e),
     [disabled, loading, onClick]
   )
+
+  const styles: CSSProperties = useMemo(() => {
+    if (disabled || loading) return { opacity: 0.5, color: 'rgba(50, 50, 50, 0.5)' }
+    return {}
+  }, [disabled, loading])
 
   return (
     <div
@@ -31,6 +36,7 @@ const SketchButton: FC<SketchButtonProps> = ({ onClick, loading, disabled, style
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            ...styles,
             ...style,
           }}
         >
@@ -45,6 +51,7 @@ const SketchButton: FC<SketchButtonProps> = ({ onClick, loading, disabled, style
             alignItems: 'center',
             boxSizing: 'content-box',
             border: '0.5vmin solid rgba(50, 50, 50, 0.5)',
+            ...styles,
             ...style,
           }}
         >

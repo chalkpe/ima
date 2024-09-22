@@ -37,7 +37,7 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
         {scoreboard.type === 'final' && <GameResultFinal room={room} scoreboard={scoreboard} />}
         {scoreboard.type === 'ryuukyoku' && <GameResultRyuukyoku room={room} scoreboard={scoreboard} />}
         <Stack alignSelf="flex-end">
-          <SketchButton disabled={meConfirmed} onClick={() => confirm()}>
+          <SketchButton loading={meConfirmed} onClick={() => confirm()}>
             <Typography fontSize="3vmin" style={{ padding: '1vmin' }}>
               {meConfirmed ? '대기 중...' : '확인'}
             </Typography>

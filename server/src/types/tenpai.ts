@@ -6,5 +6,5 @@ export interface Tenpai {
   giriTile: Tile | null
   agariTile: SimpleTile
   status: TenpaiStatus
-  han: number
+  han?: { tsumo: number; ron: number }
 }

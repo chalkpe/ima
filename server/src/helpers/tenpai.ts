@@ -1,12 +1,13 @@
 import { codeToTile } from '@ima/server/helpers/code'
 import { calculateAgari } from '@ima/server/helpers/agari'
+import { calculateYaku } from '@ima/server/helpers/yaku'
+import { getClosedHand } from '@ima/server/helpers/game'
 import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from '@ima/server/helpers/tile'
 import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
 import type { TenpaiState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
 import type { Tenpai } from '@ima/server/types/tenpai'
-import { calculateYaku } from '@ima/server/helpers/yaku'
-import { getClosedHand } from '@ima/server/helpers/game'
+import type { Yaku } from '@ima/server/types/yaku'
 
 export const calculateFuriten = (
   state: GameState,
@@ -25,6 +26,8 @@ export const calculateFuriten = (
   )
 }
 
+const sumVisibleYaku = (yaku: Yaku[]) => yaku.filter((yaku) => !yaku.isHidden).reduce((sum, yaku) => sum + yaku.han, 0)
+
 export const calculateTenpai = (
   state: GameState,
   me: PlayerType,
@@ -35,18 +38,29 @@ export const calculateTenpai = (
   if (result.status !== 'tenpai') return
 
   const tenpai: Tenpai[] = [...result.tenpai.entries()].map(([code, states]) => {
-    const yaku = calculateYaku(state, me, hand, 'test', simpleTileToTile(codeToTile(code)))
+    const agariTile = simpleTileToTile(codeToTile(code))
+    const yaku = calculateYaku(state, me, hand, 'test', agariTile)
+
+    const status =
+      !yaku.length || yaku.every((yaku) => yaku.isExtra)
+        ? 'muyaku'
+        : !states.every((s) => calculateFuriten(state, me, s, giriTile))
+          ? 'furiten'
+          : 'tenpai'
+
+    const han =
+      status !== 'tenpai'
+        ? undefined
+        : {
+            tsumo: sumVisibleYaku(calculateYaku(state, me, hand, 'tsumo', agariTile)),
+            ron: sumVisibleYaku(calculateYaku(state, me, hand, 'ron', agariTile)),
+          }
 
     return {
       giriTile,
       agariTile: codeToTile(code),
-      status:
-        !yaku.length || yaku.every((yaku) => yaku.isExtra)
-          ? 'muyaku'
-          : !states.every((s) => calculateFuriten(state, me, s, giriTile))
-            ? 'furiten'
-            : 'tenpai',
-      han: yaku.filter((yaku) => !yaku.isHidden).reduce((sum, yaku) => sum + yaku.han, 0),
+      status,
+      han,
     }
   })
 

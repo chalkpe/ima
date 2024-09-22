@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Stack, Typography } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import HaiCounter from '@ima/client/components/hai-counter'
-import { tenpaiStatusText } from '@ima/client/utils/game'
+import { getTenpaiStatusText } from '@ima/client/utils/game'
 import { compareSimpleTile } from '@ima/client/utils/tile'
 
 import type { Tenpai } from '@ima/server/types/tenpai'
@@ -34,7 +34,7 @@ const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current }) => {
             <Stack direction="column" gap="0.25vmin" key={[tenpai.agariTile.type, tenpai.agariTile.value].join()}>
               <HaiCounter tile={tenpai.agariTile} size={3} />
               <Typography fontSize="2vmin" align="left">
-                {tenpai.status === 'tenpai' ? `${tenpai.han}판` : tenpaiStatusText[tenpai.status]}
+                {getTenpaiStatusText(tenpai)}
               </Typography>
             </Stack>
           ))}

@@ -94,6 +94,7 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
           onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
           style={{
             minWidth: '12vmin',
+            minHeight: '12vmin',
             height: '100%',
             backgroundColor: typeColor[decision.type],
           }}

@@ -55,16 +55,17 @@ export const createAgariScoreboard = (
   }
 }
 
-export const createRyukyokuScoreboard = (state: GameState, me: PlayerType, type: RyuukyokuType): Scoreboard => {
+export const createRyukyokuScoreboard = (state: GameState, type: RyuukyokuType): Scoreboard => {
+  const hostTenpai = calculateTenpai(state, 'host', state.host.hand, null)
+  const guestTenpai = calculateTenpai(state, 'guest', state.guest.hand, null)
   return {
     type: 'ryuukyoku',
     hostConfirmed: false,
     guestConfirmed: false,
     ryuukyokuType: type,
-    tenpai:
-      type !== 'ryuukyoku'
-        ? [me, getOpponent(me)]
-        : [me, getOpponent(me)].filter((p) => calculateTenpai(state, p, state[p].hand, null) !== undefined),
+    tenpai: hostTenpai && guestTenpai ? ['host', 'guest'] : hostTenpai ? ['host'] : ['guest'],
+    hostHand: hostTenpai && { ...state.host.hand, tenpai: hostTenpai },
+    guestHand: guestTenpai && { ...state.guest.hand, tenpai: guestTenpai },
   }
 }
 

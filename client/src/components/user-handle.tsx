@@ -1,5 +1,5 @@
-import { Stack, Typography } from '@mui/material'
 import { FC } from 'react'
+import { Stack, Typography } from '@mui/material'
 
 interface UserHandleProps {
   username: string
@@ -8,15 +8,15 @@ interface UserHandleProps {
   fontWeight?: string
 }
 
-const UserHandle: FC<UserHandleProps> = ({ username, displayName, fontSize, fontWeight }) => {
+const UserHandle: FC<UserHandleProps> = ({ displayName, fontSize, fontWeight }) => {
   return (
     <Stack direction="row" alignItems="end" gap={`${fontSize * 0.25}vmin`}>
       <Typography fontSize={`${fontSize}vmin`} fontWeight={fontWeight}>
         {displayName}
       </Typography>
-      <Typography fontSize={`${fontSize * 0.85}vmin`} fontWeight={fontWeight}>
+      {/* <Typography fontSize={`${fontSize * 0.85}vmin`} fontWeight={fontWeight}>
         @{username}
-      </Typography>
+      </Typography> */}
     </Stack>
   )
 }

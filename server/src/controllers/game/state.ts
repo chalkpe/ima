@@ -7,6 +7,7 @@ import type { GameState, PlayerType } from '@ima/server/types/game'
 
 export const getVisibleState = (state: GameState, me: PlayerType): GameState => {
   const opponent = getOpponent(me)
+  const opponentHandVisible = state.scoreboard?.type === 'ryuukyoku' && state.scoreboard.tenpai.includes(opponent)
 
   return {
     ...state,
@@ -14,8 +15,12 @@ export const getVisibleState = (state: GameState, me: PlayerType): GameState => 
       ...state[opponent],
       hand: {
         ...state[opponent].hand,
-        closed: state[opponent].hand.closed.map((tile) => hideTile(tile, true)),
-        tsumo: state[opponent].hand.tsumo ? hideTile(state[opponent].hand.tsumo, true) : undefined,
+        closed: state[opponent].hand.closed.map((tile) => (opponentHandVisible ? tile : hideTile(tile, true))),
+        tsumo: state[opponent].hand.tsumo
+          ? opponentHandVisible
+            ? state[opponent].hand.tsumo
+            : hideTile(state[opponent].hand.tsumo, true)
+          : undefined,
         tenpai: [],
         banned: [],
       },

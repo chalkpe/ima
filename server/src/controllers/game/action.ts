@@ -21,7 +21,7 @@ import type { GameState, PlayerType, WallType } from '@ima/server/types/game'
 export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update' | 'end' => {
   if (state.wall.doraCount === 5) {
     if (![me, getOpponent(me)].some((p) => state[p].hand.called.filter((set) => set.tiles.length === 4).length === 4)) {
-      state.scoreboard = createRyukyokuScoreboard(state, me, 'suukaikan')
+      state.scoreboard = createRyukyokuScoreboard(state, 'suukaikan')
       return 'end'
     }
   }
@@ -43,7 +43,7 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update
       const nagashiMangan = [me, getOpponent(me)].filter((p) => isNagashiMangan(state, p))
 
       if (nagashiMangan.length % 2 === 0) {
-        state.scoreboard = createRyukyokuScoreboard(state, me, 'ryuukyoku')
+        state.scoreboard = createRyukyokuScoreboard(state, 'ryuukyoku')
       } else {
         state.scoreboard = createAgariScoreboard(state, nagashiMangan[0], state[nagashiMangan[0]].hand, 'tsumo', [
           { name: '유국만관', han: 5 },

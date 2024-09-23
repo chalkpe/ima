@@ -113,6 +113,8 @@ export interface RyuukyokuScoreboard extends BaseScoreboard {
   type: 'ryuukyoku'
   tenpai: PlayerType[]
   ryuukyokuType: RyuukyokuType
+  hostHand?: Hand
+  guestHand?: Hand
 }
 
 export interface FinalScoreboard extends BaseScoreboard {

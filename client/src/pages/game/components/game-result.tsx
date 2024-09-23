@@ -35,7 +35,7 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
       <Stack direction="column" alignItems="start" gap="1vmin" height="60vmin">
         {scoreboard.type === 'agari' && <GameResultAgari room={room} scoreboard={scoreboard} />}
         {scoreboard.type === 'final' && <GameResultFinal room={room} scoreboard={scoreboard} />}
-        {scoreboard.type === 'ryuukyoku' && <GameResultRyuukyoku room={room} scoreboard={scoreboard} />}
+        {scoreboard.type === 'ryuukyoku' && <GameResultRyuukyoku room={room} scoreboard={scoreboard} me={me} />}
         <Stack alignSelf="flex-end">
           <SketchButton loading={meConfirmed} onClick={() => confirm()}>
             <Typography fontSize="3vmin" style={{ padding: '1vmin' }}>

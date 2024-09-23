@@ -1,10 +1,9 @@
 import { FC } from 'react'
 import { Stack, Typography } from '@mui/material'
 import Hai from '@ima/client/components/hai'
-import HaiGroup from '@ima/client/components/hai-group'
 import SketchBox from '@ima/client/components/sketch-box'
-import { calculateScoreName, getAgariHaiSize, getYakuFontSize } from '@ima/client/utils/game'
-import { compareTile } from '@ima/client/utils/tile'
+import HandCard from '@ima/client/pages/game/components/hand-card'
+import { calculateScoreName, getYakuFontSize } from '@ima/client/utils/game'
 import type { AgariScoreboard, Room } from '@ima/server/types/game'
 
 interface GameResultAgariProps {
@@ -22,26 +21,8 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
       </Typography>
 
       <SketchBox style={{ backgroundColor: '#cadf9f' }}>
-        <Stack direction="column" gap="2vmin" padding="1.5vmin" borderRadius="1vmin">
-          <Stack direction="row" gap="1vmin">
-            <Stack direction="row" gap={0}>
-              {[...scoreboard.hand.closed].sort(compareTile).map((tile) => (
-                <Hai key={tile.index} size={getAgariHaiSize(scoreboard.hand)} tile={tile} />
-              ))}
-            </Stack>
-            <Stack direction="row" gap="0.5vmin">
-              {scoreboard.hand.called.map((set) => (
-                <HaiGroup
-                  key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()}
-                  set={set}
-                  size={getAgariHaiSize(scoreboard.hand)}
-                  rotate={false}
-                  stack={false}
-                />
-              ))}
-            </Stack>
-            {scoreboard.hand.tsumo && <Hai size={getAgariHaiSize(scoreboard.hand)} tile={scoreboard.hand.tsumo} />}
-          </Stack>
+        <Stack direction="column" gap="2vmin" padding="1.5vmin">
+          <HandCard hand={scoreboard.hand} />
 
           <Stack direction="row" gap="1vmin">
             <Stack direction="row" gap="1vmin">

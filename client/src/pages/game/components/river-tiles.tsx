@@ -15,18 +15,19 @@ const RiverTiles: FC<RiverTilesProps> = ({ river, me }) => {
     <Box
       sx={{
         position: 'absolute',
-        left: me ? '32.5vmin' : '67.5vmin',
-        top: me ? '60.25vmin' : '39.75vmin',
-        transformOrigin: 'top left',
-        transform: me ? undefined : 'rotate(180deg)',
+        ...(me ? { left: '32.5vmin' } : { right: '32.5vmin' }),
+        ...(me ? { top: '60.25vmin' } : { bottom: '60.25vmin' }),
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: me ? 'column' : 'column-reverse',
         justifyContent: 'start',
         gap: '0.2vmin',
       }}
     >
-      {chunk(river, 6).map((line) => (
-        <Box key={line.map((t) => t.tile.index).join()} sx={{ display: 'flex', flexFlow: 'row', gap: '0.1vmin' }}>
+      {chunk(river, [6, 6, Infinity]).map((line) => (
+        <Box
+          key={line.map((t) => t.tile.index).join()}
+          sx={{ display: 'flex', flexFlow: me ? 'row' : 'row-reverse', gap: '0.1vmin' }}
+        >
           {line.map((riverTile) => (
             <Hai
               key={riverTile.tile.index}
@@ -35,6 +36,8 @@ const RiverTiles: FC<RiverTilesProps> = ({ river, me }) => {
               rotate={riverTile.isRiichi}
               dim={riverTile.isTsumogiri}
               tile={riverTile.tile}
+              animate
+              flip={!me}
             />
           ))}
         </Box>

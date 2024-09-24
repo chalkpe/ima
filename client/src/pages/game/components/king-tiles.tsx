@@ -32,25 +32,23 @@ const KingTiles: FC<KingTilesProps> = ({ wall, size = 4 }) => {
     ;[upperTiles[index], lowerTiles[index]] = [lowerTiles[index], upperTiles[index]]
   }
 
-  const sx = { transformOrigin: 'bottom left', transform: 'rotate(90deg)' }
-
   return (
     <>
-      <Stack direction="row" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 2}vmin)`} sx={sx}>
+      <Stack direction="column" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 2}vmin)`}>
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Hai key={tile.index} size={size} tile={tile} />
+            <Hai key={tile.index} size={size} tile={tile} rotated animate />
           ) : (
-            <Box key={['lower', index].join()} width={`${size}vmin`} />
+            <Box key={['lower', index].join()} height={`${size}vmin`} />
           )
         )}
       </Stack>
-      <Stack direction="row" position="absolute" top="34vmin" left="2vmin" sx={sx}>
+      <Stack direction="column" position="absolute" top="34vmin" left="2vmin">
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Hai key={tile.index} size={size} tile={tile} />
+            <Hai key={tile.index} size={size} tile={tile} rotated animate />
           ) : (
-            <Box key={['upper', index].join()} width={`${size}vmin`} />
+            <Box key={['upper', index].join()} height={`${size}vmin`} />
           )
         )}
       </Stack>

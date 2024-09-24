@@ -6,9 +6,11 @@ import type { TileSet } from '@ima/server/types/game'
 interface HaiGroupAnkanProps {
   set: TileSet
   size: number
+  flip?: boolean
+  animate?: boolean
 }
 
-const HaiGroupAnkan: FC<HaiGroupAnkanProps> = ({ set, size }) => {
+const HaiGroupAnkan: FC<HaiGroupAnkanProps> = ({ set, size, flip, animate }) => {
   return (
     <>
       <Hai size={size} tile={backTile} />
@@ -21,7 +23,7 @@ const HaiGroupAnkan: FC<HaiGroupAnkanProps> = ({ set, size }) => {
         )
         .slice(0, 2)
         .map((tile) => (
-          <Hai key={tile.index} size={size} tile={tile} />
+          <Hai key={tile.index} size={size} tile={tile} animate={animate} flip={flip} />
         ))}
       <Hai size={size} tile={backTile} />
     </>

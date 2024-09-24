@@ -6,26 +6,28 @@ import Hai from '@ima/client/components/hai'
 interface HaiGroupGakanProps {
   set: TileSet
   size: number
+  flip?: boolean
+  animate?: boolean
   rotate?: boolean
   stack?: boolean
 }
 
-const HaiGroupGakan: FC<HaiGroupGakanProps> = ({ set, size, rotate, stack }) => {
+const HaiGroupGakan: FC<HaiGroupGakanProps> = ({ set, size, flip, animate, rotate, stack }) => {
   return (
     <>
-      <Hai size={size} tile={set.tiles[1]} />
+      <Hai size={size} flip={flip} animate={animate} tile={set.tiles[1]} />
       {stack ? (
         <Stack direction="column">
-          <Hai size={size} rotate={rotate} stack tile={set.tiles[3]} />
-          <Hai size={size} rotate={rotate} tile={set.tiles[0]} />
+          <Hai size={size} animate={animate} rotate={rotate} stack tile={set.tiles[3]} />
+          <Hai size={size} animate={animate} rotate={rotate} tile={set.tiles[0]} />
         </Stack>
       ) : (
         <>
-          <Hai size={size} rotate={rotate} tile={set.tiles[0]} />
-          <Hai size={size} rotate={rotate} tile={set.tiles[3]} />
+          <Hai size={size} flip={flip} animate={animate} rotate={rotate} tile={set.tiles[0]} />
+          <Hai size={size} flip={flip} animate={animate} rotate={rotate} tile={set.tiles[3]} />
         </>
       )}
-      <Hai size={size} tile={set.tiles[2]} />
+      <Hai size={size} flip={flip} animate={animate} tile={set.tiles[2]} />
     </>
   )
 }

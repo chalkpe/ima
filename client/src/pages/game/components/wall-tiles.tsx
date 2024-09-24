@@ -31,33 +31,21 @@ const WallTiles: FC<WallTilesProps> = ({ wall }) => {
 
   return (
     <>
-      <Stack
-        direction="row"
-        position="absolute"
-        top="8vmin"
-        right="2.5vmin"
-        sx={{ transformOrigin: 'bottom right', transform: 'rotate(-90deg)' }}
-      >
+      <Stack direction="column-reverse" position="absolute" top="9vmin" right="2.5vmin">
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
-            <Hai key={tile.index} size={3.5} tile={tile} />
+            <Hai key={tile.index} size={3.5} tile={tile} rotated animate />
           ) : (
-            <Box key={['lower', index].join()} width="3.5vmin" />
+            <Box key={['lower', index].join()} height="3.5vmin" />
           )
         )}
       </Stack>
-      <Stack
-        direction="row"
-        position="absolute"
-        top="8vmin"
-        right="2vmin"
-        sx={{ transformOrigin: 'bottom right', transform: 'rotate(-90deg)' }}
-      >
+      <Stack direction="column-reverse" position="absolute" top="9vmin" right="2vmin">
         {upperTiles.map((tile, index) =>
           tile !== null ? (
-            <Hai key={tile.index} size={3.5} tile={tile} />
+            <Hai key={tile.index} size={3.5} tile={tile} rotated animate />
           ) : (
-            <Box key={['upper', index].join()} width="3.5vmin" />
+            <Box key={['upper', index].join()} height="3.5vmin" />
           )
         )}
       </Stack>

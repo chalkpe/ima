@@ -1,4 +1,5 @@
 import { CSSProperties, FC, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import Rand from 'rand-seed'
 import { convertTileToCode, getBackground } from '@ima/client/utils/tile'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
@@ -8,11 +9,14 @@ interface HaiProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLI
   tile: Tile | SimpleTile
   dim?: boolean
   rotate?: boolean
+  rotated?: boolean
   stack?: boolean
   natural?: boolean
+  animate?: boolean
+  flip?: boolean
 }
 
-const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, stack, natural, style, ...rest }) => {
+const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, rotated, stack, natural, animate, flip, style, ...rest }) => {
   const transform = useMemo(
     () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 3 - 1.5}deg)` : ''),
     [natural, tile]
@@ -34,7 +38,7 @@ const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, stack, natural, style, ...
     minHeight: `calc(${size}vmin * 10/7)`,
   }
 
-  return (
+  const content = (
     <div
       {...rest}
       style={
@@ -59,6 +63,20 @@ const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, stack, natural, style, ...
       )}
     </div>
   )
+
+  if (animate && 'index' in tile) {
+    return (
+      <motion.div
+        transition={{ duration: 0.25 }}
+        layoutId={tile.index.toString()}
+        style={rotated ? { rotate: 90, marginBottom: `calc(-${size}vmin * 3/7)` } : flip ? { rotate: 180 } : {}}
+      >
+        {content}
+      </motion.div>
+    )
+  } else {
+    return content
+  }
 }
 
 export default Hai

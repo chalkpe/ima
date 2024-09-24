@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import useAuth from '@ima/client/hooks/useAuth'
 import { trpc } from '@ima/client/utils/trpc'
-import { useNavigate } from 'react-router-dom'
 import HandTiles from '@ima/client/pages/game/components/hand-tiles'
 import RiverTiles from '@ima/client/pages/game/components/river-tiles'
 import KingTiles from '@ima/client/pages/game/components/king-tiles'
@@ -64,22 +65,22 @@ const Game = () => {
   if (!data) return null
 
   return (
-    <>
-      <CenterPanel state={data.state} me={me} />
-      <WallTiles wall={data.state.wall} />
-      <KingTiles wall={data.state.wall} />
+    <AnimatePresence>
+      <CenterPanel key="center" state={data.state} me={me} />
+      <KingTiles key="king" wall={data.state.wall} />
+      <WallTiles key="wall" wall={data.state.wall} />
 
-      <HandTiles hand={data.state[opponent].hand} />
-      <RiverTiles river={data.state[opponent].river} />
+      <HandTiles key="hand" hand={data.state[opponent].hand} />
+      <RiverTiles key="river" river={data.state[opponent].river} />
 
-      <RiverTiles river={data.state[me].river} me />
-      <HandTiles hand={data.state[me].hand} me turn={data.state.turn === me} />
+      <RiverTiles key="river_me" river={data.state[me].river} me />
+      <HandTiles key="hand_me" hand={data.state[me].hand} me turn={data.state.turn === me} />
 
-      <DecisionButton decisions={data.state[me].decisions} />
-      <MenuPopup room={data} me={me} />
-      <GameResult room={data} me={me} />
-      {type && <StateChange type={type} />}
-    </>
+      <DecisionButton key="decision" decisions={data.state[me].decisions} />
+      <MenuPopup key="menu" room={data} me={me} />
+      <GameResult key="result" room={data} me={me} />
+      {type && <StateChange key="change" type={type} />}
+    </AnimatePresence>
   )
 }
 

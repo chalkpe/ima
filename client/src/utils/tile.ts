@@ -52,10 +52,14 @@ export const getBackground = (tile: Tile | SimpleTile) => {
   return 'foreground'
 }
 
-export const chunk = (river: RiverTile[], size: number) => {
+export const chunk = (river: RiverTile[], sizes: number[]) => {
   const result: RiverTile[][] = []
-  for (let i = 0; i < river.length; i += size) {
-    result.push(river.slice(i, i + size))
+
+  let index = 0
+  for (const size of sizes) {
+    result.push(river.slice(index, (index += size)))
+    if (index >= river.length) break
   }
+
   return result
 }

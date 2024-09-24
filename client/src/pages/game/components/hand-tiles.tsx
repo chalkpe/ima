@@ -58,6 +58,7 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
                 paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0',
                 cursor: hand.banned.includes(tile.index) ? 'not-allowed' : me && turn ? 'pointer' : 'default',
               }}
+              animate
               dim={hand.banned.includes(tile.index)}
             />
           ))}
@@ -77,6 +78,7 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
                 paddingBottom: hoveredIndex === hand.tsumo.index ? '1vmin' : '0',
                 cursor: me && turn ? 'pointer' : 'default',
               }}
+              animate
             />
           ) : (
             <Box width="6vmin" />
@@ -85,15 +87,20 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
       </Stack>
 
       <Stack
-        direction="column-reverse"
+        direction={me ? 'column-reverse' : 'column'}
         gap="0.5vmin"
         position="absolute"
         justifyContent="end"
         {...(me ? { bottom: '2vmin', right: '2vmin' } : { top: '2vmin', left: '2vmin' })}
-        sx={me ? {} : { transform: 'rotate(180deg)' }}
       >
         {hand.called.map((set) => (
-          <HaiGroup set={set} size={5} key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()} />
+          <HaiGroup
+            animate
+            flip={!me}
+            set={set}
+            size={5}
+            key={[set.type, set.jun, set.tiles.map((t) => t.index).join()].join()}
+          />
         ))}
       </Stack>
     </>

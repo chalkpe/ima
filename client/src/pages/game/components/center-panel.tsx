@@ -132,7 +132,6 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           justifyContent="center"
           alignItems="center"
           textAlign="center"
-          // sx={{ transform: 'rotate(180deg)' }}
         >
           <Typography fontSize="2.25vmin" fontWeight="bold" letterSpacing="0.2vmin">
             {state[op].score}

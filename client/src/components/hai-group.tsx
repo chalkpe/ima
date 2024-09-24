@@ -16,15 +16,17 @@ const itemMap: Record<TileSet['type'], FC<HaiGroupProps>> = {
 interface HaiGroupProps {
   set: TileSet
   size: number
+  flip?: boolean
+  animate?: boolean
   rotate?: boolean
   stack?: boolean
 }
 
-const HaiGroup: FC<HaiGroupProps> = ({ set, size, rotate = true, stack = true }) => {
+const HaiGroup: FC<HaiGroupProps> = ({ set, size, flip, animate, rotate = true, stack = true }) => {
   const Item = itemMap[set.type]
   return (
-    <Stack direction="row" gap={0} alignItems="end" justifyContent="end">
-      <Item set={set} size={size} rotate={rotate} stack={stack} />
+    <Stack direction="row" gap={0} alignItems={flip ? 'start' : 'end'} justifyContent={flip ? 'start' : 'end'}>
+      <Item set={set} size={size} flip={flip} animate={animate} rotate={rotate} stack={stack} />
     </Stack>
   )
 }

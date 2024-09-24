@@ -31,7 +31,7 @@ const WallTiles: FC<WallTilesProps> = ({ wall }) => {
 
   return (
     <>
-      <Stack direction="column-reverse" position="absolute" top="9vmin" right="2.5vmin">
+      <Stack direction="column-reverse" position="absolute" top="12.5vmin" right="3.5vmin">
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
             <Hai key={tile.index} size={3.5} tile={tile} rotated animate />
@@ -40,7 +40,7 @@ const WallTiles: FC<WallTilesProps> = ({ wall }) => {
           )
         )}
       </Stack>
-      <Stack direction="column-reverse" position="absolute" top="9vmin" right="2vmin">
+      <Stack direction="column-reverse" position="absolute" top="12.5vmin" right="3vmin">
         {upperTiles.map((tile, index) =>
           tile !== null ? (
             <Hai key={tile.index} size={3.5} tile={tile} rotated animate />

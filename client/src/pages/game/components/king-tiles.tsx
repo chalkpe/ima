@@ -34,7 +34,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall, size = 4 }) => {
 
   return (
     <>
-      <Stack direction="column" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 2}vmin)`}>
+      <Stack direction="column" position="absolute" top="34vmin" left={`calc(${size * 0.2 + 4}vmin)`}>
         {lowerTiles.map((tile, index) =>
           tile !== null ? (
             <Hai key={tile.index} size={size} tile={tile} rotated animate />
@@ -43,7 +43,7 @@ const KingTiles: FC<KingTilesProps> = ({ wall, size = 4 }) => {
           )
         )}
       </Stack>
-      <Stack direction="column" position="absolute" top="34vmin" left="2vmin">
+      <Stack direction="column" position="absolute" top="34vmin" left="4vmin">
         {upperTiles.map((tile, index) =>
           tile !== null ? (
             <Hai key={tile.index} size={size} tile={tile} rotated animate />

@@ -66,6 +66,7 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
         <Stack direction="row" gap={0} alignItems="end">
           {hand.tsumo ? (
             <Hai
+              key={hand.tsumo.index}
               size={6}
               tile={hand.tsumo}
               onClick={() => me && hand.tsumo && setHoveredIndex(hand.tsumo.index)}

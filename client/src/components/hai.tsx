@@ -67,8 +67,8 @@ const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, rotated, stack, natural, a
   if (animate && 'index' in tile) {
     return (
       <motion.div
-        transition={{ duration: 0.25 }}
         layoutId={tile.index.toString()}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
         style={rotated ? { rotate: 90, marginBottom: `calc(-${size}vmin * 3/7)` } : flip ? { rotate: 180 } : {}}
       >
         {content}

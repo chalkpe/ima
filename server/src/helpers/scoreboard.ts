@@ -55,17 +55,18 @@ export const createAgariScoreboard = (
   }
 }
 
-export const createRyukyokuScoreboard = (state: GameState, type: RyuukyokuType): Scoreboard => {
-  const hostTenpai = calculateTenpai(state, 'host', state.host.hand, null)
-  const guestTenpai = calculateTenpai(state, 'guest', state.guest.hand, null)
+export const createRyukyokuScoreboard = (state: GameState, ryuukyokuType: RyuukyokuType): Scoreboard => {
+  const hostTenpai = ryuukyokuType === 'ryuukyoku' && calculateTenpai(state, 'host', state.host.hand, null)
+  const guestTenpai = ryuukyokuType === 'ryuukyoku' && calculateTenpai(state, 'guest', state.guest.hand, null)
+  const tenpai = [...(hostTenpai ? ['host' as const] : []), ...(guestTenpai ? ['guest' as const] : [])]
   return {
     type: 'ryuukyoku',
     hostConfirmed: false,
     guestConfirmed: false,
-    ryuukyokuType: type,
-    tenpai: hostTenpai && guestTenpai ? ['host', 'guest'] : hostTenpai ? ['host'] : ['guest'],
-    hostHand: hostTenpai && { ...state.host.hand, tenpai: hostTenpai },
-    guestHand: guestTenpai && { ...state.guest.hand, tenpai: guestTenpai },
+    ryuukyokuType,
+    tenpai,
+    hostHand: hostTenpai ? { ...state.host.hand, tenpai: hostTenpai } : undefined,
+    guestHand: guestTenpai ? { ...state.guest.hand, tenpai: guestTenpai } : undefined,
   }
 }
 

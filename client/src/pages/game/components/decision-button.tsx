@@ -91,7 +91,7 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
         <HoverSketchButton
           key={[decision.type, decision.tile?.index, decision.otherTiles?.map((t) => t.index).join()].join()}
           onClick={() => onClick(decision)}
-          onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile.index)}
+          onMouseEnter={() => decision.type === 'riichi' && decision.tile && setHovered(decision.tile)}
           style={{
             minWidth: '12vmin',
             minHeight: '12vmin',

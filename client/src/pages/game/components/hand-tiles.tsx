@@ -17,13 +17,13 @@ interface HandTilesProps {
 }
 
 const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
-  const [hoveredIndex, setHoveredIndex] = useAtom(hoveredAtom)
+  const [hovered, setHovered] = useAtom(hoveredAtom)
   const closed = useMemo(() => sortTiles(hand.closed), [hand.closed])
 
   const currentTenpai = useMemo(() => hand.tenpai.filter((tenpai) => tenpai.giriTile === null), [hand.tenpai])
   const tedashiTenpai = useMemo(
-    () => hand.tenpai.filter((tenpai) => hoveredIndex !== undefined && tenpai.giriTile?.index === hoveredIndex),
-    [hand.tenpai, hoveredIndex]
+    () => hand.tenpai.filter((tenpai) => hovered !== undefined && tenpai.giriTile?.index === hovered.index),
+    [hand.tenpai, hovered]
   )
   const tsumogiriTenpai = useMemo(
     () => hand.tenpai.filter((tenpai) => tenpai.giriTile?.index === hand.tsumo?.index),
@@ -50,12 +50,14 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
               key={tile.index}
               size={6}
               tile={tile}
-              onClick={() => me && setHoveredIndex(tile.index)}
-              onMouseEnter={() => me && setHoveredIndex(tile.index)}
-              onMouseLeave={() => setHoveredIndex(undefined)}
-              onDoubleClick={() => me && hoveredIndex === tile.index && giri({ index: tile.index })}
+              onClick={() => me && setHovered(tile)}
+              onMouseEnter={() => me && setHovered(tile)}
+              onMouseLeave={() => setHovered(undefined)}
+              onDoubleClick={() =>
+                me && hovered?.index === tile.index && [giri({ index: tile.index }), setHovered(undefined)]
+              }
               style={{
-                paddingBottom: hoveredIndex === tile.index ? '1vmin' : '0',
+                paddingBottom: hovered?.index === tile.index ? '1vmin' : '0',
                 cursor: hand.banned.includes(tile.index) ? 'not-allowed' : me && turn ? 'pointer' : 'default',
               }}
               animate
@@ -69,14 +71,16 @@ const HandTiles: FC<HandTilesProps> = ({ hand, me, turn }) => {
               key={hand.tsumo.index}
               size={6}
               tile={hand.tsumo}
-              onClick={() => me && hand.tsumo && setHoveredIndex(hand.tsumo.index)}
-              onMouseEnter={() => me && hand.tsumo && setHoveredIndex(hand.tsumo.index)}
-              onMouseLeave={() => setHoveredIndex(undefined)}
+              onClick={() => me && hand.tsumo && setHovered(hand.tsumo)}
+              onMouseEnter={() => me && hand.tsumo && setHovered(hand.tsumo)}
+              onMouseLeave={() => setHovered(undefined)}
               onDoubleClick={() =>
-                me && hand.tsumo && hoveredIndex === hand.tsumo.index && giri({ index: hand.tsumo.index })
+                me &&
+                hand.tsumo &&
+                hovered?.index === hand.tsumo.index && [giri({ index: hand.tsumo.index }), setHovered(undefined)]
               }
               style={{
-                paddingBottom: hoveredIndex === hand.tsumo.index ? '1vmin' : '0',
+                paddingBottom: hovered?.index === hand.tsumo.index ? '1vmin' : '0',
                 cursor: me && turn ? 'pointer' : 'default',
               }}
               animate

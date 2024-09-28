@@ -46,7 +46,8 @@ export const convertTileToCode = (tile: Tile | SimpleTile) => {
   }
 }
 
-export const getBackground = (tile: Tile | SimpleTile) => {
+export const getBackground = (tile: Tile | SimpleTile, selected?: boolean) => {
+  if (selected) return 'blue'
   if (tile.type === 'back') return 'yellow'
   if ('background' in tile && tile.background === 'transparent') return 'transparent'
   return 'foreground'

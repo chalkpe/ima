@@ -14,9 +14,23 @@ interface HaiProps extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLI
   natural?: boolean
   animate?: boolean
   flip?: boolean
+  selected?: boolean
 }
 
-const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, rotated, stack, natural, animate, flip, style, ...rest }) => {
+const Hai: FC<HaiProps> = ({
+  size,
+  tile,
+  dim,
+  rotate,
+  rotated,
+  stack,
+  natural,
+  animate,
+  flip,
+  selected,
+  style,
+  ...rest
+}) => {
   const transform = useMemo(
     () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 3 - 1.5}deg)` : ''),
     [natural, tile]
@@ -28,7 +42,7 @@ const Hai: FC<HaiProps> = ({ size, tile, dim, rotate, rotated, stack, natural, a
     transform,
     userSelect: 'none',
     filter: dim ? 'brightness(0.5)' : '',
-    backgroundImage: `url(./back/${getBackground(tile)}.png)`,
+    backgroundImage: `url(./back/${getBackground(tile, selected)}.png)`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
   }

@@ -1,8 +1,9 @@
 import { FC } from 'react'
 import Hai from '@ima/client/components/hai'
 import { Box } from '@mui/material'
-import { chunk } from '@ima/client/utils/tile'
-
+import { chunk, compareSimpleTile } from '@ima/client/utils/tile'
+import { useAtomValue } from 'jotai'
+import { hoveredAtom } from '@ima/client/store/hovered'
 import type { RiverTile } from '@ima/server/types/game'
 
 interface RiverTilesProps {
@@ -11,6 +12,8 @@ interface RiverTilesProps {
 }
 
 const RiverTiles: FC<RiverTilesProps> = ({ river, me }) => {
+  const hovered = useAtomValue(hoveredAtom)
+
   return (
     <Box
       sx={{
@@ -38,6 +41,7 @@ const RiverTiles: FC<RiverTilesProps> = ({ river, me }) => {
               tile={riverTile.tile}
               animate
               flip={!me}
+              selected={hovered && compareSimpleTile(riverTile.tile, hovered) === 0}
             />
           ))}
         </Box>

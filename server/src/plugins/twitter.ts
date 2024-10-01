@@ -1,14 +1,7 @@
-import fs from 'fs'
-import path from 'path'
-
 import fp from 'fastify-plugin'
-import fastifySecureSession from '@fastify/secure-session'
 import fastifyPassport from '@fastify/passport'
 import { Strategy } from 'passport-twitter'
 import { prisma } from '@ima/server/db'
-import { Prisma } from '@prisma/client'
-
-const key = fs.readFileSync(path.join(__dirname, '..', '..', 'secret-key'))
 
 const consumerKey = process.env.TWITTER_API_KEY!
 const consumerSecret = process.env.TWITTER_API_SECRET!
@@ -19,13 +12,11 @@ const authPath = '/api/twitter/auth'
 const callbackPath = '/api/twitter/callback'
 
 export default fp((server, _, done) => {
-  server.register(fastifySecureSession, { key, cookie: { path: '/' } })
-  server.register(fastifyPassport.initialize())
-  server.register(fastifyPassport.secureSession())
-
   fastifyPassport.use(
+    'twitter',
     new Strategy({ consumerKey, consumerSecret, callbackURL }, async (token, tokenSecret, profile, done) => {
-      const { id, displayName, username } = profile
+      const { id: twitterId, displayName, username } = profile
+      const id = `twitter:${twitterId}`
       try {
         const user = await prisma.user.findFirst({ where: { id } })
         if (user) {
@@ -40,27 +31,12 @@ export default fp((server, _, done) => {
     })
   )
 
-  fastifyPassport.registerUserSerializer(async (user: Prisma.UserSelect) => user.id)
-  fastifyPassport.registerUserDeserializer(async (id: string) => await prisma.user.findFirst({ where: { id } }))
-
   server.get(authPath, { preValidation: fastifyPassport.authenticate('twitter') }, () => {})
   server.get(callbackPath, { preValidation: fastifyPassport.authenticate('twitter') }, async (req, reply) => {
     if (!req.user) return reply.redirect(redirectURL)
-    const { id, displayName, username } = req.user
-    return reply.redirect(`${redirectURL}/?token=${await reply.jwtSign({ id, displayName, username })}`)
+    const { id, displayName } = req.user
+    return reply.redirect(`${redirectURL}/?token=${await reply.jwtSign({ id, displayName })}`)
   })
 
   done()
 })
-
-declare module 'fastify' {
-  interface PassportUser extends Prisma.UserSelect {
-    _: unknown
-  }
-}
-
-declare module '@fastify/jwt' {
-  interface FastifyJWT {
-    user: Prisma.UserSelect
-  }
-}

@@ -145,10 +145,10 @@ export interface GameState {
 export interface Room {
   host: string
   hostReady: boolean
-  hostUser?: { username: string; displayName: string } | null
+  hostUser?: { id: string; displayName: string } | null
   guest: string
   guestReady: boolean
-  guestUser?: { username: string; displayName: string } | null
+  guestUser?: { id: string; displayName: string } | null
   started: boolean
   state: GameState
   stopRequestedBy: 'HOST' | 'GUEST' | null
@@ -157,7 +157,7 @@ export interface Room {
 
 export interface LobbyRoom {
   host: string
-  hostUser?: { username: string; displayName: string } | null
+  hostUser?: { id: string; displayName: string } | null
   guest: string | null
-  guestUser?: { username: string; displayName: string } | null
+  guestUser?: { id: string; displayName: string } | null
 }

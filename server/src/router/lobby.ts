@@ -5,16 +5,16 @@ import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
 import type { GameState, LobbyRoom } from '@ima/server/types/game'
 
-const getRoom = async (username: string, onlyHost = false) => {
+const getRoom = async (id: string, onlyHost = false) => {
   const room = await prisma.room.findFirst({
-    where: onlyHost ? { host: username } : { OR: [{ host: username }, { guest: username }] },
+    where: onlyHost ? { host: id } : { OR: [{ host: id }, { guest: id }] },
     select: {
       host: true,
       hostReady: true,
-      hostUser: { select: { username: true, displayName: true } },
+      hostUser: { select: { id: true, displayName: true } },
       guest: true,
       guestReady: true,
-      guestUser: { select: { username: true, displayName: true } },
+      guestUser: { select: { id: true, displayName: true } },
       started: true,
       state: true,
     },
@@ -29,45 +29,45 @@ export const lobbyRouter = router({
       where: { NOT: { started: true } },
       select: {
         host: true,
-        hostUser: { select: { username: true, displayName: true } },
+        hostUser: { select: { id: true, displayName: true } },
         guest: true,
-        guestUser: { select: { username: true, displayName: true } },
+        guestUser: { select: { id: true, displayName: true } },
       },
     })
   ),
 
   create: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    if (await prisma.room.findFirst({ where: { host: username } })) {
+    const { id } = opts.ctx
+    if (await prisma.room.findFirst({ where: { host: id } })) {
       throw new TRPCError({ code: 'CONFLICT', message: '이미 호스트가 존재합니다.' })
     }
 
     await prisma.room.create({
       data: {
-        hostUser: { connect: { username } },
+        hostUser: { connect: { id } },
         state: createInitialState(),
       },
     })
   }),
 
   leave: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username)
+    const { id } = opts.ctx
+    const room = await getRoom(id)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '방을 찾을 수 없습니다.' })
 
-    if (room.host === username) {
+    if (room.host === id) {
       if (room.guest) {
         await prisma.room.update({
-          where: { host: username },
+          where: { host: id },
           data: {
             guestUser: { disconnect: true },
             guestReady: false,
-            hostUser: { connect: { username: room.guest } },
+            hostUser: { connect: { id: room.guest } },
             hostReady: room.guestReady,
           },
         })
       } else {
-        await prisma.room.delete({ where: { host: username } })
+        await prisma.room.delete({ where: { host: id } })
       }
     } else {
       await prisma.room.update({
@@ -81,32 +81,32 @@ export const lobbyRouter = router({
   }),
 
   join: protectedProcedure.input(z.object({ host: z.string() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { host } = opts.input
 
-    if (host === username) throw new TRPCError({ code: 'BAD_REQUEST', message: '호스트와 같은 이름입니다.' })
+    if (host === id) throw new TRPCError({ code: 'BAD_REQUEST', message: '호스트와 같은 이름입니다.' })
 
     const room = await getRoom(host, true)
     if (!room) throw new TRPCError({ code: 'NOT_FOUND', message: '호스트를 찾을 수 없습니다.' })
 
     if (room.guest) throw new TRPCError({ code: 'FORBIDDEN', message: '이미 게스트가 존재합니다.' })
 
-    await prisma.room.update({ where: { host }, data: { guestUser: { connect: { username } } } })
-    await prisma.room.deleteMany({ where: { host: username } })
+    await prisma.room.update({ where: { host }, data: { guestUser: { connect: { id } } } })
+    await prisma.room.deleteMany({ where: { host: id } })
   }),
 
   room: protectedProcedure.query(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username)
+    const { id } = opts.ctx
+    const room = await getRoom(id)
     room.state = { rule: room.state.rule } as GameState
     return { ...room }
   }),
 
   ready: protectedProcedure.input(z.object({ ready: z.boolean() })).mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username)
+    const { id } = opts.ctx
+    const room = await getRoom(id)
 
-    if (room.host === username) room.hostReady = opts.input.ready
+    if (room.host === id) room.hostReady = opts.input.ready
     else room.guestReady = opts.input.ready
 
     await prisma.room.update({
@@ -116,20 +116,20 @@ export const lobbyRouter = router({
   }),
 
   setLocalYaku: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { value } = opts.input
 
-    const room = await getRoom(username, true)
+    const room = await getRoom(id, true)
     room.state.rule.localYaku = value
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
   }),
 
   setManganShibari: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { value } = opts.input
 
-    const room = await getRoom(username, true)
+    const room = await getRoom(id, true)
     room.state.rule.manganShibari = value
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -138,20 +138,20 @@ export const lobbyRouter = router({
   setLength: protectedProcedure
     .input(z.object({ value: z.enum(['east', 'south', 'north']) }))
     .mutation(async (opts) => {
-      const { username } = opts.ctx
+      const { id } = opts.ctx
       const { value } = opts.input
 
-      const room = await getRoom(username, true)
+      const room = await getRoom(id, true)
       room.state.rule.length = value
 
       await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     }),
 
   setTransparentMode: protectedProcedure.input(z.object({ value: z.boolean() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { value } = opts.input
 
-    const room = await getRoom(username, true)
+    const room = await getRoom(id, true)
     room.state.rule.transparentMode = value
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })

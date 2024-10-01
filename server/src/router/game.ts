@@ -28,16 +28,16 @@ import { tileTypes } from '@ima/server/helpers/tile'
 import { createInitialState, getActiveMe, getOpponent } from '@ima/server/helpers/game'
 import type { StateChangeType } from '@ima/server/types/game'
 
-const getRoom = async (username: string, started?: boolean) => {
+const getRoom = async (id: string, started?: boolean) => {
   const room = await prisma.room.findFirst({
-    where: { OR: [{ host: username }, { guest: username }] },
+    where: { OR: [{ host: id }, { guest: id }] },
     select: {
       host: true,
       hostReady: true,
-      hostUser: { select: { username: true, displayName: true } },
+      hostUser: { select: { id: true, displayName: true } },
       guest: true,
       guestReady: true,
-      guestUser: { select: { username: true, displayName: true } },
+      guestUser: { select: { id: true, displayName: true } },
       started: true,
       state: true,
       stopRequestedBy: true,
@@ -57,15 +57,15 @@ const getRoom = async (username: string, started?: boolean) => {
 
 export const gameRouter = router({
   state: protectedProcedure.query(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username)
-    const me = room.host === username ? 'host' : 'guest'
+    const { id } = opts.ctx
+    const room = await getRoom(id)
+    const me = room.host === id ? 'host' : 'guest'
     return { ...room, state: getVisibleState(room.state, me) }
   }),
 
   onStateChange: protectedProcedure.subscription(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username)
+    const { id } = opts.ctx
+    const room = await getRoom(id)
 
     await sub.subscribe(room.host)
     return observable<StateChangeType>((emit) => {
@@ -78,8 +78,8 @@ export const gameRouter = router({
   }),
 
   start: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username, false)
+    const { id } = opts.ctx
+    const room = await getRoom(id, false)
 
     initState(room.state)
     room.state.turn = Math.round(Math.random()) ? 'host' : 'guest'
@@ -92,8 +92,8 @@ export const gameRouter = router({
   }),
 
   stop: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username, true)
+    const { id } = opts.ctx
+    const room = await getRoom(id, true)
 
     const check = async () => {
       const r = await prisma.room.findFirst({
@@ -125,17 +125,17 @@ export const gameRouter = router({
 
     await prisma.room.update({
       where: { host: room.host },
-      data: { remainingTimeToStop: 30, stopRequestedBy: room.host === username ? 'HOST' : 'GUEST' },
+      data: { remainingTimeToStop: 30, stopRequestedBy: room.host === id ? 'HOST' : 'GUEST' },
     })
     pub.publish(room.host, 'stop')
     setTimeout(check, 1000)
   }),
 
   confirmStop: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username, true)
+    const { id } = opts.ctx
+    const room = await getRoom(id, true)
 
-    const me = room.host === username ? 'HOST' : 'GUEST'
+    const me = room.host === id ? 'HOST' : 'GUEST'
     if (room.stopRequestedBy === me)
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Cannot confirm stop by yourself' })
 
@@ -154,8 +154,8 @@ export const gameRouter = router({
   }),
 
   revertStop: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
-    const room = await getRoom(username, true)
+    const { id } = opts.ctx
+    const room = await getRoom(id, true)
 
     await prisma.room.update({ where: { host: room.host }, data: { remainingTimeToStop: null } })
     pub.publish(room.host, 'update')
@@ -164,20 +164,20 @@ export const gameRouter = router({
   getRemainingTileCount: protectedProcedure
     .input(z.object({ type: z.enum(tileTypes), value: z.number() }))
     .query(async (opts) => {
-      const { username } = opts.ctx
+      const { id } = opts.ctx
       const { type, value } = opts.input
 
-      const room = await getRoom(username, true)
-      const me = room.host === username ? 'host' : 'guest'
+      const room = await getRoom(id, true)
+      const me = room.host === id ? 'host' : 'guest'
       return getRemainingTileCount(room.state, me, { type, value })
     }),
 
   pon: protectedProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { tatsu } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     pon(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -185,11 +185,11 @@ export const gameRouter = router({
   }),
 
   chi: protectedProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { tatsu } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     chi(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -197,10 +197,10 @@ export const gameRouter = router({
   }),
 
   daiminkan: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     daiminkan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -208,11 +208,11 @@ export const gameRouter = router({
   }),
 
   ankan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { type, value } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     ankan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -220,11 +220,11 @@ export const gameRouter = router({
   }),
 
   gakan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { type, value } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     gakan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -232,10 +232,10 @@ export const gameRouter = router({
   }),
 
   skipAndTsumo: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     const result = skipAndTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -243,10 +243,10 @@ export const gameRouter = router({
   }),
 
   skipChankan: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     skipChankan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -254,10 +254,10 @@ export const gameRouter = router({
   }),
 
   callTsumo: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     callTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -265,10 +265,10 @@ export const gameRouter = router({
   }),
 
   callRon: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     callRon(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -276,11 +276,11 @@ export const gameRouter = router({
   }),
 
   giri: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { index } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     const result = giri(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -288,11 +288,11 @@ export const gameRouter = router({
   }),
 
   riichi: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
     const { index } = opts.input
 
-    const room = await getRoom(username, true)
-    const me = getActiveMe(room, username)
+    const room = await getRoom(id, true)
+    const me = getActiveMe(room, id)
     const result = riichi(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
@@ -300,10 +300,10 @@ export const gameRouter = router({
   }),
 
   confirmScoreboard: protectedProcedure.mutation(async (opts) => {
-    const { username } = opts.ctx
+    const { id } = opts.ctx
 
-    const room = await getRoom(username, true)
-    const result = confirmScoreboard(room.state, room.host === username ? 'host' : 'guest')
+    const room = await getRoom(id, true)
+    const result = confirmScoreboard(room.state, room.host === id ? 'host' : 'guest')
 
     if (result === 'end') {
       await prisma.room.update({

@@ -70,8 +70,8 @@ export const getRiverEnd = (player: Player): RiverTile | undefined => {
   return river.length > 0 ? river[river.length - 1] : undefined
 }
 
-export const getActiveMe = (room: Room, username: string) => {
-  const me = room.host === username ? 'host' : 'guest'
+export const getActiveMe = (room: Room, id: string) => {
+  const me = room.host === id ? 'host' : 'guest'
   if (room.state.scoreboard) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Game ended' })
   if (room.state.turn !== me) throw new TRPCError({ code: 'FORBIDDEN', message: 'Not your turn' })
   return me

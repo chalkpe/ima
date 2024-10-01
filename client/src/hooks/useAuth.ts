@@ -7,7 +7,6 @@ import { jwtDecode } from 'jwt-decode'
 
 interface AuthPayload {
   id: string
-  username: string
   displayName: string
 }
 

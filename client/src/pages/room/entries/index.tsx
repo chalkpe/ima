@@ -36,7 +36,7 @@ const Room = () => {
     }
   }, [data, error, navigate, skip])
 
-  const isHost = useMemo(() => data?.host === payload?.username, [data?.host, payload?.username])
+  const isHost = useMemo(() => data?.host === payload?.id, [data?.host, payload?.id])
 
   return (
     <>

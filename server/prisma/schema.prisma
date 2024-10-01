@@ -11,16 +11,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model FediverseApp {
+  domain       String @id
+  clientId     String
+  clientSecret String
+}
+
 model User {
   id          String @id
   displayName String
-  username    String @unique
+  username    String
   token       String
   tokenSecret String
   hostRoom    Room?  @relation(name: "hostUser")
   guestRoom   Room?  @relation(name: "guestUser")
 }
-
 
 enum PlayerType {
   HOST
@@ -30,13 +35,13 @@ enum PlayerType {
 model Room {
   host      String  @id
   hostReady Boolean @default(false)
-  hostUser  User?   @relation(fields: [host], references: [username], name: "hostUser")
+  hostUser  User?   @relation(fields: [host], references: [id], name: "hostUser")
 
   guest      String? @unique
   guestReady Boolean @default(false)
-  guestUser  User?   @relation(fields: [guest], references: [username], name: "guestUser")
+  guestUser  User?   @relation(fields: [guest], references: [id], name: "guestUser")
 
-  started             Boolean @default(false)
+  started Boolean @default(false)
 
   stopRequestedBy     PlayerType?
   remainingTimeToStop Int?

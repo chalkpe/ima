@@ -39,8 +39,8 @@ const Game = () => {
     },
   })
 
-  const me = useMemo(() => (data?.host === payload?.username ? 'host' : 'guest'), [data?.host, payload?.username])
-  const opponent = useMemo(() => (data?.host === payload?.username ? 'guest' : 'host'), [data?.host, payload?.username])
+  const me = useMemo(() => (data?.host === payload?.id ? 'host' : 'guest'), [data?.host, payload?.id])
+  const opponent = useMemo(() => (data?.host === payload?.id ? 'guest' : 'host'), [data?.host, payload?.id])
 
   useEffect(() => {
     if (skip) return

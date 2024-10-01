@@ -26,7 +26,7 @@ export default fp((server, _, done) => {
         }
       },
       onError({ type, path, ctx, error }) {
-        console.error('❌ tRPC error', type, path, ctx?.username, error.message)
+        console.error('❌ tRPC error', type, path, ctx?.id, error.message)
       },
     } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   })

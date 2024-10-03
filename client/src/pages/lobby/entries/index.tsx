@@ -12,7 +12,7 @@ const Lobby = () => {
   const { skip, setToken } = useAuth()
   const utils = trpc.useUtils()
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
-  const { data: room, error } = trpc.lobby.room.useQuery(skip)
+  const { data: room, error } = trpc.lobby.room.useQuery(skip, { retry: false })
   const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   const [tab, setTab] = useState<'list' | 'profile'>('list')
@@ -38,11 +38,11 @@ const Lobby = () => {
             }}
             style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#ff9800' }}
           >
-            나가기
+            로그아웃
           </SketchButton>
           <SketchButton
             onClick={() => create()}
-            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#03a9f4' }}
+            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#cadf9f' }}
           >
             방 생성
           </SketchButton>
@@ -50,10 +50,18 @@ const Lobby = () => {
       </Stack>
 
       <Stack direction="row" gap="2vmin">
-        <SketchButton style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }} onClick={() => setTab('list')}>
+        <SketchButton
+          style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
+          onClick={() => setTab('list')}
+          active={tab === 'list'}
+        >
           목록
         </SketchButton>
-        <SketchButton style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }} onClick={() => setTab('profile')}>
+        <SketchButton
+          style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
+          onClick={() => setTab('profile')}
+          active={tab === 'profile'}
+        >
           프로필
         </SketchButton>
       </Stack>

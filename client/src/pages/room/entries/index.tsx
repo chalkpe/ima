@@ -13,7 +13,7 @@ import SketchDivider from '@ima/client/components/sketch-divider'
 const Room = () => {
   const navigate = useNavigate()
   const { payload, skip } = useAuth()
-  const { data, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
+  const { data, isFetching, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000, retry: false })
 
   const utils = trpc.useUtils()
   const reset = () => utils.lobby.room.reset()
@@ -28,13 +28,10 @@ const Room = () => {
   const { mutate: setTransparentMode } = trpc.lobby.setTransparentMode.useMutation({ onSuccess: invalidate })
 
   useEffect(() => {
-    if (skip) return
-    if (!data || error) {
-      navigate('/lobby')
-    } else if (data?.started) {
-      navigate('/game')
-    }
-  }, [data, error, navigate, skip])
+    if (skip || isFetching) return
+    if (!data || error) navigate('/lobby')
+    else if (data?.started) navigate('/game')
+  }, [data, error, isFetching, navigate, skip])
 
   const isHost = useMemo(() => data?.host === payload?.id, [data?.host, payload?.id])
 
@@ -59,7 +56,7 @@ const Room = () => {
               {isHost && (
                 <SketchButton
                   disabled={!data.hostReady || !data.guestReady}
-                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#03a9f4' }}
+                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#cadf9f' }}
                   onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
                 >
                   게임 시작

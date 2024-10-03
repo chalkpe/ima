@@ -7,9 +7,10 @@ body,
 
 body {
   height: 100vh;
-  background-size: cover;
-  background-image: url(/background.png);
-  background-color: #cadf9f !important;
+  background-color: #fff;
+  /* background-size: cover; */
+  /* background-image: url(/background.png); */
+  /* background-color: #cadf9f !important; */
 }
 
 #root {

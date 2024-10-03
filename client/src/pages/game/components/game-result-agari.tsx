@@ -18,7 +18,14 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
   return (
     <>
       <Stack direction="row" gap="1vmin">
-        {winner && <UserHandle user={winner} fontSize={6} fontWeight="bold" />}
+        {winner && (
+          <UserHandle
+            user={winner}
+            fontSize={6}
+            fontWeight="bold"
+            style={{ maxWidth: '48vmin', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+          />
+        )}
         <Typography fontSize="6vmin" fontWeight="bold">
           {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
         </Typography>

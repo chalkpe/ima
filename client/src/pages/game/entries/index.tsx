@@ -13,13 +13,14 @@ import GameResult from '@ima/client/pages/game/components/game-result'
 import MenuPopup from '@ima/client/pages/game/components/menu-popup'
 import StateChange from '@ima/client/pages/game/components/state-change'
 import type { StateChangeType } from '@ima/server/types/game'
+import { css, Global } from '@emotion/react'
 
 const Game = () => {
   const navigate = useNavigate()
   const { payload, skip } = useAuth()
   const [type, setType] = useState<StateChangeType>()
 
-  const { data, error } = trpc.game.state.useQuery(skip)
+  const { data, isFetching, error } = trpc.game.state.useQuery(skip)
   const { mutate: giri } = trpc.game.giri.useMutation()
 
   const utils = trpc.useUtils()
@@ -43,11 +44,11 @@ const Game = () => {
   const opponent = useMemo(() => (data?.host === payload?.id ? 'guest' : 'host'), [data?.host, payload?.id])
 
   useEffect(() => {
-    if (skip) return
+    if (skip || isFetching) return
     if (!data || !data.started || error) {
-      navigate('/lobby')
+      navigate('/room')
     }
-  }, [data, error, navigate, skip])
+  }, [data, error, isFetching, navigate, skip])
 
   useEffect(() => {
     if (
@@ -66,6 +67,8 @@ const Game = () => {
 
   return (
     <AnimatePresence>
+      <Global styles={globalStyles} />
+
       <CenterPanel key="center" state={data.state} me={me} />
       <KingTiles key="king" wall={data.state.wall} />
       <WallTiles key="wall" wall={data.state.wall} />
@@ -85,3 +88,11 @@ const Game = () => {
 }
 
 export default Game
+
+const globalStyles = css`
+  body {
+    background-color: #cadf9f;
+    background-image: url('/background.png');
+    background-size: cover;
+  }
+`

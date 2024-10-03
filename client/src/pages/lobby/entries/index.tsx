@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
-import { Button, Stack, Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@ima/client/utils/trpc'
 import useAuth from '@ima/client/hooks/useAuth'
 import RoomList from '@ima/client/pages/lobby/components/room-list'
+import SketchButton from '@ima/client/components/sketch-button'
 
 const Lobby = () => {
   const navigate = useNavigate()
@@ -27,24 +28,21 @@ const Lobby = () => {
           로비
         </Typography>
         <Stack direction="row" gap="2vmin">
-          <Button
-            variant="contained"
-            color="warning"
+          <SketchButton
             onClick={() => {
               setToken('')
               navigate('/')
             }}
-            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#ff9800' }}
           >
             나가기
-          </Button>
-          <Button
-            variant="contained"
+          </SketchButton>
+          <SketchButton
             onClick={() => create()}
-            sx={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#03a9f4' }}
           >
             방 생성
-          </Button>
+          </SketchButton>
         </Stack>
       </Stack>
 

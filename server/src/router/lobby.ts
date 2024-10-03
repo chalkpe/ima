@@ -11,10 +11,10 @@ const getRoom = async (id: string, onlyHost = false) => {
     select: {
       host: true,
       hostReady: true,
-      hostUser: { select: { id: true, displayName: true } },
+      hostUser: { select: { id: true, displayName: true, nickname: true } },
       guest: true,
       guestReady: true,
-      guestUser: { select: { id: true, displayName: true } },
+      guestUser: { select: { id: true, displayName: true, nickname: true } },
       started: true,
       state: true,
     },
@@ -29,9 +29,9 @@ export const lobbyRouter = router({
       where: { NOT: { started: true } },
       select: {
         host: true,
-        hostUser: { select: { id: true, displayName: true } },
+        hostUser: { select: { id: true, displayName: true, nickname: true } },
         guest: true,
-        guestUser: { select: { id: true, displayName: true } },
+        guestUser: { select: { id: true, displayName: true, nickname: true } },
       },
     })
   ),

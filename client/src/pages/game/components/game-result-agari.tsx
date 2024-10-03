@@ -5,6 +5,7 @@ import SketchBox from '@ima/client/components/sketch-box'
 import HandCard from '@ima/client/pages/game/components/hand-card'
 import { calculateScoreName, getYakuFontSize } from '@ima/client/utils/game'
 import type { AgariScoreboard, Room } from '@ima/server/types/game'
+import UserHandle from '@ima/client/components/user-handle'
 
 interface GameResultAgariProps {
   room: Room
@@ -16,14 +17,16 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
 
   return (
     <>
-      <Typography fontSize="6vmin" fontWeight="bold">
-        {winner?.displayName} {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
-      </Typography>
+      <Stack direction="row" gap="1vmin">
+        {winner && <UserHandle user={winner} fontSize={6} fontWeight="bold" />}
+        <Typography fontSize="6vmin" fontWeight="bold">
+          {scoreboard.agariType === 'tsumo' ? '쯔모' : '론'}
+        </Typography>
+      </Stack>
 
       <SketchBox style={{ backgroundColor: '#cadf9f' }}>
         <Stack direction="column" gap="2vmin" padding="1.5vmin">
           <HandCard hand={scoreboard.hand} />
-
           <Stack direction="row" gap="1vmin">
             <Stack direction="row" gap="1vmin">
               <Typography fontSize="3vmin">도라</Typography>

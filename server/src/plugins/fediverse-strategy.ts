@@ -3,8 +3,9 @@ import { prisma } from '@ima/server/db'
 import generator, { detector, Mastodon } from 'megalodon'
 
 interface FediverseStrategyOptions {
-  scopes: string[]
+  redirectUrl: string
   callbackPath: string
+  scopes: string[]
 }
 
 class FediverseStrategy extends Strategy {
@@ -38,6 +39,14 @@ class FediverseStrategy extends Strategy {
     }
   }
 
+  async detect(url: string) {
+    try {
+      return await detector(url)
+    } catch (err: unknown) {
+      return this.fail(err, 422)
+    }
+  }
+
   async auth(req: Parameters<Strategy['authenticate']>[0]) {
     const parsed = this.parse(req)
     if (!parsed) return this.fail('invalid_request', 400)
@@ -46,7 +55,7 @@ class FediverseStrategy extends Strategy {
     const { domain, baseUrl, redirectUri } = parsed
 
     try {
-      const type = await detector(baseUrl)
+      const type = await this.detect(baseUrl)
       if (type !== 'mastodon') return this.fail('not_supported', 422)
 
       const client = generator(type, baseUrl) as Mastodon

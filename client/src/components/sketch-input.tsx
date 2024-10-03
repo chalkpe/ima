@@ -4,6 +4,7 @@ import styled from '@emotion/styled'
 import { useTheme } from '@mui/material'
 
 interface SketchInputProps {
+  size: number
   name?: string
   value: string
   onChange: (value: string) => void
@@ -13,11 +14,12 @@ interface SketchInputProps {
   style?: CSSProperties
 }
 
-const SketchInput: FC<SketchInputProps> = ({ name, value, onChange, autoFocus, onBlur, placeholder, style }) => {
+const SketchInput: FC<SketchInputProps> = ({ size, name, value, onChange, autoFocus, onBlur, placeholder, style }) => {
   const theme = useTheme()
   const { toggle } = useSketchToggle()
 
   const commonStyles: CSSProperties = {
+    fontSize: `${size}vmin`,
     fontFamily: theme.typography.fontFamily,
   }
 
@@ -34,14 +36,9 @@ const SketchInput: FC<SketchInputProps> = ({ name, value, onChange, autoFocus, o
           input::placeholder { color: rgba(50, 50, 50, 0.5) }
         `)
         shadowRoot.adoptedStyleSheets.push(style)
-
-        const input = shadowRoot.querySelector('input')
-        if (input) {
-          if (autoFocus) input.focus()
-          if (name) input.setAttribute('name', name)
-        }
+        if (autoFocus) shadowRoot.querySelector('input')?.focus()
       }).observe(node, { attributes: true, attributeFilter: ['class'] }),
-    [autoFocus, name]
+    [autoFocus]
   )
 
   return (

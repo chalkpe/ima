@@ -142,13 +142,19 @@ export interface GameState {
   scoreboard?: Scoreboard
 }
 
+export interface User {
+  id: string
+  displayName: string
+  nickname: string | null
+}
+
 export interface Room {
   host: string
   hostReady: boolean
-  hostUser?: { id: string; displayName: string } | null
+  hostUser?: User | null
   guest: string
   guestReady: boolean
-  guestUser?: { id: string; displayName: string } | null
+  guestUser?: User | null
   started: boolean
   state: GameState
   stopRequestedBy: 'HOST' | 'GUEST' | null
@@ -157,7 +163,7 @@ export interface Room {
 
 export interface LobbyRoom {
   host: string
-  hostUser?: { id: string; displayName: string } | null
+  hostUser?: User | null
   guest: string | null
-  guestUser?: { id: string; displayName: string } | null
+  guestUser?: User | null
 }

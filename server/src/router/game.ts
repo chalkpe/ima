@@ -34,10 +34,10 @@ const getRoom = async (id: string, started?: boolean) => {
     select: {
       host: true,
       hostReady: true,
-      hostUser: { select: { id: true, displayName: true } },
+      hostUser: { select: { id: true, displayName: true, nickname: true } },
       guest: true,
       guestReady: true,
-      guestUser: { select: { id: true, displayName: true } },
+      guestUser: { select: { id: true, displayName: true, nickname: true } },
       started: true,
       state: true,
       stopRequestedBy: true,

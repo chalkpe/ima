@@ -50,7 +50,7 @@ const Room = () => {
             <Stack direction="row" gap="2vmin">
               <SketchButton
                 disabled={isHost ? data.hostReady : data.guestReady}
-                style={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+                style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#ff9800' }}
                 onClick={() => leave()}
               >
                 나가기
@@ -59,7 +59,7 @@ const Room = () => {
               {isHost && (
                 <SketchButton
                   disabled={!data.hostReady || !data.guestReady}
-                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', borderRadius: '1vmin' }}
+                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#03a9f4' }}
                   onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
                 >
                   게임 시작
@@ -72,12 +72,12 @@ const Room = () => {
             <Stack direction="row" sx={{ fontSize: '4vmin' }} alignItems="center" gap="1vmin">
               {data.host !== '' ? <SketchCheckbox disabled checked={data.hostReady} size={4} /> : ''}
               <span>방장: </span>
-              {data.hostUser && <UserHandle {...data.hostUser} fontSize={4} />}
+              {data.hostUser && <UserHandle user={data.hostUser} fontSize={4} />}
             </Stack>
             <Stack direction="row" sx={{ fontSize: '4vmin' }} alignItems="center" gap="1vmin">
               {data.guest !== '' ? <SketchCheckbox disabled checked={data.guestReady} size={4} /> : ''}
               <span>상대: </span>
-              {data.guestUser && <UserHandle {...data.guestUser} fontSize={4} />}
+              {data.guestUser && <UserHandle user={data.guestUser} fontSize={4} />}
             </Stack>
           </SketchBox>
 

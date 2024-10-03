@@ -19,8 +19,9 @@ model FediverseApp {
 
 model User {
   id          String @id
-  displayName String
   username    String
+  displayName String
+  nickname    String?
   token       String
   tokenSecret String
   hostRoom    Room?  @relation(name: "hostUser")

@@ -38,7 +38,7 @@ const GameResultRyuukyoku: FC<GameResultRyuukyokuProps> = ({ room, scoreboard, m
                     <Stack direction="column" gap="1vmin" padding="1vmin">
                       {hand && (
                         <Stack direction="row" gap="1vmin" alignItems="flex-start">
-                          {user && <UserHandle {...user} fontSize={3} />}
+                          {user && <UserHandle user={user} fontSize={3} />}
                           <Typography fontSize="3vmin">텐파이 - </Typography>
                           <TenpaiTiles list={hand.tenpai} unboxed />
                         </Stack>

@@ -20,11 +20,12 @@ const FediverseButton: FC<FediverseButtonProps> = ({ size }) => {
       <form method="get" action={`/api/fediverse/auth`} ref={formRef}>
         <Stack spacing="1vmin" direction="row">
           <SketchInput
+            size={size}
             autoFocus
             name="domain"
             value={domain}
             onChange={setDomain}
-            placeholder="서버 주소 (예: planet.moe)"
+            placeholder="주소 (예: planet.moe)"
             onBlur={() => setOpen(false)}
             style={{ flex: 1 }}
           />

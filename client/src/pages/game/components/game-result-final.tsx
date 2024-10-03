@@ -23,7 +23,7 @@ const GameResultFinal: FC<GameResultFinalProps> = ({ room, scoreboard }) => {
             return (
               <SketchBox key={player} style={{ backgroundColor: '#ccc' }}>
                 <Typography fontSize="3vmin" margin="1vmin 2vmin">
-                  {user && <UserHandle {...user} fontSize={3} />}
+                  {user && <UserHandle user={user} fontSize={3} />}
                   {scoreboard[`${player}Score`].toLocaleString()}점
                 </Typography>
               </SketchBox>

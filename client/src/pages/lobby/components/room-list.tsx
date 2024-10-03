@@ -1,9 +1,10 @@
 import { FC } from 'react'
-import { CircularProgress, IconButton, List, ListItem, Stack, Typography } from '@mui/material'
-import { BlockOutlined, LoginOutlined } from '@mui/icons-material'
+import { CircularProgress, Stack, Typography } from '@mui/material'
 import UserHandle from '@ima/client/components/user-handle'
 import { trpc } from '@ima/client/utils/trpc'
 import type { LobbyRoom } from '@ima/server/types/game'
+import SketchBox from '@ima/client/components/sketch-box'
+import SketchButton from '@ima/client/components/sketch-button'
 
 interface RoomListProps {
   list?: LobbyRoom[]
@@ -26,28 +27,30 @@ const RoomList: FC<RoomListProps> = ({ list }) => {
   }
 
   return (
-    <List>
+    <Stack direction="column">
       {list.map((room) => (
-        <ListItem
-          key={room.host}
-          secondaryAction={
-            <IconButton edge="end" onClick={() => join({ host: room.host })} sx={{ fontSize: '4vmin' }}>
-              {room.guestUser ? <BlockOutlined fontSize="inherit" /> : <LoginOutlined fontSize="inherit" />}
-            </IconButton>
-          }
-        >
-          <Stack direction="row" gap="1vmin">
-            {room.hostUser && <UserHandle {...room.hostUser} fontSize={4} />}
-            {room.guestUser && (
-              <>
-                <Typography fontSize="4vmin"> vs </Typography>
-                <UserHandle {...room.guestUser} fontSize={4} />
-              </>
-            )}
+        <SketchBox key={room.host} style={{ width: '100%', padding: '1vmin 2vmin' }}>
+          <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" gap="1vmin" alignItems="center">
+              {room.hostUser && <UserHandle user={room.hostUser} fontSize={4} />}
+              {room.guestUser && (
+                <>
+                  <Typography fontSize="4vmin"> vs </Typography>
+                  <UserHandle user={room.guestUser} fontSize={4} />
+                </>
+              )}
+            </Stack>
+            <SketchButton
+              disabled={!!room.guestUser}
+              onClick={() => join({ host: room.host })}
+              style={{ fontSize: '4vmin', padding: '1vmin 2vmin' }}
+            >
+              참가
+            </SketchButton>
           </Stack>
-        </ListItem>
+        </SketchBox>
       ))}
-    </List>
+    </Stack>
   )
 }
 

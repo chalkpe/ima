@@ -45,7 +45,13 @@ const FediverseButton: FC<FediverseButtonProps> = ({ size }) => {
   return (
     <SketchButton
       onClick={() => setOpen(true)}
-      style={{ width: '50vmin', fontSize: `${size}vmin`, padding: '1vmin 2vmin', backgroundColor: COLOR }}
+      style={{
+        width: '50vmin',
+        fontSize: `${size}vmin`,
+        padding: '1vmin 2vmin',
+        backgroundColor: COLOR,
+        color: 'white',
+      }}
     >
       마스토돈으로 시작하기
     </SketchButton>

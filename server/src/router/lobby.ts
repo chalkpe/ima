@@ -156,4 +156,18 @@ export const lobbyRouter = router({
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
   }),
+
+  names: protectedProcedure.query(async (opts) => {
+    const { id } = opts.ctx
+    return await prisma.user.findFirst({
+      where: { id },
+      select: { id: true, username: true, displayName: true, nickname: true },
+    })
+  }),
+
+  setNickname: protectedProcedure.input(z.object({ nickname: z.string() })).mutation(async (opts) => {
+    const { id } = opts.ctx
+    const { nickname } = opts.input
+    await prisma.user.update({ where: { id }, data: { nickname } })
+  }),
 })

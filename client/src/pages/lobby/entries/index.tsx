@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@ima/client/utils/trpc'
 import useAuth from '@ima/client/hooks/useAuth'
-import RoomList from '@ima/client/pages/lobby/components/room-list'
 import SketchButton from '@ima/client/components/sketch-button'
+import RoomList from '@ima/client/pages/lobby/components/room-list'
+import MyProfile from '@ima/client/pages/lobby/components/my-profile'
 
 const Lobby = () => {
   const navigate = useNavigate()
@@ -13,6 +14,8 @@ const Lobby = () => {
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
   const { data: room, error } = trpc.lobby.room.useQuery(skip)
   const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
+
+  const [tab, setTab] = useState<'list' | 'profile'>('list')
 
   useEffect(() => {
     if (skip) return
@@ -46,8 +49,17 @@ const Lobby = () => {
         </Stack>
       </Stack>
 
-      <Typography fontSize="7vmin">방 목록</Typography>
-      <RoomList list={list} />
+      <Stack direction="row" gap="2vmin">
+        <SketchButton style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }} onClick={() => setTab('list')}>
+          목록
+        </SketchButton>
+        <SketchButton style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }} onClick={() => setTab('profile')}>
+          프로필
+        </SketchButton>
+      </Stack>
+
+      {tab === 'list' && <RoomList list={list} />}
+      {tab === 'profile' && <MyProfile />}
     </Stack>
   )
 }

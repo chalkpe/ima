@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Avatar, Backdrop, Box, CircularProgress, Stack, Typography } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
@@ -9,9 +9,19 @@ import FediverseButton from '@ima/client/pages/entry/components/fediverse-button
 
 const Entry: FC = () => {
   const navigate = useNavigate()
-  const [token, setToken] = useAtom(tokenAtom)
   const [searchParams, setSearchParams] = useSearchParams()
+
+  const [error, setError] = useState('')
+  const [token, setToken] = useAtom(tokenAtom)
   const { data } = trpc.entry.me.useQuery(undefined, { refetchInterval: 1000 })
+
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error) {
+      setError(error)
+      setSearchParams({})
+    }
+  }, [searchParams, setSearchParams])
 
   useEffect(() => {
     const token = searchParams.get('token')
@@ -34,6 +44,7 @@ const Entry: FC = () => {
       <Stack spacing="1vmin" sx={{ marginTop: '2vmin' }}>
         <TwitterButton size={4} />
         <FediverseButton size={4} />
+        {error && <Typography fontSize="3vmin">{error}</Typography>}
       </Stack>
       <Backdrop open={!!token} sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}>
         <Stack direction="column" gap="5vmin" alignItems="center">

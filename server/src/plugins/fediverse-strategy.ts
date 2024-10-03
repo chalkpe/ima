@@ -21,6 +21,10 @@ class FediverseStrategy extends Strategy {
     }
   }
 
+  cancel(message: string) {
+    this.redirect(`${this.options.redirectUrl}/?error=${encodeURIComponent(message)}`)
+  }
+
   parse(req: Parameters<Strategy['authenticate']>[0]) {
     const domain = req.query.domain || req.params.domain
     if (typeof domain !== 'string') return null
@@ -43,20 +47,26 @@ class FediverseStrategy extends Strategy {
     try {
       return await detector(url)
     } catch (err: unknown) {
-      return this.fail(err, 422)
+      return this.cancel(
+        err instanceof Error
+          ? err.message === 'Unknown SNS'
+            ? '마스토돈 서버가 아닙니다.'
+            : '서버에 연결할 수 없습니다.'
+          : '오류가 발생했습니다.'
+      )
     }
   }
 
   async auth(req: Parameters<Strategy['authenticate']>[0]) {
     const parsed = this.parse(req)
-    if (!parsed) return this.fail('invalid_request', 400)
+    if (!parsed) return this.cancel('잘못된 요청입니다.')
 
     const { scopes } = this.options
     const { domain, baseUrl, redirectUri } = parsed
 
     try {
       const type = await this.detect(baseUrl)
-      if (type !== 'mastodon') return this.fail('not_supported', 422)
+      if (type !== 'mastodon') return this.cancel(`마스토돈 서버가 아닙니다. (${type})`)
 
       const client = generator(type, baseUrl) as Mastodon
       const app = await prisma.fediverseApp.findFirst({ where: { domain } })
@@ -74,24 +84,24 @@ class FediverseStrategy extends Strategy {
         if (result.url) {
           this.redirect(result.url)
         } else {
-          this.error(new Error('No URL'))
+          this.cancel('앱 등록에 실패했습니다.')
         }
       }
     } catch (err: unknown) {
-      if (err instanceof Error) this.error(err)
+      this.cancel(err instanceof Error ? err.message : '오류가 발생했습니다.')
     }
   }
 
   async callback(req: Parameters<Strategy['authenticate']>[0]) {
     const parsed = this.parse(req)
-    if (!parsed) return this.fail('invalid_request', 400)
+    if (!parsed) return this.cancel('잘못된 요청입니다.')
 
     const { domain, code, baseUrl, redirectUri } = parsed
-    if (!code) return this.fail('invalid_request', 400)
+    if (!code) return this.cancel('인증 코드가 없습니다.')
 
     try {
       const app = await prisma.fediverseApp.findFirst({ where: { domain } })
-      if (!app) return this.fail('invalid_request', 400)
+      if (!app) return this.cancel('앱 정보가 없습니다.')
 
       const client = generator('mastodon', baseUrl) as Mastodon
       const result = await client.fetchAccessToken(app.clientId, app.clientSecret, code, redirectUri)
@@ -112,7 +122,7 @@ class FediverseStrategy extends Strategy {
         this.success(await prisma.user.create({ data: { id, displayName, username, token, tokenSecret } }))
       }
     } catch (err: unknown) {
-      if (err instanceof Error) this.error(err)
+      this.cancel(err instanceof Error ? err.message : '오류가 발생했습니다.')
     }
   }
 }

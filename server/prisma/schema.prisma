@@ -18,14 +18,14 @@ model FediverseApp {
 }
 
 model User {
-  id          String @id
+  id          String  @id
   username    String
   displayName String
   nickname    String?
   token       String
   tokenSecret String
-  hostRoom    Room?  @relation(name: "hostUser")
-  guestRoom   Room?  @relation(name: "guestUser")
+  hostRoom    Room?   @relation(name: "hostUser")
+  guestRoom   Room?   @relation(name: "guestUser")
 }
 
 enum PlayerType {
@@ -42,7 +42,9 @@ model Room {
   guestReady Boolean @default(false)
   guestUser  User?   @relation(fields: [guest], references: [id], name: "guestUser")
 
-  started Boolean @default(false)
+  started   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   stopRequestedBy     PlayerType?
   remainingTimeToStop Int?

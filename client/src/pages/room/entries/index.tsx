@@ -13,7 +13,7 @@ import SketchDivider from '@ima/client/components/sketch-divider'
 const Room = () => {
   const navigate = useNavigate()
   const { payload, skip } = useAuth()
-  const { data, isFetching, error } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000, retry: false })
+  const { data, isFetching } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000, retry: false })
 
   const utils = trpc.useUtils()
   const reset = () => utils.lobby.room.reset()
@@ -29,9 +29,9 @@ const Room = () => {
 
   useEffect(() => {
     if (skip || isFetching) return
-    if (!data || error) navigate('/lobby')
+    if (!data) navigate('/lobby')
     else if (data?.started) navigate('/game')
-  }, [data, error, isFetching, navigate, skip])
+  }, [data, isFetching, navigate, skip])
 
   const isHost = useMemo(() => data?.host === payload?.id, [data?.host, payload?.id])
 

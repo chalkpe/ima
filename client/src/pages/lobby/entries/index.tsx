@@ -12,17 +12,15 @@ const Lobby = () => {
   const { skip, setToken } = useAuth()
   const utils = trpc.useUtils()
   const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
-  const { data: room, error } = trpc.lobby.room.useQuery(skip, { retry: false })
+  const { data: room } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
   const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   const [tab, setTab] = useState<'list' | 'profile'>('list')
 
   useEffect(() => {
     if (skip) return
-    if (room && !error) {
-      navigate('/room')
-    }
-  }, [room, navigate, error, skip])
+    if (room) navigate('/room')
+  }, [room, navigate, skip])
 
   return (
     <Stack direction="column" gap="2vmin">

@@ -24,9 +24,15 @@ const getRoom = async (id: string, onlyHost = false) => {
 }
 
 export const lobbyRouter = router({
-  list: protectedProcedure.query<LobbyRoom[]>(() =>
-    prisma.room.findMany({
-      where: { NOT: { started: true } },
+  list: protectedProcedure.query<LobbyRoom[]>(async () => {
+    await prisma.room.deleteMany({
+      where: {
+        AND: [{ started: false }, { guest: null }, { updatedAt: { lte: new Date(Date.now() - 1000 * 60 * 60) } }],
+      },
+    })
+
+    return await prisma.room.findMany({
+      where: { started: false },
       select: {
         host: true,
         hostUser: { select: { id: true, displayName: true, nickname: true } },
@@ -34,7 +40,7 @@ export const lobbyRouter = router({
         guestUser: { select: { id: true, displayName: true, nickname: true } },
       },
     })
-  ),
+  }),
 
   create: protectedProcedure.mutation(async (opts) => {
     const { id } = opts.ctx
@@ -97,8 +103,13 @@ export const lobbyRouter = router({
 
   room: protectedProcedure.query(async (opts) => {
     const { id } = opts.ctx
-    const room = await getRoom(id)
-    return { ...room, state: { rule: room.state.rule } }
+
+    try {
+      const room = await getRoom(id)
+      return { ...room, state: { rule: room.state.rule } }
+    } catch (err: unknown) {
+      if (err instanceof TRPCError && err.code === 'NOT_FOUND') return null
+    }
   }),
 
   ready: protectedProcedure.input(z.object({ ready: z.boolean() })).mutation(async (opts) => {

@@ -33,6 +33,7 @@ export const lobbyRouter = router({
 
     return await prisma.room.findMany({
       where: { started: false },
+      orderBy: { updatedAt: 'desc' },
       select: {
         host: true,
         hostUser: { select: { id: true, displayName: true, nickname: true } },

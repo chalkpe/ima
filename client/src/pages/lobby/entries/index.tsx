@@ -6,6 +6,7 @@ import useAuth from '@ima/client/hooks/useAuth'
 import SketchButton from '@ima/client/components/sketch-button'
 import RoomList from '@ima/client/pages/lobby/components/room-list'
 import MyProfile from '@ima/client/pages/lobby/components/my-profile'
+import BackgroundImage from '@ima/client/components/background-image'
 
 const Lobby = () => {
   const theme = useTheme()
@@ -25,50 +26,53 @@ const Lobby = () => {
   }, [room, navigate, skip])
 
   return (
-    <Stack direction="column" gap="2vmin">
-      <Stack direction="row" gap="2vmin" justifyContent="space-between">
-        <Typography fontSize="7vmin" fontWeight="bold">
-          로비
-        </Typography>
+    <>
+      <BackgroundImage type="lobby" />
+      <Stack direction="column" gap="2vmin">
+        <Stack direction="row" gap="2vmin" justifyContent="space-between">
+          <Typography fontSize="7vmin" fontWeight="bold">
+            로비
+          </Typography>
+          <Stack direction="row" gap="2vmin">
+            <SketchButton
+              onClick={() => {
+                setToken('')
+                navigate('/')
+              }}
+              style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#ff9800' }}
+            >
+              로그아웃
+            </SketchButton>
+            <SketchButton
+              onClick={() => create()}
+              style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: theme.palette.background.paper }}
+            >
+              방 생성
+            </SketchButton>
+          </Stack>
+        </Stack>
+
         <Stack direction="row" gap="2vmin">
           <SketchButton
-            onClick={() => {
-              setToken('')
-              navigate('/')
-            }}
-            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#ff9800' }}
+            style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
+            onClick={() => setTab('list')}
+            active={tab === 'list'}
           >
-            로그아웃
+            목록
           </SketchButton>
           <SketchButton
-            onClick={() => create()}
-            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: theme.palette.background.paper }}
+            style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
+            onClick={() => setTab('profile')}
+            active={tab === 'profile'}
           >
-            방 생성
+            프로필
           </SketchButton>
         </Stack>
-      </Stack>
 
-      <Stack direction="row" gap="2vmin">
-        <SketchButton
-          style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
-          onClick={() => setTab('list')}
-          active={tab === 'list'}
-        >
-          목록
-        </SketchButton>
-        <SketchButton
-          style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
-          onClick={() => setTab('profile')}
-          active={tab === 'profile'}
-        >
-          프로필
-        </SketchButton>
+        {tab === 'list' && <RoomList list={list} />}
+        {tab === 'profile' && <MyProfile />}
       </Stack>
-
-      {tab === 'list' && <RoomList list={list} />}
-      {tab === 'profile' && <MyProfile />}
-    </Stack>
+    </>
   )
 }
 

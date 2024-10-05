@@ -13,11 +13,9 @@ import GameResult from '@ima/client/pages/game/components/game-result'
 import MenuPopup from '@ima/client/pages/game/components/menu-popup'
 import StateChange from '@ima/client/pages/game/components/state-change'
 import type { StateChangeType } from '@ima/server/types/game'
-import { GlobalStyles, useTheme } from '@mui/material'
+import BackgroundImage from '@ima/client/components/background-image'
 
 const Game = () => {
-  const theme = useTheme()
-
   const navigate = useNavigate()
   const { payload, skip } = useAuth()
   const [type, setType] = useState<StateChangeType>()
@@ -69,16 +67,7 @@ const Game = () => {
 
   return (
     <AnimatePresence>
-      <GlobalStyles
-        styles={{
-          body: {
-            backgroundSize: 'cover',
-            backgroundColor: theme.palette.background.paper,
-            // backgroundImage: `url('/background_${theme.palette.mode}.png')`,
-          },
-        }}
-      />
-
+      <BackgroundImage type="game" />
       <CenterPanel key="center" state={data.state} me={me} />
       <KingTiles key="king" wall={data.state.wall} />
       <WallTiles key="wall" wall={data.state.wall} />

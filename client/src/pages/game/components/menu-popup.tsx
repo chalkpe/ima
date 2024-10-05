@@ -35,7 +35,6 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
           right: '10vmin',
           width: '7vmin',
           height: '7vmin',
-          color: 'black',
           opacity: 0.75,
         }}
       >

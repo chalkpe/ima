@@ -9,6 +9,7 @@ import SketchButton from '@ima/client/components/sketch-button'
 import SketchCheckbox from '@ima/client/components/sketch-checkbox'
 import SketchRadioGroup from '@ima/client/components/sketch-radio-group'
 import SketchDivider from '@ima/client/components/sketch-divider'
+import BackgroundImage from '@ima/client/components/background-image'
 
 const Room = () => {
   const theme = useTheme()
@@ -38,6 +39,7 @@ const Room = () => {
 
   return (
     <>
+      <BackgroundImage type="lobby" />
       {data ? (
         <Stack direction="column" gap="1vmin">
           <Stack direction="row" alignItems="center" gap="4vmin" justifyContent="space-between">

@@ -6,7 +6,8 @@ const theme = (mode: 'light' | 'dark') =>
     palette: {
       mode,
       background: {
-        paper: mode === 'light' ? '#cadf9f' : '#3C422F',
+        default: mode === 'light' ? '#e9e6e2' : '#1c1c1c',
+        paper: mode === 'light' ? '#cadf9f' : '#163c1b',
       },
     },
     typography: {

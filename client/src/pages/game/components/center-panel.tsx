@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Paper, Typography, useTheme } from '@mui/material'
 import { getWindCode, getWindName } from '@ima/client/utils/game'
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
@@ -9,6 +9,7 @@ interface CenterPanelProps {
 }
 
 const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
+  const theme = useTheme()
   const op = me === 'host' ? 'guest' : 'host'
   return (
     <Paper
@@ -19,8 +20,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
         width: '35vmin',
         height: '20vmin',
         userSelect: 'none',
-        color: 'black',
-        backgroundColor: 'white',
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Box
@@ -32,7 +32,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
       />
 
       <img
-        src="/center/center_green.png"
+        src={`/center/center_${theme.palette.mode}.png`}
         alt="center"
         style={{
           position: 'absolute',

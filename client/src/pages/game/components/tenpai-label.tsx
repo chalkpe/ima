@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react'
-import { Typography } from '@mui/material'
+import { Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import { calculateTenpaiState } from '@ima/client/utils/game'
 import type { Tenpai } from '@ima/server/types/tenpai'
@@ -9,6 +9,7 @@ interface TenpaiLabelProps {
 }
 
 const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
+  const theme = useTheme()
   const state = useMemo(() => calculateTenpaiState(list), [list])
 
   if (!state) return null
@@ -19,7 +20,7 @@ const TenpaiLabel: FC<TenpaiLabelProps> = ({ list }) => {
         position: 'absolute',
         left: '2vmin',
         bottom: '25.75vmin',
-        backgroundColor: state.color,
+        backgroundColor: theme.palette.mode === 'dark' ? state.color.dark : state.color.light,
       }}
     >
       <Typography fontSize="2.5vmin" fontWeight={state.isYakuman ? 'bold' : undefined}>

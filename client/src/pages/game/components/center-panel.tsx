@@ -19,6 +19,8 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
         width: '35vmin',
         height: '20vmin',
         userSelect: 'none',
+        color: 'black',
+        backgroundColor: 'white',
       }}
     >
       <Box

@@ -1,6 +1,7 @@
 import { CSSProperties, DetailedHTMLProps, FC, HTMLAttributes, MouseEventHandler, useCallback, useMemo } from 'react'
 import { WiredCard } from 'react-wired-elements'
 import useSketchToggle from '@ima/client/hooks/useSketchToggle'
+import { useTheme } from '@mui/material'
 
 type SketchButtonProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   loading?: boolean
@@ -10,6 +11,7 @@ type SketchButtonProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLD
 }
 
 const SketchButton: FC<SketchButtonProps> = ({ onClick, loading, disabled, active, style, children, ...props }) => {
+  const theme = useTheme()
   const { toggle } = useSketchToggle()
 
   const handleClick: MouseEventHandler<HTMLDivElement> = useCallback(
@@ -18,9 +20,9 @@ const SketchButton: FC<SketchButtonProps> = ({ onClick, loading, disabled, activ
   )
 
   const styles: CSSProperties = useMemo(() => {
-    if (disabled || loading) return { opacity: 0.5, color: 'rgba(50, 50, 50, 0.5)' }
+    if (disabled || loading) return { opacity: 0.5, color: theme.palette.text.disabled }
     return {}
-  }, [disabled, loading])
+  }, [disabled, loading, theme])
 
   return (
     <div

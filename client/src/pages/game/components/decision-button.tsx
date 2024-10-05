@@ -74,6 +74,8 @@ const DecisionButton: FC<DecisionButtonProps> = ({ decisions }) => {
 
   const onClick = useCallback((decision: Decision) => handlers[decision.type](decision), [handlers])
 
+  if (!decisions.length) return null
+
   return (
     <Stack
       direction="row"

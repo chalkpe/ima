@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { trpc } from '@ima/client/utils/trpc'
 import useAuth from '@ima/client/hooks/useAuth'
@@ -8,6 +8,8 @@ import RoomList from '@ima/client/pages/lobby/components/room-list'
 import MyProfile from '@ima/client/pages/lobby/components/my-profile'
 
 const Lobby = () => {
+  const theme = useTheme()
+
   const navigate = useNavigate()
   const { skip, setToken } = useAuth()
   const utils = trpc.useUtils()
@@ -40,7 +42,7 @@ const Lobby = () => {
           </SketchButton>
           <SketchButton
             onClick={() => create()}
-            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#cadf9f' }}
+            style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: theme.palette.background.paper }}
           >
             방 생성
           </SketchButton>

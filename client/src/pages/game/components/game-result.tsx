@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import SketchButton from '@ima/client/components/sketch-button'
 import { trpc } from '@ima/client/utils/trpc'
@@ -14,6 +14,7 @@ interface GameResultProps {
 }
 
 const GameResult: FC<GameResultProps> = ({ room, me }) => {
+  const theme = useTheme()
   const { mutate: confirm } = trpc.game.confirmScoreboard.useMutation()
 
   if (!room.state.scoreboard) return null
@@ -23,7 +24,7 @@ const GameResult: FC<GameResultProps> = ({ room, me }) => {
   return (
     <SketchBox
       style={{
-        backgroundColor: 'white',
+        backgroundColor: theme.palette.background.default,
         position: 'absolute',
         left: '15vmin',
         top: '15vmin',

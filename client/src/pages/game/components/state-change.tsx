@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import SketchBox from '@ima/client/components/sketch-box'
-import { Backdrop, Dialog, Typography } from '@mui/material'
+import { Backdrop, Dialog, Typography, useTheme } from '@mui/material'
 import type { StateChangeType } from '@ima/server/types/game'
 
 const typeText: Record<StateChangeType, string> = {
@@ -26,9 +26,9 @@ const typeColor: Record<StateChangeType, string> = {
   tsumo: '#ef5350',
   ron: '#ef5350',
   update: '',
-  start: '#ffffff',
-  stop: '#ffffff',
-  end: '#ffffff',
+  start: 'background',
+  stop: 'background',
+  end: 'background',
 }
 
 interface StateChangeProps {
@@ -36,13 +36,20 @@ interface StateChangeProps {
 }
 
 const StateChange: FC<StateChangeProps> = ({ type }) => {
+  const theme = useTheme()
+
   if (type === 'update') return null
   return (
     <Dialog
       open={true}
       slots={{ backdrop: Backdrop }}
       slotProps={{ backdrop: { sx: { backgroundColor: 'transparent' } } }}
-      PaperProps={{ sx: { overflow: 'hidden', backgroundColor: typeColor[type] } }}
+      PaperProps={{
+        sx: {
+          overflow: 'hidden',
+          backgroundColor: typeColor[type] === 'background' ? theme.palette.background.default : typeColor[type],
+        },
+      }}
     >
       <SketchBox>
         <Typography fontSize="10vmin" margin="0vmin 3vmin">

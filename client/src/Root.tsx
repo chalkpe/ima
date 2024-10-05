@@ -2,11 +2,11 @@ import '@ima/client/root.css'
 
 import { useMemo, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
-import { Box, CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material'
 import { createWSClient, wsLink } from '@trpc/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { trpc } from '@ima/client/utils/trpc'
-import theme from '@ima/client/theme'
+import createTheme from '@ima/client/theme'
 import router from '@ima/client/router'
 import { useAtomValue } from 'jotai'
 import { tokenAtom } from '@ima/client/store/token'
@@ -21,6 +21,9 @@ const Root = () => {
       }),
     [token]
   )
+
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const theme = useMemo(() => createTheme(prefersDarkMode ? 'dark' : 'light'), [prefersDarkMode])
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>

@@ -11,7 +11,7 @@ interface CenterPanelProps {
 const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
   const theme = useTheme()
   const op = me === 'host' ? 'guest' : 'host'
-  const tilePrefix = theme.palette.mode === 'dark' ? '/center/center_tile_' : '/tiles/'
+  const tileSuffix = theme.palette.mode === 'dark' ? 'd' : ''
 
   return (
     <Paper
@@ -121,7 +121,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(${tilePrefix}${getWindCode(state[op].wind)}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(state[op].wind)}${tileSuffix}.png)`,
             transform: 'rotate(180deg)',
           }}
         />
@@ -171,7 +171,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(${tilePrefix}${getWindCode(state[me].wind)}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(state[me].wind)}${tileSuffix}.png)`,
           }}
         />
 

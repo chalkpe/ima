@@ -3,11 +3,12 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import importAlias from 'eslint-plugin-import-alias'
+import storybook from 'eslint-plugin-storybook'
 import prettierConfig from 'eslint-config-prettier'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'storybook-static'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended, prettierConfig],
     files: ['**/*.{ts,tsx}'],
@@ -34,5 +35,6 @@ export default tseslint.config(
         },
       ],
     },
-  }
+  },
+  ...storybook.configs['flat/recommended']
 )

@@ -28,7 +28,7 @@ jobs:
         run: npm run -w client build-storybook
 
       - name: Deploy to GitHub Pages
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: client/storybook-static
 

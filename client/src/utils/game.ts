@@ -57,15 +57,15 @@ export const tenpaiStatusText: Record<Tenpai['status'], string> = {
 
 export const calculateTenpaiState = (list: Tenpai[]) => {
   if (list.every((t) => t.han && t.han.tsumo >= 13 && t.han.ron >= 13)) {
-    return { text: '역만 준비', color: '#fac12d', isYakuman: true }
+    return { text: '역만 준비', color: { light: '#fac12d', dark: '#fac12d' }, isYakuman: true }
   }
 
   if (list.some((t) => t.han && (t.han.tsumo >= 13 || t.han.ron >= 13))) {
-    return { text: '역만 기회', color: '#ccc', isYakuman: true }
+    return { text: '역만 기회', color: { light: '#ccc', dark: '#333' }, isYakuman: true }
   }
 
   if (list.some((t) => t.status === 'tenpai')) {
-    return { text: tenpaiStatusText['tenpai'], color: 'white', isYakuman: false }
+    return { text: tenpaiStatusText['tenpai'], color: { light: 'white', dark: 'black' }, isYakuman: false }
   }
 
   return undefined

@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import HaiCounter from '@ima/client/components/hai-counter'
 import { getTenpaiStatusText } from '@ima/client/utils/game'
@@ -14,6 +14,8 @@ interface TenpaiTilesProps {
 }
 
 const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current, unboxed }) => {
+  const theme = useTheme()
+
   const content = (
     <Stack direction="row" gap="1vmin">
       {[...list]
@@ -41,7 +43,7 @@ const TenpaiTiles: FC<TenpaiTilesProps> = ({ list, current, unboxed }) => {
         left: '2vmin',
         padding: '1vmin 2vmin',
         opacity: 0.5,
-        backgroundColor: '#fff',
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Typography fontSize="2.5vmin" fontWeight="bold">

@@ -2,15 +2,17 @@ import { useEffect, useMemo } from 'react'
 import { trpc } from '@ima/client/utils/trpc'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '@ima/client/hooks/useAuth'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import UserHandle from '@ima/client/components/user-handle'
 import SketchButton from '@ima/client/components/sketch-button'
 import SketchCheckbox from '@ima/client/components/sketch-checkbox'
 import SketchRadioGroup from '@ima/client/components/sketch-radio-group'
 import SketchDivider from '@ima/client/components/sketch-divider'
+import BackgroundImage from '@ima/client/components/background-image'
 
 const Room = () => {
+  const theme = useTheme()
   const navigate = useNavigate()
   const { payload, skip } = useAuth()
   const { data, isFetching } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000, retry: false })
@@ -37,6 +39,7 @@ const Room = () => {
 
   return (
     <>
+      <BackgroundImage type="lobby" />
       {data ? (
         <Stack direction="column" gap="1vmin">
           <Stack direction="row" alignItems="center" gap="4vmin" justifyContent="space-between">
@@ -56,7 +59,7 @@ const Room = () => {
               {isHost && (
                 <SketchButton
                   disabled={!data.hostReady || !data.guestReady}
-                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: '#cadf9f' }}
+                  style={{ fontSize: '4vmin', padding: '1vmin 2vmin', backgroundColor: theme.palette.background.paper }}
                   onClick={() => start(undefined, { onSuccess: () => navigate('/game') })}
                 >
                   게임 시작

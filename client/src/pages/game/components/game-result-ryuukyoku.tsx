@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import UserHandle from '@ima/client/components/user-handle'
 import HandCard from '@ima/client/pages/game/components/hand-card'
@@ -18,6 +18,7 @@ interface GameResultRyuukyokuProps {
 }
 
 const GameResultRyuukyoku: FC<GameResultRyuukyokuProps> = ({ room, scoreboard, me }) => {
+  const theme = useTheme()
   return (
     <>
       <Typography fontSize="6vmin">{ryuukyokuMap[scoreboard.ryuukyokuType]}</Typography>
@@ -34,7 +35,7 @@ const GameResultRyuukyoku: FC<GameResultRyuukyokuProps> = ({ room, scoreboard, m
               const hand = scoreboard[`${player}Hand`]
               return (
                 <Stack key={player} direction="column">
-                  <SketchBox style={{ backgroundColor: '#cadf9f' }}>
+                  <SketchBox style={{ backgroundColor: theme.palette.background.paper }}>
                     <Stack direction="column" gap="1vmin" padding="1vmin">
                       {hand && (
                         <Stack direction="row" gap="1vmin" alignItems="flex-start">

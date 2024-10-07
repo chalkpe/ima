@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Paper, Typography, useTheme } from '@mui/material'
 import { getWindCode, getWindName } from '@ima/client/utils/game'
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
@@ -9,7 +9,10 @@ interface CenterPanelProps {
 }
 
 const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
+  const theme = useTheme()
   const op = me === 'host' ? 'guest' : 'host'
+  const tileSuffix = theme.palette.mode === 'dark' ? 'd' : ''
+
   return (
     <Paper
       sx={{
@@ -19,6 +22,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
         width: '35vmin',
         height: '20vmin',
         userSelect: 'none',
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Box
@@ -30,7 +34,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
       />
 
       <img
-        src="/center/center_green.png"
+        src={`/center/center_${theme.palette.mode}.png`}
         alt="center"
         style={{
           position: 'absolute',
@@ -117,7 +121,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(/tiles/${getWindCode(state[op].wind)}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(state[op].wind)}${tileSuffix}.png)`,
             transform: 'rotate(180deg)',
           }}
         />
@@ -167,7 +171,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(/tiles/${getWindCode(state[me].wind)}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(state[me].wind)}${tileSuffix}.png)`,
           }}
         />
 

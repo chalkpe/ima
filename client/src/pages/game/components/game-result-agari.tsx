@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { Stack, Typography, useTheme } from '@mui/material'
 import Hai from '@ima/client/components/hai'
 import SketchBox from '@ima/client/components/sketch-box'
 import HandCard from '@ima/client/pages/game/components/hand-card'
@@ -13,6 +13,7 @@ interface GameResultAgariProps {
 }
 
 const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
+  const theme = useTheme()
   const winner = room[`${scoreboard.winner}User`]
 
   return (
@@ -31,7 +32,7 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
         </Typography>
       </Stack>
 
-      <SketchBox style={{ backgroundColor: '#cadf9f' }}>
+      <SketchBox style={{ backgroundColor: theme.palette.background.paper }}>
         <Stack direction="column" gap="2vmin" padding="1.5vmin">
           <HandCard hand={scoreboard.hand} />
           <Stack direction="row" gap="1vmin">
@@ -57,7 +58,10 @@ const GameResultAgari: FC<GameResultAgariProps> = ({ room, scoreboard }) => {
 
       <Stack direction="row" flexWrap="wrap" gap="1vmin">
         {scoreboard.yaku.map((yaku, index, array) => (
-          <SketchBox key={yaku.name} style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : '#ccc' }}>
+          <SketchBox
+            key={yaku.name}
+            style={{ backgroundColor: yaku.isYakuman ? '#fac12d' : theme.palette.mode === 'light' ? '#ccc' : '#333' }}
+          >
             <Stack direction="row" gap="1vmin" sx={{ padding: '0 1vmin' }}>
               <Typography fontSize={getYakuFontSize(yaku, index, array)} fontWeight="bold">
                 {yaku.name}

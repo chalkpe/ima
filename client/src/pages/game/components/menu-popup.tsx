@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Stack, Typography } from '@mui/material'
+import { alpha, Stack, Typography, useTheme } from '@mui/material'
 import SketchBox from '@ima/client/components/sketch-box'
 import SketchButton from '@ima/client/components/sketch-button'
 import type { PlayerType, Room } from '@ima/server/types/game'
@@ -23,6 +23,8 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
     }
   }, [room.remainingTimeToStop])
 
+  const theme = useTheme()
+
   return (
     <>
       <SketchButton
@@ -33,7 +35,6 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
           right: '10vmin',
           width: '7vmin',
           height: '7vmin',
-          backgroundColor: '#cadf9f',
           opacity: 0.75,
         }}
       >
@@ -63,7 +64,7 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
             left: '30vmin',
             width: '40vmin',
             height: '25vmin',
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+            backgroundColor: alpha(theme.palette.background.default, 0.75),
           }}
         >
           <Stack direction="column" gap="1vmin" alignItems="center" justifyContent="center" height="22.5vmin">
@@ -72,7 +73,7 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
                 onClick={() => {
                   // TODO
                 }}
-                style={{ backgroundColor: 'white' }}
+                style={{ backgroundColor: 'white', color: 'black' }}
               >
                 <Typography fontSize="3vmin">환경설정</Typography>
               </SketchButton>
@@ -81,7 +82,7 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
               disabled={room.remainingTimeToStop !== null}
               onClick={() => stop()}
               onDoubleClick={() => stop()}
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: 'white', color: 'black' }}
             >
               <Typography fontSize="3vmin">
                 종료

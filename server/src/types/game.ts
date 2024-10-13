@@ -1,6 +1,7 @@
 import type { Tenpai } from '@ima/server/types/tenpai'
 import type { Tile } from '@ima/server/types/tile'
 import type { AgariType, Yaku } from '@ima/server/types/yaku'
+import type { PlayerType as PrismaPlayerType, UserPreference } from '@prisma/client'
 
 export interface TileSet {
   type: 'pon' | 'chi' | 'gakan' | 'ankan' | 'daiminkan'
@@ -146,6 +147,7 @@ export interface User {
   id: string
   displayName: string
   nickname: string | null
+  preference: UserPreference | null
 }
 
 export interface Room {
@@ -157,7 +159,7 @@ export interface Room {
   guestUser?: User | null
   started: boolean
   state: GameState
-  stopRequestedBy: 'HOST' | 'GUEST' | null
+  stopRequestedBy: PrismaPlayerType | null
   remainingTimeToStop: number | null
 }
 

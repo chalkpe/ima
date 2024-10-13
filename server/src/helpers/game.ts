@@ -1,7 +1,18 @@
 import { TRPCError } from '@trpc/server'
 import { isEqualTile, isSyuntsu } from '@ima/server/helpers/tile'
 import type { Tile, Tsu } from '@ima/server/types/tile'
-import type { GameState, Hand, Player, PlayerType, RiverTile, Room, TileSet, Wall, Wind } from '@ima/server/types/game'
+import type {
+  GameState,
+  Hand,
+  Player,
+  PlayerType,
+  RiverTile,
+  Room,
+  StateChangeType,
+  TileSet,
+  Wall,
+  Wind,
+} from '@ima/server/types/game'
 
 export const createInitialState = (): GameState => ({
   rule: {
@@ -221,3 +232,17 @@ export const isKuikae = (state: GameState, me: PlayerType, tile: Tile) => {
       return false
   }
 }
+
+export const stateChangeTypes = [
+  'update',
+  'start',
+  'stop',
+  'end',
+  'tsumo',
+  'ron',
+  'riichi',
+  'nuki',
+  'kan',
+  'pon',
+  'chi',
+] as const satisfies StateChangeType[]

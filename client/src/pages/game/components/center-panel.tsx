@@ -1,17 +1,20 @@
 import { FC } from 'react'
 import { Box, Paper, Typography, useTheme } from '@mui/material'
 import { getWindCode, getWindName } from '@ima/client/utils/game'
-import type { GameState, PlayerType } from '@ima/server/types/game'
+import type { Room, PlayerType } from '@ima/server/types/game'
 
 interface CenterPanelProps {
-  state: GameState
+  room: Room
   me: PlayerType
 }
 
-const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
+const CenterPanel: FC<CenterPanelProps> = ({ room, me }) => {
   const theme = useTheme()
-  const op = me === 'host' ? 'guest' : 'host'
   const tileSuffix = theme.palette.mode === 'dark' ? 'd' : ''
+
+  const op = me === 'host' ? 'guest' : 'host'
+  const meColor = room[`${me}User`]?.preference?.riichiStick.toLowerCase() ?? 'red'
+  const opColor = room[`${op}User`]?.preference?.riichiStick.toLowerCase() ?? 'red'
 
   return (
     <Paper
@@ -29,7 +32,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
         position="absolute"
         width="5vmin"
         height="5vmin"
-        {...(state.turn === me ? { bottom: '1.5vmin', right: '1.5vmin' } : { top: '1.5vmin', left: '1.5vmin' })}
+        {...(room.state.turn === me ? { bottom: '1.5vmin', right: '1.5vmin' } : { top: '1.5vmin', left: '1.5vmin' })}
         sx={{ backgroundColor: '#ef5172' }}
       />
 
@@ -56,8 +59,8 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.5vmin" fontWeight="bold">
-            {getWindName(state.round.wind)}
-            {state.round.kyoku}국
+            {getWindName(room.state.round.wind)}
+            {room.state.round.kyoku}국
           </Typography>
         </Box>
 
@@ -73,7 +76,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.25vmin" fontWeight="bold">
-            {state.round.riichiSticks}
+            {room.state.round.riichiSticks}
           </Typography>
         </Box>
 
@@ -89,7 +92,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.25vmin" fontWeight="bold">
-            {state.round.honba}
+            {room.state.round.honba}
           </Typography>
         </Box>
 
@@ -105,7 +108,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="3vmin" fontWeight="bold">
-            {state.wall.tiles.length}/40
+            {room.state.wall.tiles.length}/40
           </Typography>
         </Box>
 
@@ -121,7 +124,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(/tiles/${getWindCode(state[op].wind)}${tileSuffix}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(room.state[op].wind)}${tileSuffix}.png)`,
             transform: 'rotate(180deg)',
           }}
         />
@@ -138,11 +141,11 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.25vmin" fontWeight="bold" letterSpacing="0.2vmin">
-            {state[op].score}
+            {room.state[op].score}
           </Typography>
         </Box>
 
-        {state[op].riichi !== null && (
+        {room.state[op].riichi !== null && (
           <Box
             position="absolute"
             right="8.2vmin"
@@ -153,7 +156,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              backgroundImage: 'url(/center/riichi_stick_red.png)',
+              backgroundImage: `url(/center/riichi_stick_${opColor}.png)`,
               transform: 'rotate(180deg)',
             }}
           />
@@ -171,7 +174,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundImage: `url(/tiles/${getWindCode(state[me].wind)}${tileSuffix}.png)`,
+            backgroundImage: `url(/tiles/${getWindCode(room.state[me].wind)}${tileSuffix}.png)`,
           }}
         />
 
@@ -187,11 +190,11 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
           textAlign="center"
         >
           <Typography fontSize="2.25vmin" fontWeight="bold" letterSpacing="0.2vmin">
-            {state[me].score}
+            {room.state[me].score}
           </Typography>
         </Box>
 
-        {state[me].riichi !== null && (
+        {room.state[me].riichi !== null && (
           <Box
             position="absolute"
             left="8.2vmin"
@@ -202,7 +205,7 @@ const CenterPanel: FC<CenterPanelProps> = ({ state, me }) => {
               backgroundSize: 'contain',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              backgroundImage: 'url(/center/riichi_stick_red.png)',
+              backgroundImage: `url(/center/riichi_stick_${meColor}.png)`,
             }}
           />
         )}

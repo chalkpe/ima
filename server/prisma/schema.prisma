@@ -17,15 +17,39 @@ model FediverseApp {
   clientSecret String
 }
 
+enum Theme {
+  AUTO
+  LIGHT
+  DARK
+}
+
+enum RiichiStick {
+  RED
+  BLUE
+}
+
+model UserPreference {
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  theme       Theme       @default(AUTO)
+  riichiStick RiichiStick @default(RED)
+}
+
 model User {
-  id          String  @id
+  id String @id
+
   username    String
   displayName String
-  nickname    String?
+
+  nickname   String?
+  preference UserPreference?
+
   token       String
   tokenSecret String
-  hostRoom    Room?   @relation(name: "hostUser")
-  guestRoom   Room?   @relation(name: "guestUser")
+
+  hostRoom  Room? @relation(name: "hostUser")
+  guestRoom Room? @relation(name: "guestUser")
 }
 
 enum PlayerType {

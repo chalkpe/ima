@@ -44,11 +44,12 @@ const Game = () => {
   const opponent = useMemo(() => (data?.host === payload?.id ? 'guest' : 'host'), [data?.host, payload?.id])
 
   useEffect(() => {
+    if (payload === null) navigate('/')
     if (skip || isFetching) return
     if (!data || !data.started || error) {
       navigate('/room')
     }
-  }, [data, error, isFetching, navigate, skip])
+  }, [data, error, isFetching, navigate, payload, skip])
 
   useEffect(() => {
     if (
@@ -68,7 +69,7 @@ const Game = () => {
   return (
     <AnimatePresence>
       <BackgroundImage type="game" />
-      <CenterPanel key="center" state={data.state} me={me} />
+      <CenterPanel key="center" room={data} me={me} />
       <KingTiles key="king" wall={data.state.wall} />
       <WallTiles key="wall" wall={data.state.wall} />
 

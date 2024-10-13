@@ -30,10 +30,11 @@ const Room = () => {
   const { mutate: setTransparentMode } = trpc.lobby.setTransparentMode.useMutation({ onSuccess: invalidate })
 
   useEffect(() => {
+    if (payload === null) navigate('/')
     if (skip || isFetching) return
     if (!data) navigate('/lobby')
     else if (data?.started) navigate('/game')
-  }, [data, isFetching, navigate, skip])
+  }, [data, isFetching, navigate, payload, skip])
 
   const isHost = useMemo(() => data?.host === payload?.id, [data?.host, payload?.id])
 

@@ -1,8 +1,7 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
-import { observable } from '@trpc/server/observable'
 import { protectedProcedure, router } from '@ima/server/trpc'
-import { prisma, pub, sub } from '@ima/server/db'
+import { prisma, createChannel } from '@ima/server/db'
 
 import {
   confirmScoreboard,
@@ -25,8 +24,12 @@ import {
   tsumo,
 } from '@ima/server/controllers/game/action'
 import { tileTypes } from '@ima/server/helpers/tile'
-import { createInitialState, getActiveMe, getOpponent } from '@ima/server/helpers/game'
-import type { StateChangeType } from '@ima/server/types/game'
+import { createInitialState, getActiveMe, getOpponent, stateChangeTypes } from '@ima/server/helpers/game'
+
+const gameChannel = createChannel({
+  name: 'Game',
+  schema: z.enum(stateChangeTypes),
+})
 
 const getRoom = async (id: string, started?: boolean) => {
   const room = await prisma.room.findFirst({
@@ -63,18 +66,14 @@ export const gameRouter = router({
     return { ...room, state: getVisibleState(room.state, me) }
   }),
 
-  onStateChange: protectedProcedure.subscription(async (opts) => {
+  onStateChange: protectedProcedure.subscription(async function* (opts) {
     const { id } = opts.ctx
     const room = await getRoom(id)
-
-    await sub.subscribe(room.host)
-    return observable<StateChangeType>((emit) => {
-      const listener = (host: string, type: StateChangeType) => {
-        if (host === room.host) emit.next(type)
-      }
-      sub.on('message', listener)
-      return () => sub.off('message', listener)
-    })
+    try {
+      for await (const data of gameChannel.subscribe({ identifier: room.host })) yield data
+    } finally {
+      await gameChannel.unsubscribe({ identifier: room.host })
+    }
   }),
 
   start: protectedProcedure.mutation(async (opts) => {
@@ -88,7 +87,7 @@ export const gameRouter = router({
     tsumo(room.state, room.state.turn, 'haiyama')
 
     await prisma.room.update({ where: { host: room.host }, data: { started: true, state: room.state } })
-    pub.publish(room.host, 'start')
+    gameChannel.publish({ identifier: room.host, value: 'start' })
   }),
 
   stop: protectedProcedure.mutation(async (opts) => {
@@ -115,10 +114,10 @@ export const gameRouter = router({
             state: { ...createInitialState(), rule: room.state.rule },
           },
         })
-        pub.publish(room.host, 'end')
+        gameChannel.publish({ identifier: room.host, value: 'end' })
       } else {
         await prisma.room.update({ where: { host: room.host }, data: { remainingTimeToStop } })
-        pub.publish(room.host, 'update')
+        gameChannel.publish({ identifier: room.host, value: 'update' })
         setTimeout(check, 1000)
       }
     }
@@ -127,7 +126,7 @@ export const gameRouter = router({
       where: { host: room.host },
       data: { remainingTimeToStop: 30, stopRequestedBy: room.host === id ? 'HOST' : 'GUEST' },
     })
-    pub.publish(room.host, 'stop')
+    gameChannel.publish({ identifier: room.host, value: 'stop' })
     setTimeout(check, 1000)
   }),
 
@@ -150,7 +149,7 @@ export const gameRouter = router({
         state: { ...createInitialState(), rule: room.state.rule },
       },
     })
-    pub.publish(room.host, 'end')
+    gameChannel.publish({ identifier: room.host, value: 'end' })
   }),
 
   revertStop: protectedProcedure.mutation(async (opts) => {
@@ -158,7 +157,7 @@ export const gameRouter = router({
     const room = await getRoom(id, true)
 
     await prisma.room.update({ where: { host: room.host }, data: { remainingTimeToStop: null } })
-    pub.publish(room.host, 'update')
+    gameChannel.publish({ identifier: room.host, value: 'update' })
   }),
 
   getRemainingTileCount: protectedProcedure
@@ -181,7 +180,7 @@ export const gameRouter = router({
     pon(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'pon')
+    gameChannel.publish({ identifier: room.host, value: 'pon' })
   }),
 
   chi: protectedProcedure.input(z.object({ tatsu: z.tuple([z.number(), z.number()]) })).mutation(async (opts) => {
@@ -193,7 +192,7 @@ export const gameRouter = router({
     chi(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'chi')
+    gameChannel.publish({ identifier: room.host, value: 'chi' })
   }),
 
   daiminkan: protectedProcedure.mutation(async (opts) => {
@@ -204,7 +203,7 @@ export const gameRouter = router({
     daiminkan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'kan')
+    gameChannel.publish({ identifier: room.host, value: 'kan' })
   }),
 
   ankan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
@@ -216,7 +215,7 @@ export const gameRouter = router({
     ankan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'kan')
+    gameChannel.publish({ identifier: room.host, value: 'kan' })
   }),
 
   gakan: protectedProcedure.input(z.object({ type: z.enum(tileTypes), value: z.number() })).mutation(async (opts) => {
@@ -228,7 +227,7 @@ export const gameRouter = router({
     gakan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'kan')
+    gameChannel.publish({ identifier: room.host, value: 'kan' })
   }),
 
   skipAndTsumo: protectedProcedure.mutation(async (opts) => {
@@ -239,7 +238,7 @@ export const gameRouter = router({
     const result = skipAndTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, result)
+    gameChannel.publish({ identifier: room.host, value: result })
   }),
 
   skipChankan: protectedProcedure.mutation(async (opts) => {
@@ -250,7 +249,7 @@ export const gameRouter = router({
     skipChankan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'update')
+    gameChannel.publish({ identifier: room.host, value: 'update' })
   }),
 
   callTsumo: protectedProcedure.mutation(async (opts) => {
@@ -261,7 +260,7 @@ export const gameRouter = router({
     callTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'tsumo')
+    gameChannel.publish({ identifier: room.host, value: 'tsumo' })
   }),
 
   callRon: protectedProcedure.mutation(async (opts) => {
@@ -272,7 +271,7 @@ export const gameRouter = router({
     callRon(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, 'ron')
+    gameChannel.publish({ identifier: room.host, value: 'ron' })
   }),
 
   giri: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
@@ -284,7 +283,7 @@ export const gameRouter = router({
     const result = giri(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, result)
+    gameChannel.publish({ identifier: room.host, value: result })
   }),
 
   riichi: protectedProcedure.input(z.object({ index: z.number() })).mutation(async (opts) => {
@@ -296,7 +295,7 @@ export const gameRouter = router({
     const result = riichi(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
-    pub.publish(room.host, result)
+    gameChannel.publish({ identifier: room.host, value: result })
   }),
 
   confirmScoreboard: protectedProcedure.mutation(async (opts) => {
@@ -318,6 +317,6 @@ export const gameRouter = router({
     } else {
       await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     }
-    pub.publish(room.host, result)
+    gameChannel.publish({ identifier: room.host, value: result })
   }),
 })

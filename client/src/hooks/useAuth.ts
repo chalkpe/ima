@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { skipToken } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { tokenAtom } from '@ima/client/store/token'
@@ -10,7 +9,6 @@ interface AuthPayload {
 }
 
 const useAuth = () => {
-  const navigate = useNavigate()
   const [token, setToken] = useAtom(tokenAtom)
   const [payload, setPayload] = useState<AuthPayload | null>()
 
@@ -28,12 +26,6 @@ const useAuth = () => {
   }, [token])
 
   const skip = useMemo(() => (payload ? undefined : skipToken), [payload])
-
-  useEffect(() => {
-    if (payload === null) {
-      navigate('/')
-    }
-  }, [navigate, payload])
 
   return { skip, payload, setToken } as const
 }

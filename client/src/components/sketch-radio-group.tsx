@@ -1,11 +1,11 @@
-import { CSSProperties, FC } from 'react'
+import { CSSProperties, FC, ReactNode } from 'react'
 import { WiredRadio, WiredRadioGroup } from 'react-wired-elements'
 import useSketchToggle from '@ima/client/hooks/useSketchToggle'
 import { Stack, Typography } from '@mui/material'
 
 interface SketchRadioGroupProps {
   size: number
-  items: { name: string; label: string }[]
+  items: { name: string; label: ReactNode }[]
   selected: string
   onSelect: (name: string) => void
   disabled?: boolean

@@ -44,11 +44,12 @@ const Game = () => {
   const opponent = useMemo(() => (data?.host === payload?.id ? 'guest' : 'host'), [data?.host, payload?.id])
 
   useEffect(() => {
+    if (payload === null) navigate('/')
     if (skip || isFetching) return
     if (!data || !data.started || error) {
       navigate('/room')
     }
-  }, [data, error, isFetching, navigate, skip])
+  }, [data, error, isFetching, navigate, payload, skip])
 
   useEffect(() => {
     if (

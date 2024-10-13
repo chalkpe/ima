@@ -8,7 +8,8 @@
     "@fastify/secure-session": "^7.5.1",
     "@fastify/websocket": "^10.0.1",
     "@prisma/client": "^5.20.0",
-    "@trpc/server": "^11.0.0-rc.485",
+    "@soundxyz/redis-pubsub": "^4.1.2",
+    "@trpc/server": "^11.0.0-rc.571",
     "@types/passport-strategy": "^0.2.38",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
@@ -38,7 +39,7 @@
     "ts-jest": "^29.2.5",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.17.0",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.3",
     "typescript-eslint": "^8.4.0"
   },
   "scripts": {

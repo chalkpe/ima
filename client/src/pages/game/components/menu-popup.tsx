@@ -68,7 +68,7 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
           }}
         >
           <Stack direction="column" gap="1vmin" alignItems="center" justifyContent="center" height="22.5vmin">
-            {room.remainingTimeToStop === null && (
+            {/* {room.remainingTimeToStop === null && (
               <SketchButton
                 onClick={() => {
                   // TODO
@@ -77,7 +77,7 @@ const MenuPopup: FC<MenuPopupProps> = ({ room, me }) => {
               >
                 <Typography fontSize="3vmin">환경설정</Typography>
               </SketchButton>
-            )}
+            )} */}
             <SketchButton
               disabled={room.remainingTimeToStop !== null}
               onClick={() => stop()}

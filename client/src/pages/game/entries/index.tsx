@@ -69,7 +69,7 @@ const Game = () => {
   return (
     <AnimatePresence>
       <BackgroundImage type="game" />
-      <CenterPanel key="center" state={data.state} me={me} />
+      <CenterPanel key="center" room={data} me={me} />
       <KingTiles key="king" wall={data.state.wall} />
       <WallTiles key="wall" wall={data.state.wall} />
 

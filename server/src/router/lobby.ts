@@ -11,10 +11,10 @@ const getRoom = async (id: string, onlyHost = false) => {
     select: {
       host: true,
       hostReady: true,
-      hostUser: { select: { id: true, displayName: true, nickname: true } },
+      hostUser: { select: { id: true, displayName: true, nickname: true, preference: true } },
       guest: true,
       guestReady: true,
-      guestUser: { select: { id: true, displayName: true, nickname: true } },
+      guestUser: { select: { id: true, displayName: true, nickname: true, preference: true } },
       started: true,
       state: true,
     },
@@ -36,9 +36,9 @@ export const lobbyRouter = router({
       orderBy: { updatedAt: 'desc' },
       select: {
         host: true,
-        hostUser: { select: { id: true, displayName: true, nickname: true } },
+        hostUser: { select: { id: true, displayName: true, nickname: true, preference: true } },
         guest: true,
-        guestUser: { select: { id: true, displayName: true, nickname: true } },
+        guestUser: { select: { id: true, displayName: true, nickname: true, preference: true } },
       },
     })
   }),

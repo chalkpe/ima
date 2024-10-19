@@ -6,20 +6,26 @@ import useAuth from '@ima/client/hooks/useAuth'
 import SketchButton from '@ima/client/components/sketch-button'
 import RoomList from '@ima/client/pages/lobby/components/room-list'
 import MyProfile from '@ima/client/pages/lobby/components/my-profile'
+import UserPreference from '@ima/client/pages/lobby/components/user-preference'
 import BackgroundImage from '@ima/client/components/background-image'
-import UserPreference from '@ima/client/components/user-preference'
+
+const tabs = [
+  { label: '목록', value: 'list', component: RoomList },
+  { label: '프로필', value: 'profile', component: MyProfile },
+  { label: '환경설정', value: 'preference', component: UserPreference },
+] as const
+
+type Tab = (typeof tabs)[number]['value']
 
 const Lobby = () => {
   const theme = useTheme()
-
   const navigate = useNavigate()
   const { payload, skip, setToken } = useAuth()
   const utils = trpc.useUtils()
-  const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
   const { data: room } = trpc.lobby.room.useQuery(skip, { refetchInterval: 1000 })
   const { mutate: create } = trpc.lobby.create.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
-  const [tab, setTab] = useState<'list' | 'profile' | 'preference'>('list')
+  const [tab, setTab] = useState<Tab>(tabs[0].value)
 
   useEffect(() => {
     if (payload === null) navigate('/')
@@ -55,32 +61,19 @@ const Lobby = () => {
         </Stack>
 
         <Stack direction="row" gap="2vmin">
-          <SketchButton
-            style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
-            onClick={() => setTab('list')}
-            active={tab === 'list'}
-          >
-            목록
-          </SketchButton>
-          <SketchButton
-            style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
-            onClick={() => setTab('profile')}
-            active={tab === 'profile'}
-          >
-            프로필
-          </SketchButton>
-          <SketchButton
-            style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
-            onClick={() => setTab('preference')}
-            active={tab === 'preference'}
-          >
-            환경설정
-          </SketchButton>
+          {tabs.map(({ label, value }) => (
+            <SketchButton
+              key={value}
+              active={tab === value}
+              onClick={() => setTab(value)}
+              style={{ fontSize: '5vmin', padding: '1vmin 2vmin' }}
+            >
+              {label}
+            </SketchButton>
+          ))}
         </Stack>
 
-        {tab === 'list' && <RoomList list={list} />}
-        {tab === 'profile' && <MyProfile />}
-        {tab === 'preference' && <UserPreference />}
+        {tabs.map(({ value, component: Component }) => tab === value && <Component key={value} />)}
       </Stack>
     </>
   )

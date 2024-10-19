@@ -2,16 +2,14 @@ import { FC } from 'react'
 import { CircularProgress, Stack, Typography } from '@mui/material'
 import UserHandle from '@ima/client/components/user-handle'
 import { trpc } from '@ima/client/utils/trpc'
-import type { LobbyRoom } from '@ima/server/types/game'
 import SketchBox from '@ima/client/components/sketch-box'
 import SketchButton from '@ima/client/components/sketch-button'
+import useAuth from '@ima/client/hooks/useAuth'
 
-interface RoomListProps {
-  list?: LobbyRoom[]
-}
-
-const RoomList: FC<RoomListProps> = ({ list }) => {
+const RoomList: FC = () => {
+  const { skip } = useAuth()
   const utils = trpc.useUtils()
+  const { data: list } = trpc.lobby.list.useQuery(skip, { refetchInterval: 1000 })
   const { mutate: join } = trpc.lobby.join.useMutation({ onSuccess: () => utils.lobby.room.reset() })
 
   if (!list) {

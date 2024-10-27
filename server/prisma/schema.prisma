@@ -23,6 +23,11 @@ enum Theme {
   DARK
 }
 
+enum TileTheme {
+  SIMPLE
+  CLASSIC
+}
+
 enum RiichiStick {
   RED
   BLUE
@@ -33,6 +38,7 @@ model UserPreference {
   user   User   @relation(fields: [userId], references: [id])
 
   theme       Theme       @default(AUTO)
+  tileTheme   TileTheme   @default(SIMPLE)
   riichiStick RiichiStick @default(RED)
 }
 

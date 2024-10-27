@@ -2,9 +2,27 @@ import { FC } from 'react'
 import SketchBox from '@ima/client/components/sketch-box'
 import useAuth from '@ima/client/hooks/useAuth'
 import { trpc } from '@ima/client/utils/trpc'
-import { Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 import SketchRadioGroup from '@ima/client/components/sketch-radio-group'
 import styled from '@emotion/styled'
+import Hai from '@ima/client/components/hai'
+import type { SimpleTile } from '@ima/server/types/tile'
+
+const kokushiTiles: SimpleTile[] = [
+  { type: 'man', value: 1 },
+  { type: 'man', value: 9 },
+  { type: 'pin', value: 1 },
+  { type: 'pin', value: 9 },
+  { type: 'sou', value: 1 },
+  { type: 'sou', value: 9 },
+  { type: 'wind', value: 1 },
+  { type: 'wind', value: 2 },
+  { type: 'wind', value: 3 },
+  { type: 'wind', value: 4 },
+  { type: 'dragon', value: 1 },
+  { type: 'dragon', value: 2 },
+  { type: 'dragon', value: 3 },
+]
 
 const UserPreference: FC = () => {
   const { skip } = useAuth()
@@ -12,6 +30,9 @@ const UserPreference: FC = () => {
   const utils = trpc.useUtils()
   const { data } = trpc.preference.preference.useQuery(skip)
   const { mutate: setTheme } = trpc.preference.theme.useMutation({
+    onSuccess: () => utils.preference.preference.reset(),
+  })
+  const { mutate: setTileTheme } = trpc.preference.tileTheme.useMutation({
     onSuccess: () => utils.preference.preference.reset(),
   })
   const { mutate: setRiichiStick } = trpc.preference.riichiStick.useMutation({
@@ -32,6 +53,23 @@ const UserPreference: FC = () => {
           { name: 'DARK', label: '다크' },
         ]}
       />
+
+      <Typography fontSize="4vmin">마작패 테마</Typography>
+      <Stack direction="row">
+        {kokushiTiles.map((tile, i) => (
+          <Hai size={3} tile={tile} key={i} />
+        ))}
+      </Stack>
+      <SketchRadioGroup
+        size={4}
+        selected={data.tileTheme}
+        onSelect={(name) => setTileTheme(name as typeof data.tileTheme)}
+        items={[
+          { name: 'SIMPLE', label: '심플' },
+          { name: 'CLASSIC', label: '클래식' },
+        ]}
+      />
+
       <Typography fontSize="4vmin">리치봉</Typography>
       <SketchRadioGroup
         size={4}

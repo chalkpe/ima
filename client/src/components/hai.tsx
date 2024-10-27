@@ -1,6 +1,7 @@
 import { CSSProperties, FC, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Rand from 'rand-seed'
+import { trpc } from '@ima/client/utils/trpc'
 import { convertTileToCode, getBackground } from '@ima/client/utils/tile'
 import type { SimpleTile, Tile } from '@ima/server/types/tile'
 
@@ -31,6 +32,9 @@ const Hai: FC<HaiProps> = ({
   style,
   ...rest
 }) => {
+  const { data: preference } = trpc.preference.preference.useQuery()
+  const tilesPath = preference?.tileTheme === 'CLASSIC' ? 'tiles_classic' : 'tiles'
+
   const transform = useMemo(
     () => (natural ? `rotate(${new Rand(JSON.stringify(tile)).next() * 3 - 1.5}deg)` : ''),
     [natural, tile]
@@ -73,7 +77,11 @@ const Hai: FC<HaiProps> = ({
       {tile.type === 'back' ? (
         <div style={commonImageStyle} />
       ) : (
-        <img alt={convertTileToCode(tile)} src={`./tiles/${convertTileToCode(tile)}.png`} style={commonImageStyle} />
+        <img
+          alt={convertTileToCode(tile)}
+          src={`./${tilesPath}/${convertTileToCode(tile)}.png`}
+          style={commonImageStyle}
+        />
       )}
     </div>
   )

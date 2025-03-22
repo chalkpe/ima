@@ -9,6 +9,7 @@ import type { TenpaiState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
 import type { Tenpai } from '@ima/server/types/tenpai'
 import type { Yaku } from '@ima/server/types/yaku'
+import type { Code } from '@ima/server/types/code'
 
 export const calculateFuriten = (
   state: GameState,
@@ -39,8 +40,8 @@ export const calculateTenpai = async (
   if (result.status !== 'tenpai') return
 
   const tenpai: Tenpai[] = await Promise.all(
-    [...result.tenpai.entries()].map(async ([code, states]) => {
-      const agariTile = simpleTileToTile(codeToTile(code))
+    Object.entries(result.tenpai).map(async ([code, states]) => {
+      const agariTile = simpleTileToTile(codeToTile(code as Code))
       const yaku = await calculateYaku(state, me, hand, 'test', agariTile)
 
       const status =
@@ -60,7 +61,7 @@ export const calculateTenpai = async (
 
       return {
         giriTile,
-        agariTile: codeToTile(code),
+        agariTile: codeToTile(code as Code),
         status,
         han,
       }

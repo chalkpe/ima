@@ -37,18 +37,17 @@ export const mergeAgariResults = (result: AgariResult, r: AgariResult) => {
   }
 
   if (result.tenpai !== r.tenpai) {
-    for (const [code, states] of r.tenpai) {
-      const existing = result.tenpai.get(code) ?? []
-      result.tenpai.set(
-        code,
-        [...existing, ...states]
-          .map((state) => [tenpaiStateToString(state), state] as const)
-          .filter((pair, index, array) => array.findIndex(([code]) => code === pair[0]) === index)
-          .map(([, state]) => state)
-      )
+    for (const [code, states] of Object.entries(r.tenpai)) {
+      const existing = result.tenpai[code as Code] ?? []
+      result.tenpai[code as Code] = [...existing, ...states]
+        .map((state) => [tenpaiStateToString(state), state] as const)
+        .filter((pair, index, array) => array.findIndex(([code]) => code === pair[0]) === index)
+        .map(([, state]) => state)
     }
 
-    result.tenpai = new Map([...result.tenpai.entries()].toSorted(([a], [b]) => compareCode(a, b)))
+    result.tenpai = Object.fromEntries(
+      Object.entries(result.tenpai).toSorted(([a], [b]) => compareCode(a as Code, b as Code))
+    ) as AgariResult['tenpai']
   }
 }
 
@@ -62,7 +61,7 @@ export const isAgariResultValid = (r: AgariResult): boolean => {
         return one.length === 0 && ((two.length === 7 && three.length === 0) || two.length <= 1)
       })
     case 'tenpai':
-      return [...r.tenpai.values()].every((states) =>
+      return Object.values(r.tenpai).every((states) =>
         states.every((state) => {
           const machi = state.filter((set) => isMachiType(set.type))
           const toitsu = state.filter((set) => set.type === 'toitsu')
@@ -76,7 +75,7 @@ export const isAgariResultValid = (r: AgariResult): boolean => {
 
 export const calculateAgari = (
   hand: Tile[],
-  result: AgariResult = { status: 'noten', state: [], agari: [], tenpai: new Map() }
+  result: AgariResult = { status: 'noten', state: [], agari: [], tenpai: {} as AgariResult['tenpai'] }
 ): AgariResult => {
   switch (hand.length) {
     case 0: {
@@ -93,7 +92,9 @@ export const calculateAgari = (
         ...result,
         status: 'tenpai',
         state: [...result.state, { type: 'koritsu', tiles: [a] }],
-        tenpai: new Map([[tileToCode(a), [[...result.state, { type: 'tanki', tiles: [a] }]]]]),
+        tenpai: Object.fromEntries([
+          [tileToCode(a), [[...result.state, { type: 'tanki', tiles: [a] }]]],
+        ]) as AgariResult['tenpai'],
       }
     }
     case 2: {
@@ -109,10 +110,10 @@ export const calculateAgari = (
           return {
             ...result,
             status: 'tenpai',
-            tenpai: new Map([
+            tenpai: Object.fromEntries([
               [tileToCode(a), [[...otherState, { type: 'shabo', tiles: [a, b] }, { type: 'shabo', tiles: [c, c] }]]],
               [tileToCode(c), [[...otherState, { type: 'shabo', tiles: [a, b] }, { type: 'shabo', tiles: [c, c] }]]],
-            ]),
+            ]) as AgariResult['tenpai'],
           }
         }
 
@@ -138,9 +139,9 @@ export const calculateAgari = (
           ...result,
           status: 'tenpai',
           state: [...result.state, { type: 'tatsu', tiles: [a, b] }],
-          tenpai: new Map(
+          tenpai: Object.fromEntries(
             machi.tiles.map((tile) => [tileToCode(tile), [[...result.state, { type: machi.type, tiles: [a, b] }]]])
-          ),
+          ) as AgariResult['tenpai'],
         }
       } else {
         return { ...result, status: 'noten' }
@@ -187,7 +188,7 @@ export const calculateAgari = (
       }
 
       if (result.agari.length) return { ...result, status: 'agari' }
-      if (result.tenpai.size) return { ...result, status: 'tenpai' }
+      if (Object.keys(result.tenpai).length) return { ...result, status: 'tenpai' }
 
       const ksTiles = kokushiTiles
         .map(simpleTileToTile)
@@ -223,7 +224,9 @@ export const calculateAgari = (
           ...result,
           status: 'tenpai',
           state,
-          tenpai: new Map([[tileToCode(last), [[...state, { type: 'tanki', tiles: [last] }]]]]),
+          tenpai: Object.fromEntries([
+            [tileToCode(last), [[...state, { type: 'tanki', tiles: [last] }]]],
+          ]) as AgariResult['tenpai'],
         }
       }
 
@@ -236,9 +239,9 @@ export const calculateAgari = (
           ...result,
           status: 'tenpai',
           state,
-          tenpai: new Map(
+          tenpai: Object.fromEntries(
             kokushiTiles.map((ksTile) => [tileToCode(ksTile), [[...state, { type: 'tanki', tiles: [ksTile] }]]])
-          ),
+          ) as AgariResult['tenpai'],
         }
       }
 
@@ -254,8 +257,8 @@ export const agariResultToString = (result: AgariResult): string => {
     case 'tenpai':
       return (
         'tenpai: ' +
-        [...result.tenpai.entries()]
-          .toSorted(([a], [b]) => compareCode(a, b))
+        Object.entries(result.tenpai)
+          .toSorted(([a], [b]) => compareCode(a as Code, b as Code))
           .map(([code, states]) => code + ' => ' + states.map(tenpaiStateToString).join(' or '))
           .join(', ')
       )

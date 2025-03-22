@@ -8,5 +8,5 @@ export interface AgariResult {
   status: 'agari' | 'tenpai' | 'noten'
   state: AgariState
   agari: AgariState[]
-  tenpai: Map<Code, TenpaiState[]>
+  tenpai: Record<Code, TenpaiState[]>
 }

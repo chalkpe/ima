@@ -9,7 +9,8 @@ import {
   tileSetToTsu,
 } from '@ima/server/helpers/game'
 import yakuValidators from '@ima/server/helpers/yaku/validators'
-import type { AgariState } from '@ima/server/types/agari'
+
+import type { AgariResult, AgariState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
 import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
 import type { AgariType, Yaku, YakuPredicateParams } from '@ima/server/types/yaku'
@@ -95,7 +96,7 @@ export const calculateYaku = async (
     status: 'noten',
     state: hand.called.map(tileSetToTsu),
     agari: [],
-    tenpai: new Map(),
+    tenpai: {} as AgariResult['tenpai'],
   })
 
   if (result.status !== 'agari') return []

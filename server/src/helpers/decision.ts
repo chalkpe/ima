@@ -14,6 +14,7 @@ import {
 } from '@ima/server/helpers/tile'
 import { calculateAgariThreaded } from '@ima/server/workers/agari'
 
+import type { Code } from '@ima/server/types/code'
 import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
 export const calculateChiDecisions = (state: GameState, me: PlayerType): Decision[] => {
@@ -121,8 +122,12 @@ export const calculateAnkanDecisions = async (state: GameState, me: PlayerType):
             calculateAgariThreaded(state[me].hand.closed),
             calculateAgariThreaded(closedHand.filter((tile) => !isEqualTile(tile, tsu[0]))),
           ])
-          return [...current.tenpai.keys()].toSorted(compareCode).join(',') ===
-            [...future.tenpai.keys()].toSorted(compareCode).join(',')
+          return Object.keys(current.tenpai)
+            .toSorted((a, b) => compareCode(a as Code, b as Code))
+            .join(',') ===
+            Object.keys(future.tenpai)
+              .toSorted((a, b) => compareCode(a as Code, b as Code))
+              .join(',')
             ? tsu
             : null
         })
@@ -163,8 +168,8 @@ export const calculateRiichiDecisions = async (state: GameState, me: PlayerType)
         result.status === 'tenpai' &&
         (
           await Promise.all(
-            [...result.tenpai.keys()]
-              .map((code) => simpleTileToTile(codeToTile(code)))
+            Object.keys(result.tenpai)
+              .map((code) => simpleTileToTile(codeToTile(code as Code)))
               .map(async (tile) =>
                 isYakuOverShibari(
                   state,
@@ -202,8 +207,8 @@ export const calculateRonDecisions = async (state: GameState, me: PlayerType): P
 
   const result = await calculateAgariThreaded(state[me].hand.closed)
   return result.status === 'tenpai' &&
-    [...result.tenpai.keys()].includes(tileToCode(ronTile)) &&
-    [...result.tenpai.values()].every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
+    Object.keys(result.tenpai).includes(tileToCode(ronTile)) &&
+    Object.values(result.tenpai).every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
     isYakuOverShibari(state, await calculateYaku(state, me, state[me].hand, 'ron', ronTile))
     ? [{ type: 'ron', tile: ronTile }]
     : []

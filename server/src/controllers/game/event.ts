@@ -9,66 +9,70 @@ import { calculateTenpai } from '@ima/server/helpers/tenpai'
 
 import type { GameState, PlayerType } from '@ima/server/types/game'
 
-export const onHandChange = (state: GameState, me: PlayerType) => {
+export const onHandChange = async (state: GameState, me: PlayerType) => {
   const isRiichi = state[me].riichi
   const closedHand = getClosedHand(state[me].hand)
 
   const giriTiles = isRiichi ? [...(state[me].hand.tsumo ? [state[me].hand.tsumo] : []), null] : [...closedHand, null]
-  state[me].hand.tenpai = giriTiles.flatMap((giriTile) => {
-    const hand =
-      giriTile === null
-        ? { ...state[me].hand, closed: closedHand, tsumo: undefined }
-        : { ...state[me].hand, closed: closedHand.filter((t) => giriTile.index !== t.index), tsumo: undefined }
-    const tenpai = calculateTenpai(state, me, hand, giriTile)
-    return tenpai ? tenpai : []
-  })
+  const res = await Promise.all(
+    giriTiles.map(async (giriTile) => {
+      const hand =
+        giriTile === null
+          ? { ...state[me].hand, closed: closedHand, tsumo: undefined }
+          : { ...state[me].hand, closed: closedHand.filter((t) => giriTile.index !== t.index), tsumo: undefined }
+
+      return await calculateTenpai(state, me, hand, giriTile)
+    })
+  )
+
+  state[me].hand.tenpai = res.flatMap((r) => (r ? r : []))
 }
 
-export const onBeforeTsumo = (state: GameState, me: PlayerType): 'update' | 'end' => {
-  state[me].decisions = calculateBeforeTsumoDecisions(state, me)
+export const onBeforeTsumo = async (state: GameState, me: PlayerType): Promise<'update' | 'end'> => {
+  state[me].decisions = await calculateBeforeTsumoDecisions(state, me)
   if (state[me].decisions.length === 0) {
-    return tsumo(state, me, 'haiyama')
+    return await tsumo(state, me, 'haiyama')
   } else {
     return 'update'
   }
 }
 
-export const onAfterTsumo = (state: GameState, me: PlayerType) => {
-  state[me].decisions = calculateAfterTsumoDecisions(state, me)
-  onHandChange(state, me)
+export const onAfterTsumo = async (state: GameState, me: PlayerType) => {
+  state[me].decisions = await calculateAfterTsumoDecisions(state, me)
+  await onHandChange(state, me)
 }
 
-export const onBeforeGiri = (state: GameState, me: PlayerType) => {
+export const onBeforeGiri = async (state: GameState, me: PlayerType) => {
   const opponent = getOpponent(me)
   state.turn = opponent
 }
 
-export const onAfterGiri = (state: GameState, me: PlayerType) => {
+export const onAfterGiri = async (state: GameState, me: PlayerType) => {
   state[me].decisions = []
   state[me].hand.tsumo = undefined
-  onHandChange(state, me)
+  await onHandChange(state, me)
 }
 
-export const onAfterAnkan = (state: GameState, me: PlayerType) => {
-  onHandChange(state, me)
+export const onAfterAnkan = async (state: GameState, me: PlayerType) => {
+  await onHandChange(state, me)
   const opponent = getOpponent(me)
 
-  state[opponent].decisions = calculateAfterOpponentKanDecisions(state, opponent)
+  state[opponent].decisions = await calculateAfterOpponentKanDecisions(state, opponent)
   if (state[opponent].decisions.length > 0) {
     state.turn = opponent
   } else {
-    tsumo(state, me, 'lingshang')
+    await tsumo(state, me, 'lingshang')
   }
 }
 
-export const onAfterGakan = (state: GameState, me: PlayerType) => {
-  onHandChange(state, me)
+export const onAfterGakan = async (state: GameState, me: PlayerType) => {
+  await onHandChange(state, me)
   const opponent = getOpponent(me)
 
-  state[opponent].decisions = calculateAfterOpponentKanDecisions(state, opponent)
+  state[opponent].decisions = await calculateAfterOpponentKanDecisions(state, opponent)
   if (state[opponent].decisions.length > 0) {
     state.turn = opponent
   } else {
-    tsumo(state, me, 'lingshang')
+    await tsumo(state, me, 'lingshang')
   }
 }

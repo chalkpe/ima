@@ -1,6 +1,5 @@
 import { codeToTile, compareCode, tileToCode } from '@ima/server/helpers/code'
 import { calculateYaku, isYakuOverShibari } from '@ima/server/helpers/yaku'
-import { calculateAgari } from '@ima/server/helpers/agari'
 import { calculateFuriten } from '@ima/server/helpers/tenpai'
 import { combination, combinations, partition } from '@ima/server/helpers/common'
 import { getClosedHand, getOpponent, getRiverEnd, isMenzenHand } from '@ima/server/helpers/game'
@@ -13,6 +12,7 @@ import {
   removeTileFromHand,
   simpleTileToTile,
 } from '@ima/server/helpers/tile'
+import { calculateAgariThreaded } from '@ima/server/workers/agari'
 
 import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
@@ -101,7 +101,7 @@ export const calculateGakanDecisions = (state: GameState, me: PlayerType): Decis
     .map(([tile]) => ({ type: 'gakan', tile }))
 }
 
-export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateAnkanDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   if (state.wall.tiles.length === 0) return []
   if (state.wall.doraCount === 5) return []
 
@@ -113,16 +113,23 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
     .map(([code, _]) => closedHand.filter((tile) => tileToCode(tile) === code))
 
   if (state[me].riichi) {
-    return kantsu
-      .filter((tsu) => tsu.some((tile) => tile.index === state[me].hand.tsumo?.index))
-      .filter((tsu) => {
-        const current = calculateAgari(state[me].hand.closed)
-        const future = calculateAgari(closedHand.filter((tile) => !isEqualTile(tile, tsu[0])))
-        return (
-          [...current.tenpai.keys()].toSorted(compareCode).join(',') ===
-          [...future.tenpai.keys()].toSorted(compareCode).join(',')
-        )
-      })
+    const res = await Promise.all(
+      kantsu
+        .filter((tsu) => tsu.some((tile) => tile.index === state[me].hand.tsumo?.index))
+        .map(async (tsu) => {
+          const [current, future] = await Promise.all([
+            calculateAgariThreaded(state[me].hand.closed),
+            calculateAgariThreaded(closedHand.filter((tile) => !isEqualTile(tile, tsu[0]))),
+          ])
+          return [...current.tenpai.keys()].toSorted(compareCode).join(',') ===
+            [...future.tenpai.keys()].toSorted(compareCode).join(',')
+            ? tsu
+            : null
+        })
+    )
+
+    return res
+      .filter((tiles) => tiles !== null)
       .map((tiles) => {
         const [tile, otherTiles] = partition(tiles, (t) => t.index === state[me].hand.tsumo?.index)
         return { type: 'ankan', tile: tile[0], otherTiles }
@@ -135,7 +142,7 @@ export const calculateAnkanDecisions = (state: GameState, me: PlayerType): Decis
   })
 }
 
-export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateRiichiDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   if (state[me].riichi) return []
   if (state.wall.tiles.length < 2) return []
 
@@ -143,53 +150,66 @@ export const calculateRiichiDecisions = (state: GameState, me: PlayerType): Deci
   if (!isMenzenHand(state[me].hand)) return []
 
   const hand = getClosedHand(state[me].hand)
-  return hand
-    .filter((tile, index) => hand.findIndex((t) => isStrictEqualTile(tile, t)) === index)
-    .map((tile) => partition(hand, (t) => t.index === tile.index))
-    .map(([removed, hand]) => [removed[0], hand, calculateAgari(hand)] as const)
-    .filter(
-      ([_, hand, result]) =>
+  const res = await Promise.all(
+    hand
+      .filter((tile, index) => hand.findIndex((t) => isStrictEqualTile(tile, t)) === index)
+      .map((tile) => partition(hand, (t) => t.index === tile.index))
+      .map(async ([removed, hand]) => [removed[0], hand, await calculateAgariThreaded(hand)] as const)
+  )
+
+  return (
+    await Promise.all(
+      res.map(async ([tile, hand, result]) =>
         result.status === 'tenpai' &&
-        [...result.tenpai.keys()]
-          .map((code) => simpleTileToTile(codeToTile(code)))
-          .some((tile) =>
-            isYakuOverShibari(
-              state,
-              calculateYaku(state, me, { ...state[me].hand, closed: hand, tsumo: tile }, 'tsumo', tile)
-            )
+        (
+          await Promise.all(
+            [...result.tenpai.keys()]
+              .map((code) => simpleTileToTile(codeToTile(code)))
+              .map(async (tile) =>
+                isYakuOverShibari(
+                  state,
+                  await calculateYaku(state, me, { ...state[me].hand, closed: hand, tsumo: tile }, 'tsumo', tile)
+                )
+              )
           )
+        ).some(Boolean)
+          ? tile
+          : null
+      )
     )
-    .map(([tile]) => ({ type: 'riichi', tile }))
+  )
+    .filter((tile) => tile !== null)
+    .map((tile) => ({ type: 'riichi', tile }))
 }
 
-export const calculateTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateTsumoDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   if (state[me].hand.tsumo === undefined) return []
   const hand = getClosedHand(state[me].hand)
 
-  const result = calculateAgari(hand)
+  const result = await calculateAgariThreaded(hand)
   return result.status === 'agari' &&
-    isYakuOverShibari(state, calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo))
+    isYakuOverShibari(state, await calculateYaku(state, me, state[me].hand, 'tsumo', state[me].hand.tsumo))
     ? [{ type: 'tsumo', tile: state[me].hand.tsumo }]
     : []
 }
 
-export const calculateRonDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateRonDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
 
   if (!riverEnd) return []
   const ronTile = riverEnd.tile
 
-  const result = calculateAgari(state[me].hand.closed)
+  const result = await calculateAgariThreaded(state[me].hand.closed)
   return result.status === 'tenpai' &&
     [...result.tenpai.keys()].includes(tileToCode(ronTile)) &&
     [...result.tenpai.values()].every((tenpai) => tenpai.every((ten) => calculateFuriten(state, me, ten, null))) &&
-    isYakuOverShibari(state, calculateYaku(state, me, state[me].hand, 'ron', ronTile))
+    isYakuOverShibari(state, await calculateYaku(state, me, state[me].hand, 'ron', ronTile))
     ? [{ type: 'ron', tile: ronTile }]
     : []
 }
 
-export const calculateChankanDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateChankanDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   const opponent = getOpponent(me)
 
   const opponentCalled = state[opponent].hand.called
@@ -201,7 +221,7 @@ export const calculateChankanDecisions = (state: GameState, me: PlayerType): Dec
   if (!lastTile || (type !== 'gakan' && type !== 'ankan')) return []
 
   const hand = [...state[me].hand.closed, lastTile]
-  const result = calculateAgari(hand)
+  const result = await calculateAgariThreaded(hand)
 
   if (result.status !== 'agari') return []
   if (type !== 'gakan' && !result.agari.some((s) => s.some(({ type }) => type === 'kokushi'))) return []

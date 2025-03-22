@@ -177,7 +177,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    pon(room.state, me, tatsu)
+    await pon(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'pon' })
@@ -189,7 +189,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    chi(room.state, me, tatsu)
+    await chi(room.state, me, tatsu)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'chi' })
@@ -200,7 +200,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    daiminkan(room.state, me)
+    await daiminkan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'kan' })
@@ -212,7 +212,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    ankan(room.state, me, type, value)
+    await ankan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'kan' })
@@ -224,7 +224,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    gakan(room.state, me, type, value)
+    await gakan(room.state, me, type, value)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'kan' })
@@ -235,7 +235,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    const result = skipAndTsumo(room.state, me)
+    const result = await skipAndTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: result })
@@ -246,7 +246,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    skipChankan(room.state, me)
+    await skipChankan(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'update' })
@@ -257,7 +257,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    callTsumo(room.state, me)
+    await callTsumo(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'tsumo' })
@@ -268,7 +268,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    callRon(room.state, me)
+    await callRon(room.state, me)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: 'ron' })
@@ -280,7 +280,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    const result = giri(room.state, me, index)
+    const result = await giri(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: result })
@@ -292,7 +292,7 @@ export const gameRouter = router({
 
     const room = await getRoom(id, true)
     const me = getActiveMe(room, id)
-    const result = riichi(room.state, me, index)
+    const result = await riichi(room.state, me, index)
 
     await prisma.room.update({ where: { host: room.host }, data: { state: room.state } })
     gameChannel.publish({ identifier: room.host, value: result })

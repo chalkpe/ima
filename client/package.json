@@ -1,16 +1,16 @@
 {
   "name": "@ima/client",
+  "version": "2.0.0",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc -b && vite build",
+    "build-storybook": "storybook build",
+    "dev": "vite",
     "lint": "eslint . && tsc --noEmit",
-    "test": "echo \"Error: no test specified\" && exit 0",
-    "test:ci": "echo \"Error: no test specified\" && exit 0",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "test:ci": "echo \"Error: no test specified\" && exit 0"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

@@ -1,8 +1,9 @@
 import { codeToTile } from '@ima/server/helpers/code'
-import { calculateAgari } from '@ima/server/helpers/agari'
 import { calculateYaku } from '@ima/server/helpers/yaku'
 import { getClosedHand } from '@ima/server/helpers/game'
 import { getMachiTiles, isEqualTile, isMachi, simpleTileToTile } from '@ima/server/helpers/tile'
+import { calculateAgariThreaded } from '@ima/server/workers/agari'
+
 import type { GameState, Hand, PlayerType } from '@ima/server/types/game'
 import type { TenpaiState } from '@ima/server/types/agari'
 import type { Tile } from '@ima/server/types/tile'
@@ -28,41 +29,43 @@ export const calculateFuriten = (
 
 const sumVisibleYaku = (yaku: Yaku[]) => yaku.filter((yaku) => !yaku.isHidden).reduce((sum, yaku) => sum + yaku.han, 0)
 
-export const calculateTenpai = (
+export const calculateTenpai = async (
   state: GameState,
   me: PlayerType,
   hand: Hand,
   giriTile: Tile | null
-): Tenpai[] | undefined => {
-  const result = calculateAgari(getClosedHand(hand))
+): Promise<Tenpai[] | undefined> => {
+  const result = await calculateAgariThreaded(getClosedHand(hand))
   if (result.status !== 'tenpai') return
 
-  const tenpai: Tenpai[] = [...result.tenpai.entries()].map(([code, states]) => {
-    const agariTile = simpleTileToTile(codeToTile(code))
-    const yaku = calculateYaku(state, me, hand, 'test', agariTile)
+  const tenpai: Tenpai[] = await Promise.all(
+    [...result.tenpai.entries()].map(async ([code, states]) => {
+      const agariTile = simpleTileToTile(codeToTile(code))
+      const yaku = await calculateYaku(state, me, hand, 'test', agariTile)
 
-    const status =
-      !yaku.length || yaku.every((yaku) => yaku.isExtra)
-        ? 'muyaku'
-        : !states.every((s) => calculateFuriten(state, me, s, giriTile))
-          ? 'furiten'
-          : 'tenpai'
+      const status =
+        !yaku.length || yaku.every((yaku) => yaku.isExtra)
+          ? 'muyaku'
+          : !states.every((s) => calculateFuriten(state, me, s, giriTile))
+            ? 'furiten'
+            : 'tenpai'
 
-    const han =
-      status !== 'tenpai'
-        ? undefined
-        : {
-            tsumo: sumVisibleYaku(calculateYaku(state, me, hand, 'tsumo', agariTile)),
-            ron: sumVisibleYaku(calculateYaku(state, me, hand, 'ron', agariTile)),
-          }
+      const han =
+        status !== 'tenpai'
+          ? undefined
+          : await Promise.all([
+              calculateYaku(state, me, hand, 'tsumo', agariTile),
+              calculateYaku(state, me, hand, 'ron', agariTile),
+            ]).then(([tsumo, ron]) => ({ tsumo: sumVisibleYaku(tsumo), ron: sumVisibleYaku(ron) }))
 
-    return {
-      giriTile,
-      agariTile: codeToTile(code),
-      status,
-      han,
-    }
-  })
+      return {
+        giriTile,
+        agariTile: codeToTile(code),
+        status,
+        han,
+      }
+    })
+  )
 
   return tenpai.some((t) => t.status === 'furiten')
     ? tenpai.map((t) => ({ ...t, status: t.status === 'tenpai' ? 'furiten' : t.status }))

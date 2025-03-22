@@ -1,7 +1,20 @@
 {
   "name": "ima",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Two-player riichi mahjong",
+  "keywords": [
+    "mahjong"
+  ],
+  "homepage": "https://github.com/chalkpe/ima#readme",
+  "bugs": {
+    "url": "https://github.com/chalkpe/ima/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chalkpe/ima.git"
+  },
+  "license": "MIT",
+  "author": "Chalk",
   "workspaces": [
     "client",
     "server"
@@ -9,23 +22,8 @@
   "scripts": {
     "prepare": "husky"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chalkpe/ima.git"
-  },
-  "keywords": [
-    "mahjong"
-  ],
-  "author": "Chalk",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/chalkpe/ima/issues"
-  },
-  "homepage": "https://github.com/chalkpe/ima#readme",
-  "devDependencies": {
-    "husky": "^9.1.5",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   },
   "prettier": {
     "printWidth": 120,
@@ -33,7 +31,14 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+  "dependencies": {
+    "@prisma/client": "^6.5.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "prisma": "^6.5.0",
+    "prisma-json-types-generator": "^3.2.2"
   }
 }

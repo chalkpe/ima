@@ -55,9 +55,9 @@ export const createAgariScoreboard = (
   }
 }
 
-export const createRyukyokuScoreboard = (state: GameState, ryuukyokuType: RyuukyokuType): Scoreboard => {
-  const hostTenpai = ryuukyokuType === 'ryuukyoku' && calculateTenpai(state, 'host', state.host.hand, null)
-  const guestTenpai = ryuukyokuType === 'ryuukyoku' && calculateTenpai(state, 'guest', state.guest.hand, null)
+export const createRyukyokuScoreboard = async (state: GameState, ryuukyokuType: RyuukyokuType): Promise<Scoreboard> => {
+  const hostTenpai = ryuukyokuType === 'ryuukyoku' && (await calculateTenpai(state, 'host', state.host.hand, null))
+  const guestTenpai = ryuukyokuType === 'ryuukyoku' && (await calculateTenpai(state, 'guest', state.guest.hand, null))
   const tenpai = [...(hostTenpai ? ['host' as const] : []), ...(guestTenpai ? ['guest' as const] : [])]
   return {
     type: 'ryuukyoku',

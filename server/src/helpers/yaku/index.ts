@@ -1,5 +1,5 @@
 import { isYaochuuhai } from '@ima/server/helpers/tile'
-import { calculateAgari } from '@ima/server/helpers/agari'
+import { calculateAgariThreaded } from '@ima/server/workers/agari'
 import {
   getAvailableTiles,
   getDoraTiles,
@@ -84,14 +84,14 @@ const calculateYakuOfAgari = (
 const compareByHan = (a: Yaku[], b: Yaku[], filter: (yaku: Yaku) => boolean = () => true) =>
   b.filter(filter).reduce((han, yaku) => han + yaku.han, 0) - a.filter(filter).reduce((han, yaku) => han + yaku.han, 0)
 
-export const calculateYaku = (
+export const calculateYaku = async (
   state: GameState,
   me: PlayerType,
   hand: Hand,
   agariType: AgariType,
   agariTile: Tile
-): Yaku[] => {
-  const result = calculateAgari([...hand.closed, agariTile], {
+): Promise<Yaku[]> => {
+  const result = await calculateAgariThreaded([...hand.closed, agariTile], {
     status: 'noten',
     state: hand.called.map(tileSetToTsu),
     agari: [],

@@ -11,24 +11,25 @@ import {
 
 import type { Decision, GameState, PlayerType } from '@ima/server/types/game'
 
-export const calculateBeforeTsumoDecisions = (state: GameState, me: PlayerType): Decision[] => {
+export const calculateBeforeTsumoDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
   const decisions = [
     ...calculateChiDecisions(state, me),
     ...calculatePonDaiminkanDecisions(state, me),
-    ...calculateRonDecisions(state, me),
+    ...(await calculateRonDecisions(state, me)),
   ]
   return decisions.length > 0 ? [...decisions, { type: 'skip_and_tsumo' }] : []
 }
 
-export const calculateAfterTsumoDecisions = (state: GameState, me: PlayerType) => {
-  return [
-    ...calculateAnkanDecisions(state, me),
-    ...calculateGakanDecisions(state, me),
-    ...calculateRiichiDecisions(state, me),
-    ...calculateTsumoDecisions(state, me),
-  ]
+export const calculateAfterTsumoDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
+  const [ankan, riichi, tsumo] = await Promise.all([
+    calculateAnkanDecisions(state, me),
+    calculateRiichiDecisions(state, me),
+    calculateTsumoDecisions(state, me),
+  ])
+
+  return [...ankan, ...calculateGakanDecisions(state, me), ...riichi, ...tsumo]
 }
 
-export const calculateAfterOpponentKanDecisions = (state: GameState, me: PlayerType) => {
-  return [...calculateChankanDecisions(state, me)]
+export const calculateAfterOpponentKanDecisions = async (state: GameState, me: PlayerType): Promise<Decision[]> => {
+  return [...(await calculateChankanDecisions(state, me))]
 }

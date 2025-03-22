@@ -18,10 +18,10 @@ import { createAgariScoreboard, createRyukyokuScoreboard } from '@ima/server/hel
 import type { Tile, TileType } from '@ima/server/types/tile'
 import type { GameState, PlayerType, WallType } from '@ima/server/types/game'
 
-export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update' | 'end' => {
+export const tsumo = async (state: GameState, me: PlayerType, from: WallType): Promise<'update' | 'end'> => {
   if (state.wall.doraCount === 5) {
     if (![me, getOpponent(me)].some((p) => state[p].hand.called.filter((set) => set.tiles.length === 4).length === 4)) {
-      state.scoreboard = createRyukyokuScoreboard(state, 'suukaikan')
+      state.scoreboard = await createRyukyokuScoreboard(state, 'suukaikan')
       return 'end'
     }
   }
@@ -43,7 +43,7 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update
       const nagashiMangan = [me, getOpponent(me)].filter((p) => isNagashiMangan(state, p))
 
       if (nagashiMangan.length % 2 === 0) {
-        state.scoreboard = createRyukyokuScoreboard(state, 'ryuukyoku')
+        state.scoreboard = await createRyukyokuScoreboard(state, 'ryuukyoku')
       } else {
         state.scoreboard = createAgariScoreboard(state, nagashiMangan[0], state[nagashiMangan[0]].hand, 'tsumo', [
           { name: '유국만관', han: 5 },
@@ -56,11 +56,11 @@ export const tsumo = (state: GameState, me: PlayerType, from: WallType): 'update
     state[me].hand.tsumo = state.wall.tiles.splice(0, 1)[0]
   }
 
-  onAfterTsumo(state, me)
+  await onAfterTsumo(state, me)
   return 'update'
 }
 
-export const ankan = (state: GameState, me: PlayerType, type: TileType, value: number) => {
+export const ankan = async (state: GameState, me: PlayerType, type: TileType, value: number) => {
   const closedHand = getClosedHand(state[me].hand)
   const [ankanTiles, otherTiles] = partition(closedHand, (tile) => isEqualTile(tile, { type, value }))
   if (ankanTiles.length !== 4) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not sufficient' })
@@ -70,10 +70,10 @@ export const ankan = (state: GameState, me: PlayerType, type: TileType, value: n
   state[me].hand.tsumo = undefined
   state[me].hand.called.push({ type: 'ankan', tiles: ankanTiles, jun: state[me].jun })
 
-  onAfterAnkan(state, me)
+  await onAfterAnkan(state, me)
 }
 
-export const gakan = (state: GameState, me: PlayerType, type: TileType, value: number) => {
+export const gakan = async (state: GameState, me: PlayerType, type: TileType, value: number) => {
   const closedHand = getClosedHand(state[me].hand)
 
   const [gakanTiles, otherTiles] = partition(closedHand, (tile) => isEqualTile(tile, { type, value }))
@@ -95,10 +95,10 @@ export const gakan = (state: GameState, me: PlayerType, type: TileType, value: n
   minkou.jun = state[me].jun
   state[me].hand.called = [...state[me].hand.called.filter((set) => set !== minkou), minkou]
 
-  onAfterGakan(state, me)
+  await onAfterGakan(state, me)
 }
 
-export const daiminkan = (state: GameState, me: PlayerType) => {
+export const daiminkan = async (state: GameState, me: PlayerType) => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
   if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
@@ -119,10 +119,10 @@ export const daiminkan = (state: GameState, me: PlayerType) => {
     jun: state[opponent].jun,
   })
 
-  tsumo(state, me, 'lingshang')
+  await tsumo(state, me, 'lingshang')
 }
 
-export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) => {
+export const pon = async (state: GameState, me: PlayerType, tatsu: [number, number]) => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
   if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
@@ -145,10 +145,10 @@ export const pon = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].hand.called.push({ type: 'pon', tiles, calledTile, jun: state[opponent].jun })
   state[me].hand.banned = remain.filter((tile) => isKuikae(state, me, tile)).map((tile) => tile.index)
 
-  onHandChange(state, me)
+  await onHandChange(state, me)
 }
 
-export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) => {
+export const chi = async (state: GameState, me: PlayerType, tatsu: [number, number]) => {
   const opponent = getOpponent(me)
   const riverEnd = getRiverEnd(state[opponent])
   if (!riverEnd) throw new TRPCError({ code: 'BAD_REQUEST', message: 'River empty' })
@@ -171,17 +171,17 @@ export const chi = (state: GameState, me: PlayerType, tatsu: [number, number]) =
   state[me].hand.called.push({ type: 'chi', tiles, calledTile, jun: state[opponent].jun })
   state[me].hand.banned = remain.filter((tile) => isKuikae(state, me, tile)).map((tile) => tile.index)
 
-  onHandChange(state, me)
+  await onHandChange(state, me)
 }
 
-export const skipAndTsumo = (state: GameState, me: PlayerType): 'update' | 'end' => {
+export const skipAndTsumo = async (state: GameState, me: PlayerType): Promise<'update' | 'end'> => {
   if (!state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'No decisions' })
 
-  return tsumo(state, me, 'haiyama')
+  return await tsumo(state, me, 'haiyama')
 }
 
-export const skipChankan = (state: GameState, me: PlayerType) => {
+export const skipChankan = async (state: GameState, me: PlayerType) => {
   if (!state[me].decisions.some((dec) => dec.type === 'skip_chankan'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'No decisions' })
 
@@ -189,35 +189,35 @@ export const skipChankan = (state: GameState, me: PlayerType) => {
 
   const opponent = getOpponent(me)
   state.turn = opponent
-  tsumo(state, opponent, 'lingshang')
+  await tsumo(state, opponent, 'lingshang')
 }
 
-export const callTsumo = (state: GameState, me: PlayerType) => {
+export const callTsumo = async (state: GameState, me: PlayerType) => {
   const tsumo = state[me].decisions.find((dec) => dec.type === 'tsumo')
   if (!tsumo || !tsumo.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No tsumo decision' })
 
-  const yaku = calculateYaku(state, me, state[me].hand, 'tsumo', tsumo.tile)
+  const yaku = await calculateYaku(state, me, state[me].hand, 'tsumo', tsumo.tile)
   if (!isYakuOverShibari(state, yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, state[me].hand, 'tsumo', yaku)
 }
 
-export const callRon = (state: GameState, me: PlayerType) => {
+export const callRon = async (state: GameState, me: PlayerType) => {
   const ron = state[me].decisions.find((dec) => dec.type === 'ron')
   if (!ron || !ron.tile) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ron decision' })
 
   const calledTile = ron.tile
   if (calledTile.type === 'back') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not visible' })
 
-  const yaku = calculateYaku(state, me, state[me].hand, 'ron', calledTile)
+  const yaku = await calculateYaku(state, me, state[me].hand, 'ron', calledTile)
   if (!isYakuOverShibari(state, yaku)) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No yaku or under shibari' })
 
   state[me].decisions = []
   state.scoreboard = createAgariScoreboard(state, me, { ...state[me].hand, tsumo: calledTile }, 'ron', yaku)
 }
 
-export const giri = (state: GameState, me: PlayerType, index: number): 'update' | 'end' => {
+export const giri = async (state: GameState, me: PlayerType, index: number): Promise<'update' | 'end'> => {
   if (state[me].decisions.some((dec) => dec.type === 'skip_and_tsumo' || dec.type === 'skip_chankan'))
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Decisions should be made' })
 
@@ -229,7 +229,7 @@ export const giri = (state: GameState, me: PlayerType, index: number): 'update' 
   if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
   if (isKuikae(state, me, tiles[0])) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cannot kuikae' })
 
-  onBeforeGiri(state, me)
+  await onBeforeGiri(state, me)
 
   const isRiichi = state[me].riichi !== null && !state[me].river.some((r) => r.isRiichi)
   state[me].river.push({ tile: tiles[0], isTsumogiri: state[me].hand.tsumo?.index === index, isRiichi })
@@ -238,18 +238,18 @@ export const giri = (state: GameState, me: PlayerType, index: number): 'update' 
   state[me].hand.tsumo = undefined
   state[me].hand.banned = []
 
-  onAfterGiri(state, me)
-  return onBeforeTsumo(state, getOpponent(me))
+  await onAfterGiri(state, me)
+  return await onBeforeTsumo(state, getOpponent(me))
 }
 
-export const riichi = (state: GameState, me: PlayerType, index: number): 'riichi' | 'end' => {
+export const riichi = async (state: GameState, me: PlayerType, index: number): Promise<'riichi' | 'end'> => {
   if (state[me].riichi) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Riichi already declared' })
 
   const closedHand = getClosedHand(state[me].hand)
   const [tiles, remain] = partition(closedHand, (t) => t.index === index)
   if (!tiles.length) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tile not found' })
 
-  onBeforeGiri(state, me)
+  await onBeforeGiri(state, me)
 
   state.round.riichiSticks += 1
   state[me].score -= 1000
@@ -259,7 +259,7 @@ export const riichi = (state: GameState, me: PlayerType, index: number): 'riichi
   state[me].hand.closed = remain
   state[me].hand.tsumo = undefined
 
-  onAfterGiri(state, me)
-  const result = onBeforeTsumo(state, getOpponent(me))
+  await onAfterGiri(state, me)
+  const result = await onBeforeTsumo(state, getOpponent(me))
   return result === 'update' ? 'riichi' : 'end'
 }

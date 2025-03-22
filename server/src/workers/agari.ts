@@ -5,6 +5,8 @@ export const calculateAgariThreaded = async (
   ...args: Parameters<typeof calculateAgari>
 ): Promise<ReturnType<typeof calculateAgari>> => {
   const key = `agari:${JSON.stringify(args)}`
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { redis } = require('@ima/server/db')
 
   const cached = await redis.get(key)

@@ -98,8 +98,9 @@ const Room = () => {
               <SketchRadioGroup
                 size={4}
                 selected={data.state.rule.length}
-                onSelect={(name) => setLength({ value: name as 'east' | 'south' | 'north' })}
+                onSelect={(name) => setLength({ value: name as typeof data.state.rule.length })}
                 items={[
+                  { name: 'one', label: '단판전' },
                   { name: 'east', label: '동풍전' },
                   { name: 'south', label: '반장전' },
                   { name: 'north', label: '일장전' },

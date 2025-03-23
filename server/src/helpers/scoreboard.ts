@@ -84,6 +84,8 @@ export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboa
   state[scoreboard.winner].score += scoreboard.score + state.round.riichiSticks * 1000 + state.round.honba * 100
   state.round.riichiSticks = 0
 
+  if (state.rule.length === 'one') return createFinalScoreboard(state)
+
   if (
     state.round.kyoku === 2 &&
     !getNextWind(state, state.round.wind) &&
@@ -110,6 +112,8 @@ export const applyAgariScoreboard = (state: GameState, scoreboard: AgariScoreboa
 }
 
 export const applyRyukyokuScoreboard = (state: GameState, scoreboard: RyuukyokuScoreboard): Scoreboard | PlayerType => {
+  if (state.rule.length === 'one') return createFinalScoreboard(state)
+
   if (scoreboard.tenpai.length === 1) {
     const winner = scoreboard.tenpai[0]
     state[winner].score += 1000

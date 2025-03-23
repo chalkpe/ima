@@ -129,7 +129,7 @@ export type Scoreboard = AgariScoreboard | RyuukyokuScoreboard | FinalScoreboard
 export interface Rule {
   localYaku: boolean
   manganShibari: boolean
-  length: 'east' | 'south' | 'north'
+  length: 'one' | 'east' | 'south' | 'north'
   transparentMode: boolean
 }
 

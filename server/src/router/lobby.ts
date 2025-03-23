@@ -147,7 +147,7 @@ export const lobbyRouter = router({
   }),
 
   setLength: protectedProcedure
-    .input(z.object({ value: z.enum(['east', 'south', 'north']) }))
+    .input(z.object({ value: z.enum(['one', 'east', 'south', 'north']) }))
     .mutation(async (opts) => {
       const { id } = opts.ctx
       const { value } = opts.input

@@ -1,6 +1,6 @@
 import z from 'zod'
 import { protectedProcedure, router } from '@ima/server/trpc'
-import { prisma } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
 import { TRPCError } from '@trpc/server'
 import { createInitialState } from '@ima/server/helpers/game'
 import type { LobbyRoom } from '@ima/server/types/game'

@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin'
 import fastifyPassport from '@fastify/passport'
 import { Strategy } from 'passport-twitter'
-import { prisma } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
 
 const consumerKey = process.env.TWITTER_API_KEY!
 const consumerSecret = process.env.TWITTER_API_SECRET!

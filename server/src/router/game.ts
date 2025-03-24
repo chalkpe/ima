@@ -1,7 +1,8 @@
 import z from 'zod'
 import { TRPCError } from '@trpc/server'
 import { protectedProcedure, router } from '@ima/server/trpc'
-import { prisma, createChannel } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
+import createChannel from '@ima/server/stores/pubsub'
 
 import {
   confirmScoreboard,

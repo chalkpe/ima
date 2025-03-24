@@ -1,6 +1,6 @@
 import z from 'zod'
 import { protectedProcedure, router } from '@ima/server/trpc'
-import { prisma } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
 import { RiichiStick, Theme, TileTheme } from '@prisma/client'
 
 export const preferenceRouter = router({

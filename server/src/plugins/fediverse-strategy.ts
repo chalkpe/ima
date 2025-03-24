@@ -1,5 +1,5 @@
 import { Strategy } from 'passport-strategy'
-import { prisma } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
 import generator, { detector, Mastodon } from 'megalodon'
 
 interface FediverseStrategyOptions {

@@ -7,7 +7,7 @@ export const calculateAgariThreaded = async (
   const key = `agari:${JSON.stringify(args)}`
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { redis } = require('@ima/server/db')
+  const redis = require('@ima/server/stores/redis').default
 
   const cached = await redis.get(key)
   if (cached) return JSON.parse(cached)

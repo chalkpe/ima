@@ -5,7 +5,7 @@ import fp from 'fastify-plugin'
 import fastifySecureSession from '@fastify/secure-session'
 import fastifyPassport from '@fastify/passport'
 
-import { prisma } from '@ima/server/db'
+import prisma from '@ima/server/stores/prisma'
 import { Prisma } from '@prisma/client'
 
 const key = fs.readFileSync(path.join(__dirname, '..', '..', 'secret-key'))
